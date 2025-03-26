@@ -22,7 +22,7 @@ public class Transporteur {
     private String nom;
     private String delegation;
     private int nbLivraisons = 0;
-    @OneToMany(mappedBy = "transporteur")
+    @OneToMany(mappedBy = "transporteur", cascade = CascadeType.ALL)
     private List<Livraison> livraisons;
 /*
     public List<Livraison> getLivraisons() {

@@ -6,23 +6,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-import tn.esprit.pi.Entities.Livraison;
-import tn.esprit.pi.Entities.Produit;
-import tn.esprit.pi.Entities.StatutLivraison;
-import tn.esprit.pi.Entities.Transporteur;
-import tn.esprit.pi.Repositories.LivraisonRepository;
-import tn.esprit.pi.Repositories.ProduitRepository;
-import tn.esprit.pi.Repositories.TransporteurRepository;
+import tn.esprit.pi.Entities.*;
+import tn.esprit.pi.Repositories.*;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-
-import static tn.esprit.pi.Entities.StatutLivraison.EN_ATTENTE;
+import java.time.LocalDate;
+import java.util.*;
 
 @Service
 @AllArgsConstructor
-public class LivraisonServiceImpl {
+public class LivraisonServiceImpl implements ILivraisonServices{
     @Autowired
     private LivraisonRepository livraisonRepository;
 
@@ -31,10 +23,137 @@ public class LivraisonServiceImpl {
 
     @Autowired
     private ProduitRepository produitRepository;
+    @Autowired
+    private CommandeRepository commandeRepository;
 
+    @Autowired
+    private ClientRepository clientRepository;
 
 
     @Transactional
+    public Map<String, Object> creerLivraison(Long idCommande) {
+
+        Commande commande = (Commande) commandeRepository.findById(idCommande).orElseThrow(() -> new RuntimeException("Commande non trouvée"));
+        Long idClient = commande.getIdClient();
+        // 2. Récupérer le client associé
+        Optional<Client> client = clientRepository.findById(commande.getIdClient());
+
+        String delegationClient = client.get().getDelegation();
+
+        // 3. Trouver le transporteur disponible dans la même délégation
+        Transporteur transporteur = transporteurRepository
+                .findLivreurWithLeastDeliveries(delegationClient);
+
+        // 4. Calculer la date de livraison (3 jours après la date de commande)
+        LocalDate dateLivraison = LocalDate.now().plusDays(3);
+
+        // 5. Calculer le prix total (prix de la commande + 7DT)
+        double prixTotalLivraison = commande.getPrixTotal() + 7;
+
+        // 6. Créer la livraison
+        Livraison livraison = new Livraison();
+        livraison.setClientId(client.get().getId());
+        livraison.setCommandeId(commande.getId());
+        livraison.setTransporteurId(transporteur.getId());
+        livraison.setDateLivraison(dateLivraison);
+        livraison.setStatut(StatutLivraison.EN_ATTENTE);
+        livraison.setPrixTotal(prixTotalLivraison);
+
+        // 7. Sauvegarder la livraison
+        livraisonRepository.save(livraison);
+        transporteur.setNbLivraisons(transporteur.getNbLivraisons() + 1);
+        transporteurRepository.save(transporteur);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("transporteur", Map.of(
+                "id", transporteur.getId(),
+                "nom", transporteur.getNom(),
+                "delegation", transporteur.getDelegation(),
+                "nbLivraisons", transporteur.getNbLivraisons()
+        ));
+        response.put("client", Map.of(
+                "id", client.get().getId(),
+                "nom", client.get().getNom(),
+                "prenom", client.get().getPrenom(),
+                "email", client.get().getEmail(),
+                "telephone", client.get().getTelephone(),
+                "adresse", client.get().getAdresse(),
+                "delegation", client.get().getDelegation()
+        ));
+        response.put("commande", Map.of(
+                "id", commande.getId(),
+                "prix", commande.getPrixTotal()
+        ));
+        response.put("livraison", Map.of(
+                "id", livraison.getId(),
+                "dateLivraison", livraison.getDateLivraison(),
+                "statut", livraison.getStatut(),
+                "prixTotal", livraison.getPrixTotal()
+        ));
+        return response;
+    }
+
+
+    public List<Livraison> getAllLivraisons() {
+        return livraisonRepository.findByArchivedFalse();
+    }
+
+
+    public Livraison getLivraisonById(Long id) {
+        Livraison livraison = livraisonRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        if (livraison.getStatut() == StatutLivraison.ARCHIVE) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        }
+
+        return livraison;
+    }
+
+    public void archiverLivraison(Long id) {
+        Livraison livraison = livraisonRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Livraison non trouvée"));
+
+        livraison.setArchived(true);
+        livraison.setStatut(StatutLivraison.ARCHIVE);
+
+        // Vérifier si un transporteur est associé
+        Transporteur transporteur = livraison.getTransporteur();
+        if (transporteur != null && transporteur.getNbLivraisons() > 0) {
+            transporteur.setNbLivraisons(transporteur.getNbLivraisons() - 1);
+            transporteurRepository.save(transporteur);
+        }
+
+        livraisonRepository.save(livraison);
+    }
+
+    public Livraison annulerLivraison(Long livraisonId) {
+        // Récupérer la livraison existante par son ID
+        Livraison livraison = livraisonRepository.findById(livraisonId).get();
+
+        livraison.setStatut(StatutLivraison.ANNULE);
+        // Vérifier si un transporteur est associé
+        Transporteur transporteur = livraison.getTransporteur();
+        if (transporteur != null && transporteur.getNbLivraisons() > 0) {
+            transporteur.setNbLivraisons(transporteur.getNbLivraisons() - 1);
+            transporteurRepository.save(transporteur);
+        }
+        return livraisonRepository.save(livraison);
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+   /* @Transactional
     public Livraison createLivraison(List<Long> produitIds, String nomClient, String prenomClient,
                                      String delegation, String adresseExacte, Date dateLiv, Long numTel) {
         // Récupérer les produits à partir de leurs IDs
@@ -78,11 +197,10 @@ public class LivraisonServiceImpl {
     public List<Livraison> getAllLivraisons() {
         return livraisonRepository.findByArchivedFalse();
     }
-    /*
     public Livraison getLivraisonById(Long id) {
         return livraisonRepository.findById(id).get();
     }
-*/
+
     public Livraison getLivraisonById(Long id) {
         Livraison livraison = livraisonRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
@@ -94,7 +212,7 @@ public class LivraisonServiceImpl {
         return livraison;
     }
 
-/*
+
     public void archiverLivraison(Long id) {
         Livraison livraison = livraisonRepository.findById(id).get();
         livraison.setArchived(true);
@@ -109,7 +227,7 @@ public class LivraisonServiceImpl {
         livraison.setStatut(StatutLivraison.ANNULE);
         return livraisonRepository.save(livraison);
     }
-*/
+
 public void archiverLivraison(Long id) {
     Livraison livraison = livraisonRepository.findById(id)
             .orElseThrow(() -> new RuntimeException("Livraison non trouvée"));
@@ -202,7 +320,7 @@ public void archiverLivraison(Long id) {
 
         return livraisonRepository.save(livraison);
     }
-
+*/
 /*
     public Livraison updateLivraison(Long id, Livraison updateLivraison) {
         // Trouver la livraison existante
@@ -270,4 +388,3 @@ public void archiverLivraison(Long id) {
         return updatedLivraison;
     }
 */
-}

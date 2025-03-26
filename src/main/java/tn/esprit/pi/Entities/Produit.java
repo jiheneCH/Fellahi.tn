@@ -18,33 +18,8 @@ public class Produit {
 
     private String nom;
     private Double prix;
-    private String nomAgr;
-    private String addAgr;
-    private Long numTelAgri;
 
-    public String getNomAgr() {
-        return nomAgr;
-    }
 
-    public void setNomAgr(String nomAgr) {
-        this.nomAgr = nomAgr;
-    }
-
-    public Long getNumTelAgri() {
-        return numTelAgri;
-    }
-
-    public void setNumTelAgri(Long numTelAgri) {
-        this.numTelAgri = numTelAgri;
-    }
-
-    public String getAddAgr() {
-        return addAgr;
-    }
-
-    public void setAddAgr(String addAgr) {
-        this.addAgr = addAgr;
-    }
 
     @ManyToOne
     private Livraison livraison;

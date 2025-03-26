@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -19,43 +20,43 @@ public class Livraison {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToMany
-    private List<Produit> produits;
-
-    private Double prixTotal;
-    private String nomClient;
-    private String prenomClient;
-    private String delegation;
-    private String adresseExacte;
-    private Long numTel;
-    private Date dateLiv;
-    private boolean archived = false;
-
-    public Long getNumTel() {
-        return numTel;
-    }
-
-    public void setNumTel(Long numTel) {
-        this.numTel = numTel;
-    }
-
-    public Date getDateLiv() {
-        return dateLiv;
-    }
-
-    public void setDateLiv(Date dateLiv) {
-        this.dateLiv = dateLiv;
-    }
 
     @ManyToOne
-    @JoinColumn(name = "transporteur_id")
+    @JoinColumn(name = "id_commande", referencedColumnName = "id")
+    private Commande commande;
+    public void setCommandeId(Long commandeId) {
+        // Si tu veux juste garder l'ID du transporteur, tu affectes ici l'ID du transporteur à la relation
+        this.commande = new Commande();
+        this.commande.setId(commandeId);
+    }
+    @ManyToOne
+    @JoinColumn(name = "client_id",  referencedColumnName = "id")
+    private Client client;
+    public void setClientId(Long clientId) {
+        this.client = new Client();
+        this.client.setId(clientId);
+    }
+    @ManyToOne
+    @JoinColumn(name = "transporteur_id", nullable = false)
     private Transporteur transporteur;
+    // Getter et setter pour transporteurId
+    public Long getTransporteurId() {
+        return transporteur != null ? transporteur.getId() : null;
+    }
+
+    public void setTransporteurId(Long transporteurId) {
+        // Si tu veux juste garder l'ID du transporteur, tu affectes ici l'ID du transporteur à la relation
+        this.transporteur = new Transporteur();
+        this.transporteur.setId(transporteurId);
+    }
+    private LocalDate dateLivraison;
 
     @Enumerated(EnumType.STRING)
-    private StatutLivraison statut = StatutLivraison.EN_ATTENTE;
+    private StatutLivraison statut;
+    @Column(name = "archived")
+    private boolean archived;
 
-    private String nomTransporteur;
-
+    // Getters and setters
     public boolean isArchived() {
         return archived;
     }
@@ -63,6 +64,7 @@ public class Livraison {
     public void setArchived(boolean archived) {
         this.archived = archived;
     }
+    private double prixTotal; // Prix total de la commande + 7 DT (frais de livraison)
 
     public Long getId() {
         return id;
@@ -72,52 +74,14 @@ public class Livraison {
         this.id = id;
     }
 
-    public List<Produit> getProduits() {
-        return produits;
+
+
+    public Commande getCommande() {
+        return commande;
     }
 
-    public void setProduits(List<Produit> produits) {
-        this.produits = produits;
-    }
-
-    public Double getPrixTotal() {
-        return prixTotal;
-    }
-
-    public void setPrixTotal(Double prixTotal) {
-        this.prixTotal = prixTotal;
-    }
-
-    public String getNomClient() {
-        return nomClient;
-    }
-
-    public void setNomClient(String nomClient) {
-        this.nomClient = nomClient;
-    }
-
-    public String getPrenomClient() {
-        return prenomClient;
-    }
-
-    public void setPrenomClient(String prenomClient) {
-        this.prenomClient = prenomClient;
-    }
-
-    public String getDelegation() {
-        return delegation;
-    }
-
-    public void setDelegation(String delegation) {
-        this.delegation = delegation;
-    }
-
-    public String getAdresseExacte() {
-        return adresseExacte;
-    }
-
-    public void setAdresseExacte(String adresseExacte) {
-        this.adresseExacte = adresseExacte;
+    public void setCommande(Commande commande) {
+        this.commande = commande;
     }
 
     public Transporteur getTransporteur() {
@@ -128,6 +92,13 @@ public class Livraison {
         this.transporteur = transporteur;
     }
 
+    public LocalDate getDateLivraison() {
+        return dateLivraison;
+    }
+
+    public void setDateLivraison(LocalDate dateLivraison) {
+        this.dateLivraison = dateLivraison;
+    }
 
     public StatutLivraison getStatut() {
         return statut;
@@ -137,11 +108,11 @@ public class Livraison {
         this.statut = statut;
     }
 
-    public String getNomTransporteur() {
-        return nomTransporteur;
+    public double getPrixTotal() {
+        return prixTotal;
     }
 
-    public void setNomTransporteur(String nomTransporteur) {
-        this.nomTransporteur = nomTransporteur;
+    public void setPrixTotal(double prixTotal) {
+        this.prixTotal = prixTotal;
     }
 }

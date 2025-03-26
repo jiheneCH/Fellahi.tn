@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 @RestController
@@ -19,7 +20,12 @@ import java.util.NoSuchElementException;
 public class LivraisonRestController {
     @Autowired
     private LivraisonServiceImpl livraisonService;
-
+    @PostMapping("/creer/{idCommande}")
+    public ResponseEntity<Map<String, Object>> creerLivraison(@PathVariable Long idCommande) {
+        Map<String, Object> response = livraisonService.creerLivraison(idCommande);
+        return ResponseEntity.ok(response);
+    }
+/*
     @PostMapping
     public Livraison createLivraison(@RequestBody Livraison livraison) {
         return livraisonService.createLivraison(
@@ -67,6 +73,29 @@ public class LivraisonRestController {
         }
     }
 
+*/
+@PutMapping("/annuler/{id}")
+public ResponseEntity<Livraison> annulerLivraison(@PathVariable Long id) {
+    try {
+        Livraison livraison = livraisonService.annulerLivraison(id);
+        return ResponseEntity.ok(livraison);
+    } catch (IllegalArgumentException | IllegalStateException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+    }
+}
+@PutMapping("/archiver/{id}")
+public ResponseEntity<String> archiverLivraison(@PathVariable("id") Long id) {
+    livraisonService.archiverLivraison(id);
+    return ResponseEntity.ok("Livraison " + id + " archivée avec succès.");
+}
+@GetMapping
+public List<Livraison> getAllLivraisons() {
+    return livraisonService.getAllLivraisons();
+}
 
-
+    @GetMapping("/{id}")
+    public ResponseEntity<Livraison> getLivraisonById(@PathVariable("id") Long id) {
+        Livraison livraison = livraisonService.getLivraisonById(id);
+        return ResponseEntity.ok(livraison);
+    }
 }
