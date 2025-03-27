@@ -11,6 +11,7 @@ import tn.esprit.pi.Repositories.*;
 
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -29,30 +30,47 @@ public class LivraisonServiceImpl implements ILivraisonServices{
     @Autowired
     private ClientRepository clientRepository;
 
+    @Override
+    public Transporteur findLivreurAvecMoinsDeLivraisons(String delegation) {
+        // Récupérer tous les transporteurs dans la même délégation
+        List<Transporteur> transporteurs = transporteurRepository.findAll();
+
+        // Filtrer les transporteurs dans la même délégation
+        transporteurs = transporteurs.stream()
+                .filter(t -> t.getDelegation().equals(delegation))
+                .collect(Collectors.toList());
+
+        // Trouver le transporteur avec le nombre minimal de livraisons
+        return transporteurs.stream()
+                .min(Comparator.comparingInt(Transporteur::getNbLivraisons))
+                .orElseThrow(() -> new RuntimeException("Aucun transporteur disponible dans cette délégation"));
+    }
 
     @Transactional
+    @Override
     public Map<String, Object> creerLivraison(Long idCommande) {
+        // 1. Récupérer la commande
+        Commande commande = commandeRepository.findById(idCommande)
+                .orElseThrow(() -> new RuntimeException("Commande non trouvée"));
 
-        Commande commande = (Commande) commandeRepository.findById(idCommande).orElseThrow(() -> new RuntimeException("Commande non trouvée"));
-        Long idClient = commande.getIdClient();
         // 2. Récupérer le client associé
-        Optional<Client> client = clientRepository.findById(commande.getIdClient());
+        Client client = clientRepository.findById(commande.getIdClient())
+                .orElseThrow(() -> new RuntimeException("Client non trouvé"));
 
-        String delegationClient = client.get().getDelegation();
+        String delegationClient = client.getDelegation();
 
         // 3. Trouver le transporteur disponible dans la même délégation
-        Transporteur transporteur = transporteurRepository
-                .findLivreurWithLeastDeliveries(delegationClient);
+        Transporteur transporteur = findLivreurAvecMoinsDeLivraisons(delegationClient);
 
         // 4. Calculer la date de livraison (3 jours après la date de commande)
-        LocalDate dateLivraison = LocalDate.now().plusDays(3);
+        LocalDate dateLivraison = estimerDateLivraison(delegationClient);
 
-        // 5. Calculer le prix total (prix de la commande + 7DT)
-        double prixTotalLivraison = commande.getPrixTotal() + 7;
+        // 5. Calculer le prix total en utilisant la méthode définie
+        double prixTotalLivraison = calculerPrixTotalLivraison(delegationClient, commande.getPrixTotal());
 
         // 6. Créer la livraison
         Livraison livraison = new Livraison();
-        livraison.setClientId(client.get().getId());
+        livraison.setClientId(client.getId());
         livraison.setCommandeId(commande.getId());
         livraison.setTransporteurId(transporteur.getId());
         livraison.setDateLivraison(dateLivraison);
@@ -64,6 +82,7 @@ public class LivraisonServiceImpl implements ILivraisonServices{
         transporteur.setNbLivraisons(transporteur.getNbLivraisons() + 1);
         transporteurRepository.save(transporteur);
 
+        // 8. Construire la réponse
         Map<String, Object> response = new HashMap<>();
         response.put("transporteur", Map.of(
                 "id", transporteur.getId(),
@@ -72,13 +91,13 @@ public class LivraisonServiceImpl implements ILivraisonServices{
                 "nbLivraisons", transporteur.getNbLivraisons()
         ));
         response.put("client", Map.of(
-                "id", client.get().getId(),
-                "nom", client.get().getNom(),
-                "prenom", client.get().getPrenom(),
-                "email", client.get().getEmail(),
-                "telephone", client.get().getTelephone(),
-                "adresse", client.get().getAdresse(),
-                "delegation", client.get().getDelegation()
+                "id", client.getId(),
+                "nom", client.getNom(),
+                "prenom", client.getPrenom(),
+                "email", client.getEmail(),
+                "telephone", client.getTelephone(),
+                "adresse", client.getAdresse(),
+                "delegation", client.getDelegation()
         ));
         response.put("commande", Map.of(
                 "id", commande.getId(),
@@ -90,15 +109,17 @@ public class LivraisonServiceImpl implements ILivraisonServices{
                 "statut", livraison.getStatut(),
                 "prixTotal", livraison.getPrixTotal()
         ));
+
         return response;
     }
 
 
+    @Override
     public List<Livraison> getAllLivraisons() {
         return livraisonRepository.findByArchivedFalse();
     }
 
-
+    @Override
     public Livraison getLivraisonById(Long id) {
         Livraison livraison = livraisonRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
@@ -110,6 +131,7 @@ public class LivraisonServiceImpl implements ILivraisonServices{
         return livraison;
     }
 
+    @Override
     public void archiverLivraison(Long id) {
         Livraison livraison = livraisonRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Livraison non trouvée"));
@@ -126,7 +148,7 @@ public class LivraisonServiceImpl implements ILivraisonServices{
 
         livraisonRepository.save(livraison);
     }
-
+    @Override
     public Livraison annulerLivraison(Long livraisonId) {
         // Récupérer la livraison existante par son ID
         Livraison livraison = livraisonRepository.findById(livraisonId).get();
@@ -140,6 +162,97 @@ public class LivraisonServiceImpl implements ILivraisonServices{
         }
         return livraisonRepository.save(livraison);
     }
+    private static final Map<String, Integer> REGION_TARIFS = new HashMap<>();
+
+    static {
+        REGION_TARIFS.put("Bizerte", 7);
+        REGION_TARIFS.put("Beja", 7);
+        REGION_TARIFS.put("Jendouba", 7);
+        REGION_TARIFS.put("Kef", 7);
+
+        REGION_TARIFS.put("Tunis", 5);
+        REGION_TARIFS.put("Ariana", 5);
+        REGION_TARIFS.put("Ben Arous", 5);
+        REGION_TARIFS.put("Zaghouan", 5);
+        REGION_TARIFS.put("Manouba", 5);
+        REGION_TARIFS.put("Nabeul", 5);
+
+        REGION_TARIFS.put("Siliana", 8);
+        REGION_TARIFS.put("Sousse", 8);
+        REGION_TARIFS.put("Kairouan", 8);
+        REGION_TARIFS.put("Kasserine", 8);
+        REGION_TARIFS.put("Monastir", 8);
+        REGION_TARIFS.put("Mahdia", 8);
+
+        REGION_TARIFS.put("Tozeur", 10);
+        REGION_TARIFS.put("Sidi Bouzid", 10);
+        REGION_TARIFS.put("Sfax", 10);
+        REGION_TARIFS.put("Gafsa", 10);
+
+        REGION_TARIFS.put("Tataouine", 15);
+        REGION_TARIFS.put("Gabes", 15);
+        REGION_TARIFS.put("Kebili", 15);
+        REGION_TARIFS.put("Medenine", 15);
+    }
+    @Override
+    public double calculerPrixTotalLivraison(String delegation, double prixCommande) {
+        int fraisLivraison = REGION_TARIFS.getOrDefault(delegation, 10); // 20 DT par défaut
+        return prixCommande + fraisLivraison;
+    }
+    public LocalDate estimerDateLivraison(String delegation) {
+        Map<String, Integer> REGION_DELAIS = new HashMap<>();
+
+        REGION_DELAIS.put("Bizerte", 2);
+        REGION_DELAIS.put("Beja", 2);
+        REGION_DELAIS.put("Jendouba", 2);
+        REGION_DELAIS.put("Kef", 2);  // Région 1
+
+        REGION_DELAIS.put("Tunis", 1);
+        REGION_DELAIS.put("Ariana", 1);
+        REGION_DELAIS.put("Ben Arous", 1);
+        REGION_DELAIS.put("Zaghouan", 1);
+        REGION_DELAIS.put("Manouba", 1);
+        REGION_DELAIS.put("Nabeul", 1); // Région 2
+
+        REGION_DELAIS.put("Siliana", 3);
+        REGION_DELAIS.put("Sousse", 3);
+        REGION_DELAIS.put("Kasserine", 3);
+        REGION_DELAIS.put("Kairouan", 3);
+        REGION_DELAIS.put("Monastir", 3);
+        REGION_DELAIS.put("Mahdia", 3); // Région 3
+
+        REGION_DELAIS.put("Tozeur", 4);
+        REGION_DELAIS.put("Sidi Bouzid", 4);
+        REGION_DELAIS.put("Sfax", 4);
+        REGION_DELAIS.put("Gafsa", 4); // Région 4
+
+        REGION_DELAIS.put("Tataouine", 5);
+        REGION_DELAIS.put("Gabes", 5);
+        REGION_DELAIS.put("Kebili", 5);
+        REGION_DELAIS.put("Medenine", 5); // Région 5
+
+        // Par défaut, on met 3 jours si la délégation n'est pas trouvée
+        int delai = REGION_DELAIS.getOrDefault(delegation, 3);
+
+        return LocalDate.now().plusDays(delai);
+    }
+
+    @Override
+    public Map<String, Long> calculerLivraisonsParStatut() {
+        // Récupérer le nombre de livraisons avec différents statuts
+        long livraisonsLivrees = livraisonRepository.countByStatut(StatutLivraison.LIVRE);
+        long livraisonsAnnulees = livraisonRepository.countByStatut(StatutLivraison.ANNULE);
+        long livraisonsEnAttente = livraisonRepository.countByStatut(StatutLivraison.EN_ATTENTE);
+
+        // Créer une map de résultats à retourner
+        Map<String, Long> result = new HashMap<>();
+        result.put("Livraisons Livrées", livraisonsLivrees);
+        result.put("Livraisons Annulées", livraisonsAnnulees);
+        result.put("Livraisons En Attente", livraisonsEnAttente);
+
+        return result;
+    }
+
 }
 
 
@@ -153,238 +266,4 @@ public class LivraisonServiceImpl implements ILivraisonServices{
 
 
 
-   /* @Transactional
-    public Livraison createLivraison(List<Long> produitIds, String nomClient, String prenomClient,
-                                     String delegation, String adresseExacte, Date dateLiv, Long numTel) {
-        // Récupérer les produits à partir de leurs IDs
-        List<Produit> produits = produitRepository.findAllById(produitIds);
 
-        // Calcul du prix total
-        double prixTotal = produits.stream().mapToDouble(Produit::getPrix).sum();
-
-        // Trouver le transporteur ayant le moins de livraisons dans la délégation donnée
-        Transporteur transporteur = transporteurRepository.findLivreurWithLeastDeliveries(delegation);
-
-        // Si dateLiv est null, on l'attribue à 3 jours après la date actuelle
-        if (dateLiv == null) {
-            Calendar calendar = Calendar.getInstance();
-            calendar.add(Calendar.DAY_OF_MONTH, 3); // Ajoute 3 jours à la date actuelle
-            dateLiv = calendar.getTime(); // Récupère la nouvelle date
-        }
-
-        // Création de la livraison
-        Livraison livraison = new Livraison();
-        livraison.setProduits(produits);
-        livraison.setPrixTotal(prixTotal);
-        livraison.setNomClient(nomClient);
-        livraison.setPrenomClient(prenomClient);
-        livraison.setDelegation(delegation);
-        livraison.setAdresseExacte(adresseExacte);
-        livraison.setNumTel(numTel);
-        livraison.setDateLiv(dateLiv); // Assigner la dateLiv (avec la nouvelle date si null)
-        livraison.setTransporteur(transporteur);
-        livraison.setNomTransporteur(transporteur.getNom());
-        livraison.setStatut(StatutLivraison.EN_ATTENTE);
-
-        // Mettre à jour le nombre de livraisons du transporteur
-        transporteur.setNbLivraisons(transporteur.getNbLivraisons() + 1);
-        transporteurRepository.save(transporteur);
-
-        // Enregistrer la livraison
-        return livraisonRepository.save(livraison);
-    }
-
-    public List<Livraison> getAllLivraisons() {
-        return livraisonRepository.findByArchivedFalse();
-    }
-    public Livraison getLivraisonById(Long id) {
-        return livraisonRepository.findById(id).get();
-    }
-
-    public Livraison getLivraisonById(Long id) {
-        Livraison livraison = livraisonRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-
-        if (livraison.getStatut() == StatutLivraison.ARCHIVE) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
-        }
-
-        return livraison;
-    }
-
-
-    public void archiverLivraison(Long id) {
-        Livraison livraison = livraisonRepository.findById(id).get();
-        livraison.setArchived(true);
-        livraison.setStatut(StatutLivraison.ARCHIVE);
-        livraisonRepository.save(livraison);
-    }
-    @Transactional
-    public Livraison annulerLivraison(Long livraisonId) {
-        // Récupérer la livraison existante par son ID
-        Livraison livraison = livraisonRepository.findById(livraisonId).get();
-
-        livraison.setStatut(StatutLivraison.ANNULE);
-        return livraisonRepository.save(livraison);
-    }
-
-public void archiverLivraison(Long id) {
-    Livraison livraison = livraisonRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Livraison non trouvée"));
-
-    livraison.setArchived(true);
-    livraison.setStatut(StatutLivraison.ARCHIVE);
-
-    // Vérifier si un transporteur est associé
-    Transporteur transporteur = livraison.getTransporteur();
-    if (transporteur != null && transporteur.getNbLivraisons() > 0) {
-        transporteur.setNbLivraisons(transporteur.getNbLivraisons() - 1);
-        transporteurRepository.save(transporteur);
-    }
-
-    livraisonRepository.save(livraison);
-}
-
-    @Transactional
-    public Livraison annulerLivraison(Long livraisonId) {
-        Livraison livraison = livraisonRepository.findById(livraisonId)
-                .orElseThrow(() -> new RuntimeException("Livraison non trouvée"));
-
-        livraison.setStatut(StatutLivraison.ANNULE);
-
-        // Vérifier si un transporteur est associé
-        Transporteur transporteur = livraison.getTransporteur();
-        if (transporteur != null && transporteur.getNbLivraisons() > 0) {
-            transporteur.setNbLivraisons(transporteur.getNbLivraisons() - 1);
-            transporteurRepository.save(transporteur);
-        }
-
-        return livraisonRepository.save(livraison);
-    }
-
-    @Transactional
-    public Livraison updateLivraison(Long id, Livraison updateLivraison) {
-        // Trouver la livraison existante
-        Livraison livraison = livraisonRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Livraison non trouvée"));
-
-        // Si la livraison est déjà livrée, aucune modification n'est autorisée
-        if (livraison.getStatut() == StatutLivraison.LIVRE) {
-            throw new RuntimeException("Impossible de modifier une livraison déjà marquée comme LIVRE.");
-        }
-
-        // Stocker l'ancien statut pour vérifier si on passe à LIVRE
-        StatutLivraison ancienStatut = livraison.getStatut();
-
-        // Modification des champs autorisés
-        if (livraison.getStatut() == StatutLivraison.EN_ATTENTE) {
-            if (updateLivraison.getNomClient() != null) {
-                livraison.setNomClient(updateLivraison.getNomClient());
-            }
-            if (updateLivraison.getPrenomClient() != null) {
-                livraison.setPrenomClient(updateLivraison.getPrenomClient());
-            }
-            if (updateLivraison.getDelegation() != null) {
-                livraison.setDelegation(updateLivraison.getDelegation());
-            }
-            if (updateLivraison.getAdresseExacte() != null) {
-                livraison.setAdresseExacte(updateLivraison.getAdresseExacte());
-            }
-            if (updateLivraison.getNumTel() != null) {
-                livraison.setNumTel(updateLivraison.getNumTel());
-            }
-            if (updateLivraison.getDateLiv() != null) {
-                livraison.setDateLiv(updateLivraison.getDateLiv());
-            }
-            if (updateLivraison.getStatut() != null) {
-                livraison.setStatut(updateLivraison.getStatut());
-            }
-        } else if (livraison.getStatut() == StatutLivraison.EN_COURS ||
-                livraison.getStatut() == StatutLivraison.RETARDE) {
-            if (updateLivraison.getDateLiv() != null) {
-                livraison.setDateLiv(updateLivraison.getDateLiv());
-            }
-            if (updateLivraison.getStatut() != null) {
-                livraison.setStatut(updateLivraison.getStatut());
-            }
-        }
-
-        // Si la livraison passe au statut LIVRE, on décrémente nbLivraisons du transporteur
-        if (ancienStatut != StatutLivraison.LIVRE && livraison.getStatut() == StatutLivraison.LIVRE) {
-            Transporteur transporteur = livraison.getTransporteur();
-            if (transporteur != null && transporteur.getNbLivraisons() > 0) {
-                transporteur.setNbLivraisons(transporteur.getNbLivraisons() - 1);
-                transporteurRepository.save(transporteur);
-            }
-        }
-
-        return livraisonRepository.save(livraison);
-    }
-*/
-/*
-    public Livraison updateLivraison(Long id, Livraison updateLivraison) {
-        // Trouver la livraison existante
-        Livraison livraison = livraisonRepository.findById(id).get();
-        if (livraison.getStatut() == StatutLivraison.EN_ATTENTE) {
-
-            if (updateLivraison.getNomClient() != null) {
-                livraison.setNomClient(updateLivraison.getNomClient());
-            }
-            if (updateLivraison.getPrenomClient() != null) {
-                livraison.setPrenomClient(updateLivraison.getPrenomClient());
-            }
-            if (updateLivraison.getDelegation() != null) {
-                livraison.setDelegation(updateLivraison.getDelegation());
-            }
-            if (updateLivraison.getAdresseExacte() != null) {
-                livraison.setAdresseExacte(updateLivraison.getAdresseExacte());
-            }
-            if (updateLivraison.getNumTel() != null) {
-                livraison.setNumTel(updateLivraison.getNumTel());
-            }
-            if (updateLivraison.getDateLiv() != null) {
-                livraison.setDateLiv(updateLivraison.getDateLiv());
-            }
-            if (updateLivraison.getStatut() != null) {
-                livraison.setStatut(updateLivraison.getStatut());
-            }
-        } else if (livraison.getStatut() == StatutLivraison.LIVRE ||
-                livraison.getStatut() == StatutLivraison.EN_COURS ||
-                livraison.getStatut() == StatutLivraison.RETARDE) {
-
-            if (updateLivraison.getDateLiv() != null) {
-                livraison.setDateLiv(updateLivraison.getDateLiv());
-            }
-
-            if (updateLivraison.getStatut() != null) {
-                livraison.setStatut(updateLivraison.getStatut());
-            }
-
-            if (updateLivraison.getNomClient() != null ||
-                    updateLivraison.getPrenomClient() != null ||
-                    updateLivraison.getDelegation() != null ||
-                    updateLivraison.getAdresseExacte() != null ||
-                    updateLivraison.getNumTel() != null) {
-
-            }
-        } else {
-            if (updateLivraison.getDateLiv() != null) {
-                livraison.setDateLiv(updateLivraison.getDateLiv());
-            }
-            if (updateLivraison.getStatut() != null) {
-                livraison.setStatut(updateLivraison.getStatut());
-            }
-            if (updateLivraison.getNomClient() != null ||
-                    updateLivraison.getPrenomClient() != null ||
-                    updateLivraison.getDelegation() != null ||
-                    updateLivraison.getAdresseExacte() != null ||
-                    updateLivraison.getNumTel() != null) {
-
-            }
-        }
-
-        Livraison updatedLivraison = livraisonRepository.save(livraison);
-
-        return updatedLivraison;
-    }
-*/

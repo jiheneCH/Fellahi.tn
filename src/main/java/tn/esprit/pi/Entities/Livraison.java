@@ -5,6 +5,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -92,11 +93,11 @@ public class Livraison {
         this.transporteur = transporteur;
     }
 
-    public LocalDate getDateLivraison() {
+    public LocalDate  getDateLivraison() {
         return dateLivraison;
     }
 
-    public void setDateLivraison(LocalDate dateLivraison) {
+    public void setDateLivraison(LocalDate  dateLivraison) {
         this.dateLivraison = dateLivraison;
     }
 

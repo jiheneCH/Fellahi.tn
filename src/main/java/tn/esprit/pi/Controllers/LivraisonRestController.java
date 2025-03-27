@@ -10,6 +10,7 @@ import tn.esprit.pi.Entities.StatutLivraison;
 import tn.esprit.pi.Services.LivraisonServiceImpl;
 import org.springframework.http.HttpStatus;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -98,4 +99,9 @@ public List<Livraison> getAllLivraisons() {
         Livraison livraison = livraisonService.getLivraisonById(id);
         return ResponseEntity.ok(livraison);
     }
+    @GetMapping("/statut")
+    public Map<String, Long> calculerLivraisonsParStatut() {
+        return livraisonService.calculerLivraisonsParStatut();
+    }
+
 }
