@@ -28,8 +28,7 @@ public class Client {
     @OneToMany(mappedBy = "client")
     @JsonManagedReference
     private List<Commande> commandes;
-    @OneToMany(mappedBy = "client")
-    @JsonManagedReference
+    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL)
     private List<Livraison> livraisons;
 
     public List<Commande> getCommandes() {

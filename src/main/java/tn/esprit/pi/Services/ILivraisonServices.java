@@ -18,6 +18,14 @@ public interface ILivraisonServices {
     public void archiverLivraison(Long id);
     public LocalDate estimerDateLivraison(String delegation);
     public Map<String, Long> calculerLivraisonsParStatut();
+    public List<Livraison> getLivraisonsByStatut(StatutLivraison statut);
+    public List<Livraison> getLivraisonsByDelegation(String delegation);
+    public List<Livraison> findByTransporteurId(Long transporteurId);
+    public List<Livraison> getLivraisonsBetweenDates(LocalDate startDate, LocalDate endDate);
+    public List<Livraison> getLivraisonsByDate(LocalDate dateLivraison);
+    public List<Livraison> getLivraisonsByClientId(Long clientId);
+    public String modifierLivraison(Long livraisonId, StatutLivraison statut, LocalDate DateLivraison);
+    public Livraison reaffecterLivraison(Long livraisonId);
 
 
 }

@@ -10,12 +10,13 @@ import tn.esprit.pi.Entities.*;
 import tn.esprit.pi.Repositories.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
-public class LivraisonServiceImpl implements ILivraisonServices{
+public class LivraisonServiceImpl implements ILivraisonServices {
     @Autowired
     private LivraisonRepository livraisonRepository;
 
@@ -148,6 +149,7 @@ public class LivraisonServiceImpl implements ILivraisonServices{
 
         livraisonRepository.save(livraison);
     }
+
     @Override
     public Livraison annulerLivraison(Long livraisonId) {
         // Récupérer la livraison existante par son ID
@@ -162,6 +164,7 @@ public class LivraisonServiceImpl implements ILivraisonServices{
         }
         return livraisonRepository.save(livraison);
     }
+
     private static final Map<String, Integer> REGION_TARIFS = new HashMap<>();
 
     static {
@@ -194,11 +197,13 @@ public class LivraisonServiceImpl implements ILivraisonServices{
         REGION_TARIFS.put("Kebili", 15);
         REGION_TARIFS.put("Medenine", 15);
     }
+
     @Override
     public double calculerPrixTotalLivraison(String delegation, double prixCommande) {
         int fraisLivraison = REGION_TARIFS.getOrDefault(delegation, 10); // 20 DT par défaut
         return prixCommande + fraisLivraison;
     }
+
     public LocalDate estimerDateLivraison(String delegation) {
         Map<String, Integer> REGION_DELAIS = new HashMap<>();
 
@@ -243,17 +248,140 @@ public class LivraisonServiceImpl implements ILivraisonServices{
         long livraisonsLivrees = livraisonRepository.countByStatut(StatutLivraison.LIVRE);
         long livraisonsAnnulees = livraisonRepository.countByStatut(StatutLivraison.ANNULE);
         long livraisonsEnAttente = livraisonRepository.countByStatut(StatutLivraison.EN_ATTENTE);
+        long livraisonsEnCours = livraisonRepository.countByStatut(StatutLivraison.EN_COURS);
+        long livraisonsRetarde = livraisonRepository.countByStatut(StatutLivraison.RETARDE);
 
         // Créer une map de résultats à retourner
         Map<String, Long> result = new HashMap<>();
         result.put("Livraisons Livrées", livraisonsLivrees);
         result.put("Livraisons Annulées", livraisonsAnnulees);
         result.put("Livraisons En Attente", livraisonsEnAttente);
+        result.put("Livraisons En Cours", livraisonsEnCours);
+        result.put("Livraisons Retardé", livraisonsRetarde);
 
         return result;
     }
 
+    @Override
+    public List<Livraison> getLivraisonsByStatut(StatutLivraison statut) {
+        if (statut != null) {
+            return livraisonRepository.findByStatut(statut);
+        }
+        return livraisonRepository.findAll();
+    }
+
+    @Override
+    public List<Livraison> getLivraisonsByDelegation(String delegation) {
+        return livraisonRepository.findByClient_Delegation(delegation);
+    }
+
+    @Override
+    public List<Livraison> findByTransporteurId(Long transporteurId) {
+        return livraisonRepository.findByTransporteur_Id(transporteurId);
+    }
+
+    @Override
+    public List<Livraison> getLivraisonsBetweenDates(LocalDate startDate, LocalDate endDate) {
+        // Appel de la méthode du repository pour récupérer les livraisons entre les deux dates
+        return livraisonRepository.findByDateLivraisonBetween(startDate, endDate);
+    }
+
+    @Override
+    public List<Livraison> getLivraisonsByDate(LocalDate dateLivraison) {
+        // Appel de la méthode du repository pour récupérer les livraisons d'une date spécifique
+        return livraisonRepository.findByDateLivraison(dateLivraison);
+    }
+
+    @Override
+    public List<Livraison> getLivraisonsByClientId(Long clientId) {
+        return livraisonRepository.findByClient_Id(clientId);
+    }
+
+    @Override
+    public String modifierLivraison(Long id, StatutLivraison statut, LocalDate dateLivraisonSaisie) {
+        // Vérifier si la livraison existe
+        Optional<Livraison> livraisonOpt = livraisonRepository.findById(id);
+        if (!livraisonOpt.isPresent()) {
+            return "Erreur : Livraison non trouvée.";
+        }
+        Livraison livraison = livraisonOpt.get();
+
+        // Vérifier si la modification est autorisée
+        if (livraison.getStatut() == StatutLivraison.LIVRE ||
+                livraison.getStatut() == StatutLivraison.ARCHIVE ||
+                livraison.getStatut() == StatutLivraison.ANNULE) {
+            return "Vous ne pouvez pas modifier cette livraison. Statut verrouillé.";
+        }
+
+        boolean modifEffectuee = false;
+
+        // Mise à jour du statut si fourni
+        if (statut != null ) {
+            try {
+                livraison.setStatut(StatutLivraison.valueOf(String.valueOf(statut)));
+                modifEffectuee = true;
+            } catch (IllegalArgumentException e) {
+                return "Erreur : Statut invalide.";
+            }
+        }
+
+        // Mise à jour de la date si fournie et valide
+        if (dateLivraisonSaisie != null) {
+            if (dateLivraisonSaisie.isAfter(livraison.getDateLivraison())) {
+                livraison.setDateLivraison(dateLivraisonSaisie);
+                modifEffectuee = true;
+            } else {
+                return "Erreur : La nouvelle date doit être postérieure à la date actuelle.";
+            }
+        }
+
+        if (modifEffectuee) {
+            livraisonRepository.save(livraison);
+            return "Mise à jour réussie.";
+        } else {
+            return "Aucune modification effectuée.";
+        }
+    }
+    @Override
+    public Livraison reaffecterLivraison(Long livraisonId) {
+        // Récupérer la livraison par ID
+        Livraison livraison = livraisonRepository.findById(livraisonId)
+                .orElseThrow(() -> new RuntimeException("Livraison non trouvée"));
+
+        // Vérifier si la livraison a déjà un livreur affecté
+        if (livraison.getTransporteur() == null) {
+            throw new RuntimeException("Aucun livreur actuel n'est affecté à cette livraison");
+        }
+
+        // Récupérer le livreur actuel
+        Transporteur livreurActuel = livraison.getTransporteur();
+
+        // Récupérer la délégation du client
+        String delegationClient = livraison.getCommande().getClient().getDelegation();
+
+        // Trouver un nouveau livreur dans la même délégation, excluant le livreur actuel
+        Transporteur nouveauLivreur = findLivreurAvecMoinsDeLivraisons(delegationClient);
+
+        if (nouveauLivreur == null) {
+            throw new RuntimeException("Aucun autre livreur disponible dans cette délégation");
+        }
+
+        // Décrémenter le nombre de livraisons de l'ancien livreur
+        livreurActuel.setNbLivraisons(livreurActuel.getNbLivraisons() - 1);
+        transporteurRepository.save(livreurActuel);
+
+        // Incrémenter le nombre de livraisons du nouveau livreur
+        nouveauLivreur.setNbLivraisons(nouveauLivreur.getNbLivraisons() + 1);
+        transporteurRepository.save(nouveauLivreur);
+
+        // Affecter le nouveau livreur à la livraison
+        livraison.setTransporteur(nouveauLivreur);
+        livraisonRepository.save(livraison);
+
+        return livraison;
+    }
 }
+
 
 
 

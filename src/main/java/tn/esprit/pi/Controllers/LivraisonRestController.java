@@ -1,6 +1,7 @@
 package tn.esprit.pi.Controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.ErrorResponse;
@@ -11,6 +12,7 @@ import tn.esprit.pi.Services.LivraisonServiceImpl;
 import org.springframework.http.HttpStatus;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +27,21 @@ public class LivraisonRestController {
     public ResponseEntity<Map<String, Object>> creerLivraison(@PathVariable Long idCommande) {
         Map<String, Object> response = livraisonService.creerLivraison(idCommande);
         return ResponseEntity.ok(response);
+    }
+    @PutMapping("/update/{id}")
+    public String modifierLivraison(@PathVariable Long id, @RequestBody Map<String, Object> updates) {
+        StatutLivraison statut = (updates.get("statut") != null) ? StatutLivraison.valueOf(updates.get("statut").toString()) : null;
+        LocalDate dateLivraison = null;
+
+        if (updates.get("dateLivraison") != null) {
+            try {
+                dateLivraison = LocalDate.parse(updates.get("dateLivraison").toString());
+            } catch (Exception e) {
+                return "Erreur : Format de date invalide. Utilisez 'YYYY-MM-DD'.";
+            }
+        }
+
+        return livraisonService.modifierLivraison(id, statut, dateLivraison);
     }
 /*
     @PostMapping
@@ -103,5 +120,45 @@ public List<Livraison> getAllLivraisons() {
     public Map<String, Long> calculerLivraisonsParStatut() {
         return livraisonService.calculerLivraisonsParStatut();
     }
+    @GetMapping("/byStatut")
+    public ResponseEntity<List<Livraison>> getLivraisonsByStatut(@RequestParam StatutLivraison statut) {
+        List<Livraison> livraisons = livraisonService.getLivraisonsByStatut(statut);
+        return ResponseEntity.ok(livraisons);
+    }
+    @GetMapping("/byDelegation")
+    public List<Livraison> getLivraisonsByDelegation(@RequestParam String delegation) {
+        return livraisonService.getLivraisonsByDelegation(delegation);
+    }
+    @GetMapping("/transporteur/{id}")
+    public List<Livraison> getLivraisonsByTransporteurId(@PathVariable Long id) {
+        return livraisonService.findByTransporteurId(id);
+    }
+    @GetMapping("/livraisonEntreDate")
+    public List<Livraison> getLivraisonsBetweenDates(
+            @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate startDate,
+            @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate endDate) {
+
+        return livraisonService.getLivraisonsBetweenDates(startDate, endDate);
+    }
+    @GetMapping("/livraisonDate")
+    public List<Livraison> getLivraisonsByDate(
+            @RequestParam("dateLivraison") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate dateLivraison) {
+
+        return livraisonService.getLivraisonsByDate(dateLivraison);
+    }
+    @GetMapping("/client/{clientId}")
+    public List<Livraison> getLivraisonsByClientId(@PathVariable Long clientId) {
+        return livraisonService.getLivraisonsByClientId(clientId);
+    }
+
+        @PutMapping("/reaffecter/{id}")
+        public ResponseEntity<Livraison> reaffecterLivraison(@PathVariable Long id) {
+            try {
+                Livraison livraison = livraisonService.reaffecterLivraison(id);
+                return ResponseEntity.ok(livraison);
+            } catch (RuntimeException e) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+            }
+        }
 
 }

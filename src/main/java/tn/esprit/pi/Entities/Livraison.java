@@ -40,7 +40,6 @@ public class Livraison {
     @ManyToOne
     @JoinColumn(name = "transporteur_id", nullable = false)
     private Transporteur transporteur;
-    // Getter et setter pour transporteurId
     public Long getTransporteurId() {
         return transporteur != null ? transporteur.getId() : null;
     }
@@ -115,5 +114,13 @@ public class Livraison {
 
     public void setPrixTotal(double prixTotal) {
         this.prixTotal = prixTotal;
+    }
+
+    public Client getClient() {
+        return client;
+    }
+
+    public void setClient(Client client) {
+        this.client = client;
     }
 }
