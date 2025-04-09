@@ -1,6 +1,7 @@
 package tn.esprit.pi_article.Controller;
 
 
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,8 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import tn.esprit.pi_article.Entities.Article;
+import tn.esprit.pi_article.Entities.Status;
+import tn.esprit.pi_article.Entities.TypeProduit;
 import tn.esprit.pi_article.Services.ArticleServicelmpl;
 import tn.esprit.pi_article.Services.IArticleServices;
 
@@ -97,6 +100,7 @@ public ResponseEntity<?> ajouterArticle(@Valid @RequestBody Article article) {
 
 
 
+
 @PutMapping("/archiverArticle/{id}")
 public ResponseEntity<?> archiverArticle(@PathVariable("id") Long id) {
     try {
@@ -109,9 +113,51 @@ public ResponseEntity<?> archiverArticle(@PathVariable("id") Long id) {
     }
 }
     @PutMapping("/updateArticle")
-    public Article updateArticle(@RequestBody Article article) {
-        return iArticleServices.updateArticle(article);
+    public ResponseEntity<?> updateArticle(@RequestBody Article article) {
+        try {
+            // Vérification de la requête reçue (debug)
+            System.out.println("Requête reçue pour update : " + article);
+
+            // Appel du service pour mettre à jour l'article
+            Article updatedArticle = iArticleServices.updateArticle(article);
+
+            return ResponseEntity.ok(updatedArticle);
+        } catch (RuntimeException e) {
+            // Gère les erreurs métier (ex : article non trouvé, nom déjà existant...)
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (Exception e) {
+            // Gère toute autre erreur (ex : problème de connexion à la base)
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur interne : " + e.getMessage());
+        }
     }
 
 
+
+
+
+    @PostMapping("/genererPack")
+    public ResponseEntity<Article> genererPack() {
+        Article pack = iArticleServices.genererPackSiNecessaire();
+        return ResponseEntity.ok(pack);
+    }
+    @GetMapping("/3-lowstock")
+    public ResponseEntity<List<Article>> testSeuils() {
+        List<Article> articlesFaibles = iArticleServices.verifierSeuilCritiqueEtEnvoyerAlerte();
+        return ResponseEntity.ok(articlesFaibles);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<Article>> searchArticles(
+            @RequestParam(required = false) String nom,
+            @RequestParam(required = false) Status status,
+            @RequestParam(required = false) TypeProduit typeProduit
+    ) {
+        List<Article> articles = iArticleServices.rechercherArticles(nom, status, typeProduit);
+        return ResponseEntity.ok(articles);
+    }
+
+    @GetMapping("/tendanceeee")
+    public ResponseEntity<List<Article>> getArticlesTendanceee() {
+        return ResponseEntity.ok(iArticleServices.getArticlesTendanceeee());
+    }
 }

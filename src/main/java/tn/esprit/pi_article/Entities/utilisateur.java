@@ -2,18 +2,23 @@ package tn.esprit.pi_article.Entities;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.List;
 @Entity
 public class utilisateur {
     @Id
-    private Long id = 100L;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
+    @Column(name = "nom")
     private String nom;
-    private String email;
-    private String role; // "Agriculteur" ou "Client"
 
-    @OneToMany(mappedBy = "utilisateur", cascade = CascadeType.ALL)
-    private List<Article> articles;
+    @Column(name = "email", unique = true)
+    private String email;
+
+
+    @Column(name = "role")
+    private String role;
 
     public Long getId() {
         return id;
@@ -45,13 +50,5 @@ public class utilisateur {
 
     public void setRole(String role) {
         this.role = role;
-    }
-
-    public List<Article> getArticle() {
-        return articles;
-    }
-
-    public void setArticle(List<Article> article) {
-        this.articles = article;
     }
 }

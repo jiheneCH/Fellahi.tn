@@ -1,6 +1,8 @@
 package tn.esprit.pi_article.Services;
 
 import tn.esprit.pi_article.Entities.Article;
+import tn.esprit.pi_article.Entities.Status;
+import tn.esprit.pi_article.Entities.TypeProduit;
 
 import java.util.List;
 
@@ -14,6 +16,12 @@ public interface IArticleServices {
     void archiverArticle(Long id);
     boolean existsByNom(String nom);
 
+
+    public Article genererPackSiNecessaire() ;
+    public List<Article> verifierSeuilCritiqueEtEnvoyerAlerte();
+
+    public List<Article> rechercherArticles(String nom, Status status, TypeProduit typeProduit);
+    public List<Article> getArticlesTendanceeee() ;
 
 }
 

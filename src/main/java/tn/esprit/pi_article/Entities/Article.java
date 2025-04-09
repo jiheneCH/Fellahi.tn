@@ -10,6 +10,11 @@ import jakarta.validation.constraints.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 @Entity
 @Getter
 @Setter
@@ -31,7 +36,73 @@ public class Article {
 
 
     String reference;
+    private double reduction;
+    private Integer pointsFidelite;
+    private Integer quantiteInitiale;
 
+    public Integer getQuantiteInitiale() {
+        return quantiteInitiale;
+    }
+
+    public void setQuantiteInitiale(Integer quantiteInitiale) {
+        this.quantiteInitiale = quantiteInitiale;
+    }
+
+    private boolean alerteEnvoyee;
+    private LocalDate dateAjout;
+
+    public LocalDate getDateAjout() {
+        return dateAjout;
+    }
+
+    public void setDateAjout(LocalDate dateAjout) {
+        this.dateAjout = dateAjout;
+    }
+
+    public boolean isAlerteEnvoyee() {
+        return alerteEnvoyee;
+    }
+    @Transient
+    private Double prixFinal; // Ce champ sera calculé en fonction des promotions et des périodes spécifiques
+
+    @Transient
+    private Double promotion; // Le pourcentage de réduction appliqué à l'article
+
+    public Double getPrixFinal() {
+        return prixFinal;
+    }
+
+    public void setPrixFinal(Double prixFinal) {
+        this.prixFinal = prixFinal;
+    }
+
+    public Double getPromotion() {
+        return promotion;
+    }
+
+    public void setPromotion(Double promotion) {
+        this.promotion = promotion;
+    }
+
+    public void setAlerteEnvoyee(boolean alerteEnvoyee) {
+        this.alerteEnvoyee = alerteEnvoyee;
+    }
+
+    public double getReduction() {
+        return reduction;
+    }
+
+    public Integer getPointsFidelite() {
+        return pointsFidelite;
+    }
+
+    public void setPointsFidelite(Integer pointsFidelite) {
+        this.pointsFidelite = pointsFidelite;
+    }
+
+    public void setReduction(double reduction) {
+        this.reduction = reduction;
+    }
 
     @NotNull(message = "La quantité disponible ne peut pas être vide.")
     @Min(value = 0, message = "La quantité disponible ne peut pas être négative.")
@@ -68,7 +139,7 @@ public class Article {
 
     @NotNull(message = "Le prix est obligatoire")
     @DecimalMin(value = "0.1", message = "Le prix doit être supérieur à 0")
-    double prix;
+    Double prix;
 
 
     @AssertTrue(message = "La quantité vendue ne peut pas dépasser la quantité disponible.")
@@ -77,7 +148,6 @@ public class Article {
     }
 
 
-    @NotNull(message = "Le statut est obligatoire")
     @Enumerated(EnumType.STRING)
     Status status;
 
@@ -85,20 +155,20 @@ public class Article {
     private boolean archived = false; // Ajout du champ d'archivage
 
     @ManyToOne
-    @JoinColumn(name = "user_id") // Clé étrangère vers Utilisateur
     private utilisateur utilisateur;
 
 
 
-
-
-    public tn.esprit.pi_article.Entities.utilisateur getUtilisateur() {
+    public utilisateur getUtilisateur() {
         return utilisateur;
     }
 
-    public void setUtilisateur(tn.esprit.pi_article.Entities.utilisateur utilisateur) {
+    public void setUtilisateur(utilisateur utilisateur) {
         this.utilisateur = utilisateur;
     }
+
+
+
 
     public long getIdArticle() {
         return idArticle;
@@ -148,5 +218,40 @@ public class Article {
 
     public void setNom(String nom) {
         this.nom = nom;
+    }
+
+    public void calculerPointsFidelite() {
+        if (this.prix != null) {
+            this.pointsFidelite = (int) (this.prix * 0.1); // 10% du prix
+        } else {
+            this.pointsFidelite = 0;
+        }
+    }
+
+    private boolean isPack = false; // Indique si l'article est un pack
+
+    @ElementCollection
+    private List<Long> articlesPack = new ArrayList<>(); // Liste des articles dans le pack
+
+    // Getters et Setters
+
+    public boolean isPack() {
+        return isPack;
+    }
+
+    public void setPrix(Double prix) {
+        this.prix = prix;
+    }
+
+    public void setPack(boolean pack) {
+        isPack = pack;
+    }
+
+    public List<Long> getArticlesPack() {
+        return articlesPack;
+    }
+
+    public void setArticlesPack(List<Long> articlesPack) {
+        this.articlesPack = articlesPack;
     }
 }
