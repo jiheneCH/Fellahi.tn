@@ -5,11 +5,21 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Digits;
 
-import java.util.Date;
-@Entity
-@Getter
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.ArrayList;
+
+import java.util.List;
+
 @Setter
+@Getter
+@Entity
+
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
@@ -18,7 +28,7 @@ public class Event {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    int idEvent;
+    long  idEvent;
 
     @Pattern(regexp = "^[^\\s].*[^\\s]$", message = "Le titre ne doit pas commencer ni finir par un espace")
 
@@ -26,20 +36,46 @@ public class Event {
     @Size(min = 3, max = 100, message = "Le titre doit contenir entre 3 et 100 caractères")
     String title;
 
+   // @NotNull(message = "La date est obligatoire")
+    //@FutureOrPresent(message = "La date doit être dans le futur ou aujourd'hui")
+   // @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
+   // Date dateEvent;
+
     @NotNull(message = "La date est obligatoire")
     @FutureOrPresent(message = "La date doit être dans le futur ou aujourd'hui")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    Date dateEvent;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    private LocalDate dateEvent;
+
+    @NotNull(message = "L'heure est obligatoire")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss")
+    private LocalTime heureEvent;
 
     @Pattern(regexp = "^[a-zA-Z0-9,\\s]+$", message = "L'emplacement doit être alphanumérique")
     @NotBlank(message = "L'emplacement est obligatoire")
     @Size(min = 3, max = 255, message = "L'emplacement doit contenir entre 3 et 255 caractères")
     String location;
 
+    @NotBlank(message = "La description est obligatoire")
+    @Size(min = 3, max = 100, message = "La description doit contenir entre 3 et 100 caractères")
+    String description;
+
     @NotNull(message = "Le nombre de places est obligatoire")
-    @Min(value = 1, message = "Le nombre de places doit être au moins 1")
+    @Min(value = 0)
     @Max(value = 10000, message = "Le nombre de places ne peut pas dépasser 10 000")
-    Long nomPlaces; // Changer en Integer pour éviter les erreurs
+    Long nombrePlaces;
+
+    @NotNull(message = "Le prix est obligatoire.")
+    @DecimalMin(value = "0.0", inclusive = false, message = "Le prix doit être supérieur à 0.")
+    @Digits(integer = 6, fraction = 2, message = "Le prix doit être un nombre valide avec 2 décimales maximum.")
+    private BigDecimal prix;
+
+    @Column(name = "image")
+    @NotNull(message = "L'image est obligatoire")
+    private String image;
+
+    @Column(name = "pdf")
+
+    private String pdf;
 
     private boolean archived = false;
 
@@ -51,11 +87,35 @@ public class Event {
     @Enumerated(EnumType.STRING)
     Status status;
 
-    public int getIdEvent() {
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
+    private List<Reservation> reservations = new ArrayList<>();
+
+
+    @OneToMany(mappedBy = "event")
+    private List<WaitingListEntry> waitingListEntries;
+
+    public List<WaitingListEntry> getWaitingListEntries() {
+        return waitingListEntries;
+    }
+
+    public void setWaitingListEntries(List<WaitingListEntry> waitingListEntries) {
+        this.waitingListEntries = waitingListEntries;
+
+    }
+
+    public BigDecimal getPrix() {
+        return prix;
+    }
+
+    public void setPrix(BigDecimal prix) {
+        this.prix = prix;
+    }
+
+    public long getIdEvent() {
         return idEvent;
     }
 
-    public void setIdEvent(int idEvent) {
+    public void setIdEvent(long idEvent) {
         this.idEvent = idEvent;
     }
 
@@ -67,12 +127,20 @@ public class Event {
         this.title = title;
     }
 
-    public Date getDateEvent() {
+    public LocalDate getDateEvent() {
         return dateEvent;
     }
 
-    public void setDateEvent(Date dateEvent) {
+    public void setDateEvent(LocalDate dateEvent) {
         this.dateEvent = dateEvent;
+    }
+
+    public LocalTime getHeureEvent() {
+        return heureEvent;
+    }
+
+    public void setHeureEvent(LocalTime heureEvent) {
+        this.heureEvent = heureEvent;
     }
 
     public String getLocation() {
@@ -83,12 +151,36 @@ public class Event {
         this.location = location;
     }
 
-    public Long getNomPlaces() {
-        return nomPlaces;
+    public String getDescription() {
+        return description;
     }
 
-    public void setNomPlaces(Long nomPlaces) {
-        this.nomPlaces = nomPlaces;
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Long getNombrePlaces() {
+        return nombrePlaces;
+    }
+
+    public void setNombrePlaces(Long nombrePlaces) {
+        this.nombrePlaces = nombrePlaces;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
+
+    public String getPdf() {
+        return pdf;
+    }
+
+    public void setPdf(String pdf) {
+        this.pdf = pdf;
     }
 
     public boolean isArchived() {
@@ -113,6 +205,14 @@ public class Event {
 
     public void setStatus(Status status) {
         this.status = status;
+    }
+
+    public List<Reservation> getReservations() {
+        return reservations;
+    }
+
+    public void setReservations(List<Reservation> reservations) {
+        this.reservations = reservations;
     }
 }
 

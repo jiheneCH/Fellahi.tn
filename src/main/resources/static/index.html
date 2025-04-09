@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stripe Checkout</title>
+    <script src="https://js.stripe.com/v3/"></script>
+</head>
+<body>
+<button id="checkout-button">Pay Now</button>
+
+<script>
+    const stripe = Stripe("pk_test_51RAIbAQQyVRoYT4KJuVHlj6f5oEWNGG69JpCPtg9d6R8TjOQW5yUq5y0qXbBVzRONIQJGSZiAXLBgHujfc7qaCi900DiSuzDYD"); // Replace with your Stripe publishable key
+
+    document.getElementById("checkout-button").addEventListener("click", () => {
+        fetch("http://localhost:8080/piEvent/payment/create-checkout-session", { // Replace with your backend URL
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+        })
+            .then(response => response.json())
+            .then(data => {
+                return stripe.redirectToCheckout({ sessionId: data.sessionId });
+            })
+            .then(result => {
+                if (result.error) {
+                    alert(result.error.message);
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+            });
+    });
+</script>
+</body>
+</html>
