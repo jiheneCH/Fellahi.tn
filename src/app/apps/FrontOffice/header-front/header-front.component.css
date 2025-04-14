@@ -1,0 +1,9 @@
+/* Style de base de la navbar */
+#sticker {
+    position: fixed;
+    top: 0;
+    background-color: #406151; /* Transparent par défaut */
+   
+}
+
+

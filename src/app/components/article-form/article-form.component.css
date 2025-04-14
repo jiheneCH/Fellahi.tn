@@ -1,0 +1,367 @@
+:root {
+    --agri-primary: #4CAF50;
+    --agri-primary-dark: #388E3C;
+    --agri-secondary: #8BC34A;
+    --agri-light: #F1F8E9;
+    --agri-dark: #2E7D32;
+    --agri-border: #C8E6C9;
+    --agri-error: #F44336;
+    --agri-error-light: #FFEBEE;
+    --agri-shadow: 0 4px 12px rgba(76, 175, 80, 0.15);
+    --agri-error-shadow: 0 2px 8px rgba(244, 67, 54, 0.1);
+  }
+  
+  .agri-form-container {
+    max-width: 600px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: white;
+    border-radius: 12px;
+    box-shadow: var(--agri-shadow);
+  }
+  
+  .agri-form-title {
+    text-align: center;
+    color: var(--agri-dark);
+    margin-bottom: 2rem;
+    font-size: 1.8rem;
+    position: relative;
+  }
+  
+  .agri-form-title:after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 3px;
+    background: var(--agri-primary);
+    border-radius: 3px;
+  }
+  
+  .agri-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  
+  .agri-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .agri-label {
+    color: var(--agri-dark);
+    font-weight: 500;
+    font-size: 0.95rem;
+  }
+  
+  .agri-input, .agri-select {
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--agri-border);
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background-color: white;
+  }
+  
+  .agri-price-input {
+    position: relative;
+  }
+  
+  .agri-price-input .agri-input {
+    padding-right: 2.5rem;
+    width: 100%;
+  }
+  
+  .agri-currency {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--agri-dark);
+    font-weight: 500;
+  }
+  
+  .agri-input:focus, .agri-select:focus {
+    outline: none;
+    border-color: var(--agri-primary);
+    box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+  }
+  
+  .agri-input-error {
+    border-color: var(--agri-error) !important;
+    background-color: var(--agri-error-light);
+  }
+  
+  .agri-input-error:focus {
+    box-shadow: 0 0 0 3px rgba(244, 67, 54, 0.2) !important;
+  }
+  
+  .error-message {
+    color: var(--agri-error);
+    font-size: 0.85rem;
+    margin-top: 0.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+  
+  .error-message-sm {
+    color: var(--agri-error);
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+  
+  .error-icon {
+    width: 16px;
+    height: 16px;
+    fill: var(--agri-error);
+  }
+  
+  /* Style compact pour les quantités */
+  .agri-quantity-compact {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    background: var(--agri-light);
+    padding: 1rem;
+    border-radius: 8px;
+  }
+  
+  .agri-quantity-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .agri-quantity-label {
+    font-size: 0.85rem;
+    color: var(--agri-dark);
+    text-align: center;
+    font-weight: 500;
+  }
+  
+  .agri-input-sm {
+    padding: 0.5rem;
+    border: 1px solid var(--agri-border);
+    border-radius: 6px;
+    font-size: 0.9rem;
+    text-align: center;
+    width: 100%;
+  }
+  
+  .agri-input-sm:focus {
+    outline: none;
+    border-color: var(--agri-primary);
+    box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+  }
+  
+  .agri-select {
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%232E7D32'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 1rem;
+    padding-right: 2rem !important;
+  }
+  
+  .agri-form-actions {
+    margin-top: 1.5rem;
+    display: flex;
+    justify-content: center;
+  }
+  
+  .agri-submit-btn {
+    background-color: var(--agri-primary);
+    color: rgb(84, 64, 64);
+    padding: 1rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+  }
+  
+  .agri-submit-btn:hover {
+    background-color: var(--agri-primary-dark);
+    transform: translateY(-2px);
+    box-shadow: var(--agri-shadow);
+  }
+  
+  .agri-submit-btn-disabled {
+    background-color: #BDBDBD !important;
+    cursor: not-allowed;
+    opacity: 0.7;
+    transform: none !important;
+    box-shadow: none !important;
+  }
+  .agri-btn-icon {
+    width: 20px;
+    height: 20px;
+  }
+  
+  /* Dialog de confirmation */
+  .agri-dialog-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+  
+  .agri-dialog-container {
+    background-color: white;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+    animation: dialogFadeIn 0.3s ease;
+  }
+  
+  @keyframes dialogFadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .agri-dialog-header {
+    padding: 1.5rem;
+    background-color: var(--agri-light);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--agri-border);
+  }
+  
+  .agri-dialog-header h3 {
+    margin: 0;
+    color: var(--agri-dark);
+  }
+  
+  .agri-dialog-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--agri-dark);
+    padding: 0 0.5rem;
+  }
+  
+  .agri-dialog-content {
+    padding: 1.5rem;
+  }
+  
+  .agri-dialog-product-preview {
+    margin-top: 1rem;
+    padding: 1rem;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+  }
+  
+  .agri-dialog-product-preview p {
+    margin: 0.5rem 0;
+  }
+  
+  .agri-dialog-actions {
+    padding: 1rem 1.5rem;
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    border-top: 1px solid #eee;
+  }
+  
+  .agri-dialog-btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+  }
+  
+  .agri-dialog-btn-cancel {
+    background-color: #f5f5f5;
+    color: #333;
+  }
+  
+  .agri-dialog-btn-cancel:hover {
+    background-color: #eee;
+  }
+  
+  .agri-dialog-btn-confirm {
+    background-color: var(--agri-primary);
+    color: white;
+  }
+  
+  .agri-dialog-btn-confirm:hover {
+    background-color: var(--agri-primary-dark);
+  }
+  
+  /* Responsive */
+  @media (max-width: 768px) {
+    .agri-quantity-compact {
+      grid-template-columns: 1fr;
+    }
+    
+    .agri-form-container {
+      padding: 1.5rem;
+    }
+    
+    .agri-dialog-actions {
+      justify-content: center;
+    }
+    
+    .agri-dialog-btn {
+      flex: 1;
+    }
+  }
+  .agri-form-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+  
+  .agri-icon-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 50%;
+    transition: background-color 0.2s;
+  }
+  
+  .agri-icon-btn:hover {
+    background-color: #f0f0f0;
+  }
+  
+  .agri-icon {
+    width: 24px;
+    height: 24px;
+    color: #00796b;
+  }
+  
+  

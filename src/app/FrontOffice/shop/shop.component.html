@@ -1,0 +1,117 @@
+<div class="container">
+    <!-- Background décoratif -->
+    <div class="background-decor">
+      <div class="leaf leaf-1">🍃</div>
+      <div class="leaf leaf-2">🍃</div>
+      <div class="leaf leaf-3">🍃</div>
+      <div class="fruit-decor fruit-1">🍎</div>
+      <div class="fruit-decor fruit-2">🍐</div>
+      <div class="fruit-decor fruit-3">🍊</div>
+    </div>
+  
+    <div class="page-header">
+      <h1 class="page-title">Marché des Producteurs</h1>
+      <p class="page-subtitle">Des produits frais, de saison, cultivés avec passion par nos agriculteurs locaux</p>
+      <div class="deco-leaf">🍃</div>
+    </div>
+  
+    <!-- Filtres de catégories -->
+    <div class="filter-controls reveal">
+      <button class="filter-btn active">Tous les produits</button>
+      <button class="filter-btn">Fruits</button>
+      <button class="filter-btn">Légumes</button>
+      <button class="filter-btn">Produits Bio</button>
+      <button class="filter-btn">Promotions</button>
+    </div>
+  
+    <!-- Loader animé -->
+    <div *ngIf="loading" class="loading-indicator">
+      <div class="harvest-loader">
+        <div class="harvest-circle"></div>
+        <div class="harvest-circle"></div>
+        <div class="harvest-circle"></div>
+        <div class="harvest-icon">🌱</div>
+      </div>
+      <p class="loading-text">Récolte en cours</p>
+    </div>
+  
+    <!-- Grid de produits -->
+    <div *ngIf="!loading" class="articles-container">
+      <div *ngFor="let article of articles; let i = index" 
+            class="article-card reveal"
+            [style.animation-delay]="i * 0.1 + 's'">
+        
+        <!-- Bouton favori -->
+        <button class="favorite-btn" (click)="(article)" 
+                [class.favorited]="article.idArticle && favoriteStatus[article.idArticle]">
+          ♥
+        </button>
+  
+        <!-- Badges -->
+        <div *ngIf="article.bio" class="organic-badge">
+          <span class="organic-icon">🌱</span> BIO
+        </div>
+  
+        <!-- Image du produit -->
+        <div class="image-section">
+          <div class="background-shape"></div>
+          <img *ngIf="article.image"
+                [src]="article.image"
+                [alt]="article.nom"
+                class="article-image">
+          <img *ngIf="!article.image"
+                src="assets/images/placeholder-product.png"
+                alt="Image non disponible"
+                class="article-image">
+        </div>
+  
+        <!-- Informations produit -->
+        <div class="info-section">
+          <div class="product-category">{{article.categorie || 'Produit frais'}}</div>
+          <h3>{{ article.nom }}</h3>
+          <p class="product-description">{{ article.description || 'Produit frais de saison, cultivé avec soin par nos agriculteurs partenaires.' }}</p>
+  
+          <!-- Prix et unité -->
+          <div class="price-row">
+            <span class="price">
+              <span class="price-currency">€</span>
+              {{ article.prix }}
+            </span>
+            <span class="price-unit">/ {{article.unite || 'kg'}}</span>
+          </div>
+  
+          <!-- Contrôle de quantité -->
+          <div class="quantity-control">
+            <button class="quantity-btn minus" 
+                    (click)="updateQuantity(article.idArticle!, (counters[article.idArticle!]?.target || 1) - 1)">−</button>
+            <input type="text" class="quantity-input" 
+                   [value]="counters[article.idArticle!]?.target || 0" 
+                   #quantityInput
+                   (input)="updateQuantity(article.idArticle!, +quantityInput.value)">
+            <span class="animated-counter">{{ counters[article.idArticle!]?.value || 0 }}</span>
+            <button class="quantity-btn plus" 
+                    (click)="updateQuantity(article.idArticle!, (counters[article.idArticle!]?.target || 0) + 1)">+</button>
+          </div>
+        </div>
+  
+        <!-- Section QR code -->
+        <div class="qr-section">
+          <div *ngIf="articleQRCodes[article.idArticle!]" class="qr-container hover-trigger">
+            <img [src]="articleQRCodes[article.idArticle!]"
+                  alt="QR Code"
+                  class="qr-image">
+            <div class="tooltip">Scannez pour plus d'informations</div>
+            <p class="qr-text">scan me</p>
+          </div>
+          <div *ngIf="!articleQRCodes[article.idArticle!]" class="qr-loading">
+            Génération...
+          </div>
+        </div>
+  
+        <button class="add-to-cart-btn" (click)="addToCart(article)">
+          <span class="cart-icon">🛒</span>
+          Ajouter au panier
+        </button>
+      </div>
+    </div>
+  </div>

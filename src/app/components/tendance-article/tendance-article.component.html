@@ -1,0 +1,57 @@
+<div class="trending-container">
+    <div class="header-section">
+      <h2 class="section-title">📊 Articles Tendance</h2>
+      <p class="section-subtitle">Découvrez nos best-sellers du moment</p>
+    </div>
+  
+    <div *ngIf="loading" class="loading-state">
+      <div class="spinner"></div>
+      <span>Chargement des données en cours...</span>
+    </div>
+  
+    <div *ngIf="error" class="error-state">
+      <div class="error-message">{{ error }}</div>
+    </div>
+  
+    <!-- Utilisez filteredArticles au lieu de articles -->
+    <div *ngIf="!loading && !error" class="articles-grid">
+      <div *ngFor="let article of filteredArticles; let i = index" class="product-card">
+        <div class="product-badge" [ngClass]="{
+          'gold-badge': i === 0,
+          'silver-badge': i === 1,
+          'bronze-badge': i === 2,
+          'normal-badge': i > 2
+        }">
+          #{{ i + 1 }}
+        </div>
+        
+        <div class="product-content">
+          <h3 class="product-title">{{ article.nom }}</h3>
+          
+          <div class="product-stats">
+            <div class="stat-item">
+              <span class="stat-value">{{ article.quantiteVendue || 0 | number }} ventes</span>
+            </div>
+            
+            <div class="stat-item">
+              <mat-icon [ngClass]="{
+                'available': article.status === 'DISPONIBLE',
+                'out-of-stock': article.status === 'RUPTURE',
+                'pre-order': article.status === 'EN_COMMANDE'
+              }"></mat-icon>
+            </div>
+          </div>
+          
+          <div class="progress-container">
+            <div class="progress-bar" [style.width.%]="getSalesPercentage(article)"></div>
+            <span class="progress-text">{{ getSalesPercentage(article) }}% du total</span>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Message si aucun article trouvé -->
+      <div *ngIf="filteredArticles.length === 0" class="no-articles">
+        <p>Aucun article tendance disponible actuellement</p>
+      </div>
+    </div>
+  </div>

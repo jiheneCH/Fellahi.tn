@@ -1,0 +1,253 @@
+:root {
+    --agri-primary: #4CAF50;
+    --agri-primary-dark: #388E3C;
+    --agri-secondary: #8BC34A;
+    --agri-light: #F1F8E9;
+    --agri-dark: #2E7D32;
+    --agri-border: #C8E6C9;
+    --agri-error: #F44336;
+    --agri-error-light: #FFEBEE;
+    --agri-shadow: 0 4px 12px rgba(76, 175, 80, 0.15);
+    --agri-error-shadow: 0 2px 8px rgba(244, 67, 54, 0.1);
+  }
+  
+  .agri-form-container {
+    max-width: 600px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: white;
+    border-radius: 12px;
+    box-shadow: var(--agri-shadow);
+  }
+  
+  .agri-form-title {
+    text-align: center;
+    color: var(--agri-dark);
+    margin-bottom: 2rem;
+    font-size: 1.8rem;
+    position: relative;
+  }
+  
+  .agri-form-title:after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 3px;
+    background: var(--agri-primary);
+    border-radius: 3px;
+  }
+  
+  .agri-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  
+  .agri-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .agri-label {
+    color: var(--agri-dark);
+    font-weight: 500;
+    font-size: 0.95rem;
+  }
+  
+  .agri-input, .agri-select {
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--agri-border);
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background-color: white;
+  }
+  
+  .agri-price-input {
+    position: relative;
+  }
+  
+  .agri-price-input .agri-input {
+    padding-right: 2.5rem;
+    width: 100%;
+  }
+  
+  .agri-currency {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--agri-dark);
+    font-weight: 500;
+  }
+  
+  .agri-input:focus, .agri-select:focus {
+    outline: none;
+    border-color: var(--agri-primary);
+    box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+  }
+  
+  .agri-input-error {
+    border-color: var(--agri-error) !important;
+    background-color: var(--agri-error-light);
+  }
+  
+  .agri-input-error:focus {
+    box-shadow: 0 0 0 3px rgba(244, 67, 54, 0.2) !important;
+  }
+  
+  .error-message {
+    color: var(--agri-error);
+    font-size: 0.85rem;
+    margin-top: 0.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+  
+  .error-message-sm {
+    color: var(--agri-error);
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+  
+  .error-icon {
+    width: 16px;
+    height: 16px;
+    fill: var(--agri-error);
+    flex-shrink: 0;
+  }
+  
+  .error-message span,
+  .error-message-sm span {
+    display: inline-block;
+    margin-left: 0.3rem;
+  }
+  
+  /* Style compact pour les quantités */
+  .agri-quantity-compact {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    background: var(--agri-light);
+    padding: 1rem;
+    border-radius: 8px;
+  }
+  
+  .agri-quantity-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .agri-quantity-label {
+    font-size: 0.85rem;
+    color: var(--agri-dark);
+    text-align: center;
+    font-weight: 500;
+  }
+  
+  .agri-input-sm {
+    padding: 0.5rem;
+    border: 1px solid var(--agri-border);
+    border-radius: 6px;
+    font-size: 0.9rem;
+    text-align: center;
+    width: 100%;
+  }
+  
+  .agri-input-sm:focus {
+    outline: none;
+    border-color: var(--agri-primary);
+    box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+  }
+  
+  .agri-select {
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%232E7D32'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 1rem;
+    padding-right: 2rem !important;
+  }
+  
+  .agri-form-actions {
+    margin-top: 1.5rem;
+    display: flex;
+    justify-content: center;
+  }
+  
+  .agri-submit-btn {
+    background-color: var(--agri-primary);
+    color: white;
+    padding: 1rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+  }
+  
+  .agri-submit-btn:hover:not(:disabled) {
+    background-color: var(--agri-primary-dark);
+    transform: translateY(-2px);
+    box-shadow: var(--agri-shadow);
+  }
+  
+  .agri-submit-btn-disabled {
+    background-color: #BDBDBD !important;
+    cursor: not-allowed;
+    opacity: 0.7;
+    transform: none !important;
+    box-shadow: none !important;
+  }
+  
+  .agri-btn-icon {
+    width: 20px;
+    height: 20px;
+  }
+  
+  /* Responsive */
+  @media (max-width: 768px) {
+    .agri-quantity-compact {
+      grid-template-columns: 1fr;
+    }
+    
+    .agri-form-container {
+      padding: 1.5rem;
+    }
+    
+    .error-message,
+    .error-message-sm {
+      flex-wrap: wrap;
+    }
+    
+    .error-icon {
+      margin-right: 0.3rem;
+    }
+  }
+  .spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255,255,255,.3);
+    border-radius: 50%;
+    border-top-color: white;
+    animation: spin 1s ease-in-out infinite;
+  }
+  
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }

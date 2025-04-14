@@ -1,0 +1,144 @@
+<div class="agri-form-container">
+    <h2 class="agri-form-title">🌱 Modifier un produit agricole</h2>
+  
+    <form [formGroup]="articleForm" class="agri-form">
+      <!-- Nom -->
+      <div class="agri-form-group">
+        <label class="agri-label">Nom du produit :</label>
+        <input
+          type="text"
+          formControlName="nom"
+          class="agri-input"
+          placeholder="Ex: Pommes Golden, Blé dur..."
+          [ngClass]="{'agri-input-error': articleForm.controls['nom'].invalid && articleForm.controls['nom'].touched}"
+        />
+        <div *ngIf="articleForm.controls['nom'].invalid && articleForm.controls['nom'].touched" class="error-message">
+          <svg class="error-icon" viewBox="0 0 24 24">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+          </svg>
+          <span *ngIf="articleForm.controls['nom'].errors?.['required']">Le nom du produit est requis.</span>
+          <span *ngIf="articleForm.controls['nom'].errors?.['pattern']">Le nom doit être alphanumérique.</span>
+        </div>
+      </div>
+  
+      <!-- Prix -->
+      <div class="agri-form-group">
+        <label class="agri-label">Prix (DT) :</label>
+        <div class="agri-price-input">
+          <input
+            type="number"
+            formControlName="prix"
+            class="agri-input"
+            step="0.010"
+            min="0"
+            placeholder="Prix en dinars"
+            [ngClass]="{'agri-input-error': articleForm.controls['prix'].invalid && articleForm.controls['prix'].touched}"
+          />
+          <span class="agri-currency">DT</span>
+        </div>
+        <div *ngIf="articleForm.controls['prix'].invalid && articleForm.controls['prix'].touched" class="error-message">
+          <svg class="error-icon" viewBox="0 0 24 24">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+          </svg>
+          <span *ngIf="articleForm.controls['prix'].errors?.['required']">Le prix est requis.</span>
+          <span *ngIf="articleForm.controls['prix'].errors?.['min']">Le prix doit être supérieur à 0.</span>
+        </div>
+      </div>
+  
+      <!-- Quantités -->
+      <div class="agri-form-group">
+        <label class="agri-label">Gestion des quantités :</label>
+        <div class="agri-quantity-compact">
+          <div class="agri-quantity-item">
+            <span class="agri-quantity-label">Initiale</span>
+            <input
+              type="number"
+              formControlName="quantiteInitiale"
+              class="agri-input-sm"
+              placeholder="Qté initiale"
+              [ngClass]="{'agri-input-error': articleForm.controls['quantiteInitiale'].invalid && articleForm.controls['quantiteInitiale'].touched}"
+            />
+            <div *ngIf="articleForm.controls['quantiteInitiale'].invalid && articleForm.controls['quantiteInitiale'].touched" class="error-message-sm">
+              <svg class="error-icon" viewBox="0 0 24 24">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+              </svg>
+              <span *ngIf="articleForm.controls['quantiteInitiale'].errors?.['required']">La quantité initiale est requise.</span>
+              <span *ngIf="articleForm.controls['quantiteInitiale'].errors?.['min']">Doit être ≥ 0.</span>
+            </div>
+          </div>
+  
+          <div class="agri-quantity-item">
+            <span class="agri-quantity-label">Disponible</span>
+            <input
+              type="number"
+              formControlName="quantiteDisponible"
+              class="agri-input-sm"
+              placeholder="Qté disponible"
+              [ngClass]="{'agri-input-error': articleForm.controls['quantiteDisponible'].invalid && articleForm.controls['quantiteDisponible'].touched}"
+            />
+            <div *ngIf="articleForm.controls['quantiteDisponible'].invalid && articleForm.controls['quantiteDisponible'].touched" class="error-message-sm">
+              <svg class="error-icon" viewBox="0 0 24 24">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+              </svg>
+              <span *ngIf="articleForm.controls['quantiteDisponible'].errors?.['required']">La quantité disponible est requise.</span>
+              <span *ngIf="articleForm.controls['quantiteDisponible'].errors?.['min']">Doit être ≥ 0.</span>
+            </div>
+          </div>
+  
+          <div class="agri-quantity-item">
+            <span class="agri-quantity-label">Vendue</span>
+            <input
+              type="number"
+              formControlName="quantiteVendue"
+              class="agri-input-sm"
+              placeholder="Qté vendue"
+              [ngClass]="{'agri-input-error': articleForm.controls['quantiteVendue'].invalid && articleForm.controls['quantiteVendue'].touched}"
+            />
+            <div *ngIf="articleForm.controls['quantiteVendue'].invalid && articleForm.controls['quantiteVendue'].touched" class="error-message-sm">
+              <svg class="error-icon" viewBox="0 0 24 24">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+              </svg>
+              <span *ngIf="articleForm.controls['quantiteVendue'].errors?.['required']">La quantité vendue est requise.</span>
+              <span *ngIf="articleForm.controls['quantiteVendue'].errors?.['min']">Doit être ≥ 0.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Type de produit -->
+      <div class="agri-form-group">
+        <label class="agri-label">Type de produit :</label>
+        <select 
+          formControlName="typeProduit" 
+          class="agri-select"
+          [ngClass]="{'agri-input-error': articleForm.controls['typeProduit'].invalid && articleForm.controls['typeProduit'].touched}"
+        >
+          <option value="" disabled>Sélectionnez un type</option>
+          <option *ngFor="let type of typeProduit" [value]="type">{{ type | titlecase }}</option>
+        </select>
+        <div *ngIf="articleForm.controls['typeProduit'].invalid && articleForm.controls['typeProduit'].touched" class="error-message">
+          <svg class="error-icon" viewBox="0 0 24 24">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+          </svg>
+          Le type de produit est requis
+        </div>
+      </div>
+      
+  
+      <div class="agri-form-actions">
+        <button
+          type="button"
+          class="agri-submit-btn"
+          [disabled]="articleForm.invalid || isSubmitting"
+          (click)="confirmBeforeSubmit()"
+        >
+          <span *ngIf="!isSubmitting">Mettre à jour</span>
+          <span *ngIf="isSubmitting">Enregistrement...</span>
+          <svg class="agri-btn-icon" viewBox="0 0 24 24" *ngIf="!isSubmitting">
+            <path d="M17 3H7c-1.1 0-1.99.9-1.99 2L5 21l7-3 7 3V5c0-1.1-.9-2-2-2z"/>
+          </svg>
+          <span class="spinner" *ngIf="isSubmitting"></span>
+        </button>
+      </div>
+    </form>
+  </div>

@@ -1,0 +1,125 @@
+
+<div>
+    <div class="flex flex-wrap items-center justify-between gap-4">
+        <h2 class="text-xl">Courses</h2>
+        <div class="flex w-full flex-col gap-4 sm:w-auto sm:flex-row sm:items-center sm:gap-3">
+            <div class="flex gap-3">
+                <div>
+                    <button type="button" class="btn btn-primary" (click)="editCourse()">
+                    <icon-plus class="h-6 w-6" />
+                    </button>
+                </div>
+                <div>
+                    <button
+                        type="button"
+                        class="btn btn-outline-primary p-2"
+                        [ngClass]="{ 'bg-primary text-white': displayType === 'list' }"
+                        (click)="displayType = 'list'">
+                        <icon-list-check class="h-6 w-6" />
+                    </button>
+                </div>
+                <div>
+                    <button
+                        type="button"
+                        class="btn btn-outline-primary p-2"
+                        [ngClass]="{ 'bg-primary text-white': displayType === 'grid' }"
+                        (click)="displayType = 'grid'">
+                    <icon-gallery class="h-6 w-6" />
+
+                    </button>
+                </div>
+            </div>
+
+            <div class="relative">
+                <input
+                    type="text"
+                    placeholder="Search Offers"
+                    class="peer form-input py-2 ltr:pr-11 rtl:pl-11"
+                    [(ngModel)]="searchCourse"
+                    name="searchCourse"
+                    (ngModelChange)="filterCourses()"
+                />
+                <div class="absolute top-1/2 -translate-y-1/2 peer-focus:text-primary ltr:right-[11px] rtl:left-[11px]">
+                    <!-- Place your search icon here -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="panel mt-5 overflow-hidden border-0 p-0">
+        <ng-container *ngIf="displayType === 'list'">
+            <div class="table-responsive">
+                <table class="table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Video</th>
+                            <th>Image</th>
+                            
+                            <th class="!text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <ng-container *ngFor="let course of filteredCourses">
+                            <tr>
+                                <td>{{ course.title }}</td>
+                                <td>{{ course.video }}</td>
+                                <td>{{ course.image }}</td>
+                               
+                                <td>
+                                    <div class="flex items-center justify-center gap-4">
+                                        <button type="button" class="btn btn-sm btn-outline-primary" (click)="editCourse(course)">Edit</button>
+                                        <button type="button" class="btn btn-sm btn-outline-danger" (click)="deleteCourse(course)">Delete</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </ng-container>
+                    </tbody>
+                </table>
+            </div>
+        </ng-container>
+    </div>
+    <ng-container *ngIf="displayType === 'grid'">
+        <div class="grid w-full grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+            <ng-container *ngFor="let course of filteredCourses">
+                <div class="relative overflow-hidden rounded-md bg-white text-center shadow">
+                    <div class="p-4">
+                        <h3 class="text-lg font-bold">{{ course.title }}</h3>
+                        <p class="text-sm">{{ course.video }}</p>
+                        <div class="mt-4 text-sm">
+                            <p>Image: {{ course.image }}</p>
+                           
+                        </div>
+                        <div class="mt-4 flex justify-around">
+                            <button type="button" class="btn btn-outline-primary" (click)="editCourse(course)">Edit</button>
+                            <button type="button" class="btn btn-outline-danger" (click)="deleteCourse(course)">Delete</button>
+                        </div>
+                    </div>
+                </div>
+            </ng-container>
+        </div>
+    </ng-container>
+
+    <!-- Add/Edit Offer Modal -->
+    <modal #addCourseModal class="no-footer">
+        <ng-template #modalHeader>
+            <h3 class="!font-medium">{{ CourseForm.controls['id'].value ? 'Edit Course' : 'Add Course' }}</h3>
+        </ng-template>
+        <ng-template #modalBody>
+            <form [formGroup]="CourseForm" class="text-sm" (ngSubmit)="saveCourse()" novalidate>
+                <div class="space-y-4">
+                    <input type="text" placeholder="Title" class="form-input" formControlName="title" />
+                    <input type="text" placeholder="Video" class="form-input" formControlName="video" />
+                    <input type="text" placeholder="Image" class="form-input" formControlName="image" />
+                   
+                    <!-- Add is_paid attribute as a checkbox -->
+                   
+                </div>
+                <div class="mt-8 flex justify-end">
+                    <button type="button" class="btn btn-outline-secondary" (click)="addCourseModal.close()">Cancel</button>
+                    <button type="submit" class="btn btn-primary ml-2">{{ CourseForm.controls['id'].value ? 'Update' : 'Add' }}</button>
+                </div>
+            </form>
+        </ng-template>
+    </modal>
+    
+</div>

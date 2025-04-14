@@ -1,0 +1,211 @@
+/* Styles généraux */
+.trending-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  
+  .header-section {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  
+  .section-title {
+    font-size: 2rem;
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+  }
+  
+  .section-subtitle {
+    color: #7f8c8d;
+    font-size: 1rem;
+  }
+  
+  /* États de chargement et erreur */
+  .loading-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    color: #3498db;
+  }
+  
+  .spinner {
+    border: 4px solid rgba(52, 152, 219, 0.2);
+    border-radius: 50%;
+    border-top: 4px solid #3498db;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin-bottom: 1rem;
+  }
+  
+  .error-state {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    background-color: #fdecea;
+    border-radius: 8px;
+    color: #d32f2f;
+  }
+  
+  .error-state mat-icon {
+    margin-right: 0.5rem;
+    font-size: 1.5rem;
+  }
+  
+  /* Grille des articles */
+  .articles-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+  
+  .product-card {
+    position: relative;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    overflow: hidden;
+  }
+  
+  .product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  }
+  
+  .product-badge {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: white;
+    font-size: 0.9rem;
+  }
+  
+  .gold-badge {
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+  }
+  
+  .silver-badge {
+    background: linear-gradient(135deg, #C0C0C0, #A9A9A9);
+  }
+  
+  .bronze-badge {
+    background: linear-gradient(135deg, #CD7F32, #8B4513);
+  }
+  
+  .normal-badge {
+    background: linear-gradient(135deg, #3498db, #2980b9);
+  }
+  
+  .product-content {
+    padding: 1.5rem;
+  }
+  
+  .product-title {
+    font-size: 1.2rem;
+    color: #2c3e50;
+    margin: 0 0 1rem 0;
+    font-weight: 600;
+  }
+  
+  .product-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    margin-bottom: 1.2rem;
+  }
+  
+  .stat-item {
+    display: flex;
+    align-items: center;
+    font-size: 0.95rem;
+  }
+  
+  .stat-item mat-icon {
+    font-size: 1rem;
+    margin-right: 0.5rem;
+    width: auto;
+    height: auto;
+  }
+  
+  .stat-value {
+    color: #2c3e50;
+  }
+  
+  .available {
+    color: #2ecc71;
+  }
+  
+  .out-of-stock {
+    color: #e74c3c;
+  }
+  
+  .pre-order {
+    color: #f39c12;
+  }
+  
+  .status-label {
+    color: #7f8c8d;
+  }
+  
+  /* Barre de progression */
+  .progress-container {
+    margin-top: 1rem;
+    background: #ecf0f1;
+    border-radius: 20px;
+    height: 10px;
+    position: relative;
+  }
+  
+  .progress-bar {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    border-radius: 20px;
+    background: linear-gradient(90deg, #3498db, #9b59b6);
+    transition: width 0.6s ease;
+  }
+  
+  .progress-text {
+    display: block;
+    margin-top: 0.5rem;
+    font-size: 0.8rem;
+    color: #7f8c8d;
+    text-align: right;
+  }
+  
+  /* Animation */
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  .no-articles {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 2rem;
+    color: #7f8c8d;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .no-articles mat-icon {
+    font-size: 3rem;
+    width: auto;
+    height: auto;
+    margin-bottom: 1rem;
+    color: #bdc3c7;
+  }

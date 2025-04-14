@@ -1,0 +1,115 @@
+<div *ngIf="article" class="product-details-container">
+  <div class="product-header">
+    <h2 class="product-title">Détails du produit agricole</h2>
+    <div class="product-status">
+      <span class="status-badge" [ngClass]="{
+        'disponible': article.status === 'disponible',
+        'limité': article.status === 'limité',
+        'épuisé': article.status === 'épuisé',
+        'à-venir': article.status === 'à venir'
+      }">
+        {{ article.status }}
+      </span>
+    </div>
+  </div>
+
+  <div class="product-content">
+    <!-- Section image -->
+    <div class="product-image-section">
+      <div *ngIf="article.image; else noImage" class="product-image-container">
+        <img [src]="article.image" alt="Image de {{ article.nom }}" class="product-image" />
+      </div>
+      <ng-template #noImage>
+        <div class="product-no-image">
+          <svg viewBox="0 0 24 24" class="no-image-icon">
+            <path d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-4.86 8.86l-3 3.87L9 13.14 6 17h12l-3.86-5.14z"/>
+          </svg>
+          <p>Aucune image disponible</p>
+        </div>
+      </ng-template>
+    </div>
+
+    <!-- Section détails -->
+    <div class="product-info-section">
+      <div class="product-main-info">
+        <h3 class="product-name">{{ article.nom }}</h3>
+        <p class="product-price">{{ article.prix | number:'1.2-2' }} <span class="currency">DT</span></p>
+        
+        <div class="product-type">
+          <span class="type-badge" [ngClass]="'type-' + article.typeProduit.toLowerCase().replace(' ', '-')">
+            {{ article.typeProduit }}
+          </span>
+          <span class="product-reference">Réf: {{ article.reference }}</span>
+        </div>
+      </div>
+
+      <div class="product-inventory">
+        <h4 class="inventory-title">Informations d'inventaire</h4>
+        
+        <div class="inventory-grid">
+          <div class="inventory-item">
+            <div class="inventory-label">Stock initial</div>
+            <div class="inventory-value">{{ article.quantiteInitiale }}</div>
+          </div>
+          
+          <div class="inventory-item">
+            <div class="inventory-label">Disponible</div>
+            <div class="inventory-value" [ngClass]="{
+              'low-stock': article.quantiteDisponible < 10 && article.quantiteDisponible > 0,
+              'out-stock': article.quantiteDisponible <= 0
+            }">
+              {{ article.quantiteDisponible }}
+            </div>
+          </div>
+          
+          <div class="inventory-item">
+            <div class="inventory-label">Vendu</div>
+            <div class="inventory-value sold">{{ article.quantiteVendue }}</div>
+          </div>
+          
+          <div class="inventory-item">
+            <div class="inventory-label">Points fidélité</div>
+            <div class="inventory-value points">{{ article.pointsFidelite }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="product-dates" *ngIf="article.dateAjout">
+        <div>
+          <span class="date-label">Ajouté le:</span> 
+          <span class="date-value">{{ article.dateAjout | date:'dd/MM/yyyy' }}</span>
+        </div>
+        <div *ngIf="article.dateDerniereModification">
+          <span class="date-label">Dernière modification:</span> 
+          <span class="date-value">{{ article.dateDerniereModification | date:'dd/MM/yyyy' }}</span>
+        </div>
+      </div>
+      
+      <div class="product-description" *ngIf="article.description">
+        <h4 class="description-title">Description</h4>
+        <p class="description-text">{{ article.description }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Actions -->
+  <div class="product-actions ">
+  
+    
+    <button class="action-btn back-btn " (click)="goToList()" >
+      <svg viewBox="0 0 24 24">
+        <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+      </svg>
+      Retour à la liste
+    </button>
+  </div>
+</div>
+
+<!-- Message si aucun article n'est sélectionné -->
+<div *ngIf="!article" class="no-product-selected">
+  <svg viewBox="0 0 24 24" class="no-product-icon">
+    <path d="M13 13v8h8v-8h-8zM3 21h8v-8H3v8zM3 3v8h8V3H3zm13.66-1.31L11 7.34 16.66 13l5.66-5.66-5.66-5.65z"/>
+  </svg>
+  <h3>Aucun produit sélectionné</h3>
+  <p>Veuillez choisir un produit dans la liste pour voir ses détails</p>
+</div>

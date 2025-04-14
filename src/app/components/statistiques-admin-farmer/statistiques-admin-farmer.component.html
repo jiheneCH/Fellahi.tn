@@ -1,0 +1,50 @@
+<h1>Statistiques</h1>
+
+<!-- Chiffre d'affaires total -->
+<div>
+  <strong>Chiffre d'affaires total :</strong> {{ chiffreAffairesTotal }} DT
+</div>
+
+<!-- Quantité totale vendue -->
+<div>
+  <strong>Quantité totale vendue :</strong> {{ quantiteTotaleVendue }}
+</div>
+
+<!-- Chiffre d'affaires par article -->
+<h3>Chiffre d'affaires par article :</h3>
+<ul>
+  <li *ngFor="let article of chiffreAffairesArticles">
+    {{ article.nom }} : {{ article.chiffreAffaires }} DT
+  </li>
+</ul>
+
+
+<!-- Ajouts par jour -->
+<div>
+  <h3>Ajouts par jour :</h3>
+  <ul>
+    <li *ngFor="let ajout of ajoutsParJour">
+      Date: {{ ajout[0] }} | Nombre d'ajouts : {{ ajout[1] }}
+    </li>
+  </ul>
+</div>
+
+<!-- Chiffre d'affaires par catégorie -->
+<div>
+  <h3>Chiffre d'affaires par catégorie :</h3>
+  <ul>
+    <li *ngFor="let cat of chiffreAffairesParCategorie">
+      {{ cat.categorie }} : {{ cat.chiffreAffaires }} DT
+    </li>
+  </ul>
+</div>
+
+<!-- Ajouts par mois -->
+<div>
+  <h3>Ajouts par mois :</h3>
+  <ul>
+    <li *ngFor="let mois of ajoutsParMois">
+      {{ mois.mois }} : {{ mois.nombreAjouts }}
+    </li>
+  </ul>
+</div>
