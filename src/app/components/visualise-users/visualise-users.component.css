@@ -1,0 +1,305 @@
+.visualise-users-wrapper {
+  padding: 2rem;
+  display: flex;
+  justify-content: center;
+
+  mat-card {
+    width: 100%;
+    max-width: 1200px;
+    padding: 1.5rem;
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  }
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+
+    h2 {
+      margin: 0;
+      font-size: 1.8rem;
+      font-weight: 600;
+      color: #333;
+    }
+
+    button {
+      background: linear-gradient(135deg, #3f51b5, #2196f3);
+      color: #fff;
+      font-weight: 600;
+      padding: 0.6rem 1.4rem;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 8px rgba(33, 150, 243, 0.3);
+
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(33, 150, 243, 0.4);
+      }
+    }
+  }
+
+  table {
+    width: 100%;
+    border-spacing: 0;
+    border-radius: 12px;
+    overflow: hidden;
+
+    th {
+      background-color: #f5f7fa;
+      color: #333;
+      font-weight: 600;
+    }
+
+    td {
+      color: #444;
+    }
+
+    .mat-header-cell,
+    .mat-cell {
+      padding: 1rem;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    .table-row {
+      transition: background-color 0.2s;
+
+      &:hover {
+        background-color: #f0f4ff;
+      }
+    }
+
+    .status-active,
+    .status-pending,
+    .status-suspended,
+    .status-inactive {
+      background: none;         
+      padding: 0.3rem 0.7rem;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+ 
+  }
+
+  .mat-raised-button {
+    text-transform: none;
+    font-size: 0.95rem;
+    font-weight: 500;
+  }
+  .role-badge {
+    display: inline-block;
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    white-space: nowrap;
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease;
+  }
+  
+  .role-badge:hover {
+    transform: scale(1.05);
+  }
+  
+  /* Admin Badge */
+  .role-admin {
+    background: linear-gradient(to right, #ff512f, #dd2476);
+    color: white;
+  }
+  
+  /* Farmer Badge */
+  .role-farmer {
+    background: linear-gradient(to right, #56ab2f, #a8e063);
+    color: #fff;
+  }
+  
+  /* User Badge */
+  .role-client {
+    background: linear-gradient(to right, #36d1dc, #5b86e5);
+    color: white;
+  }
+  
+  /* Moderator Badge */
+  .role-transporter {
+    background: linear-gradient(to right, #fc4a1a, #f7b733);
+    color: #fff;
+  }
+  
+  /* Fallback/default role */
+  .role-default {
+    background: #e0e0e0;
+    color: #444;
+  }
+
+  .status-active {
+    background-color: #e0f7e9;
+    color: #2e7d32;
+  }
+  
+  .status-pending {
+    background-color: #fff8e1;
+    color: #f9a825;
+  }
+  
+  .status-suspended {
+    background-color: #ffe0e0;
+    color: #c62828;
+  }
+  
+  .status-inactive {
+    background-color: #e0e0e0;
+    color: #212121;
+  }
+  .filter-section {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  
+    mat-form-field {
+      width: 250px;
+    }
+  
+    button {
+      height: 56px; 
+      padding: 0 1.5rem;
+      font-weight: 600;
+    }
+  }
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+  
+    h2 {
+      margin: 0;
+      font-size: 1.8rem;
+      font-weight: 600;
+      color: #333;
+    }
+  
+    .button-group {
+      display: flex;
+      gap: 1rem;
+  
+      button {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 600;
+        border-radius: 8px;
+        padding: 0.6rem 1.4rem;
+        transition: all 0.3s ease;
+      }
+  
+      .refresh-btn {
+        background: linear-gradient(135deg, #1e88e5, #42a5f5);
+        color: #fff;
+        box-shadow: 0 2px 8px rgba(33, 150, 243, 0.3);
+  
+        &:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(33, 150, 243, 0.4);
+        }
+      }
+  
+      .filter-btn {
+        background: #fff;
+        border: 1px solid #42a5f5;
+        color: #1e88e5;
+  
+        &:hover {
+          background-color: #e3f2fd;
+          border-color: #2196f3;
+        }
+      }
+  
+      mat-icon {
+        font-size: 20px;
+      }
+    }
+  }
+  
+  
+  
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  
+  .button-group {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  
+  .filter-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .role-select {
+    width: 150px;
+  }
+  .button-group {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+  
+    .refresh-btn {
+      order: -1; 
+    }
+  
+    .filter-group {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+  
+      .filter-btn {
+        background: #fff;
+        border: 1px solid #42a5f5;
+        color: #1e88e5;
+  
+        &:hover {
+          background-color: #e3f2fd;
+          border-color: #2196f3;
+        }
+      }
+  
+      select.role-select {
+        height: 40px;
+        padding: 0 0.8rem;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        font-weight: 500;
+        outline: none;
+        background-color: #fff;
+        color: #333;
+  
+        &:hover {
+          border-color: #42a5f5;
+        }
+  
+        &:focus {
+          border-color: #1e88e5;
+          box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2);
+        }
+      }
+    }
+  }
+  
+}

@@ -1,0 +1,154 @@
+﻿<mat-sidenav-container class="sidenav-container">
+  <mat-sidenav
+    mode="side"
+    opened
+    class="sidenav"
+    [ngClass]="{ collapsed: collapsed }"
+  >
+    <!-- Only show the inner sidebar content if not collapsed -->
+    <div class="sidenav-inner" *ngIf="!collapsed">
+      <!-- Logo -->
+      <a mat-button routerLink="/" class="logo-link">
+        <img src="assets/fruitkha-1.0.0/assets/img/fallahi.png" alt="Logo" class="logo" />
+      </a>
+
+      <!-- Navigation Items -->
+      <mat-nav-list class="nav-list">
+        <a
+          mat-list-item
+          *ngFor="let item of navItems"
+          [routerLink]="item.link"
+          routerLinkActive="active-link"
+          #rla="routerLinkActive"
+          [class.active-link]="rla.isActive"
+          class="nav-item"
+        >
+          <span class="nav-text">{{ item.label }}</span>
+        </a>
+      </mat-nav-list>
+
+      <!-- Log out -->
+      <div class="logout-container">
+        <mat-divider></mat-divider>
+        <mat-nav-list>
+          <a mat-list-item routerLink="/logout" class="logout-link">
+            <span>Log out</span>
+          </a>
+        </mat-nav-list>
+      </div>
+    </div>
+  </mat-sidenav>
+</mat-sidenav-container>
+<style>/* Sidebar wrapper with spacing on top, left, and bottom */
+  .sidenav-container {
+    position: fixed;
+    top: 16px;
+    left: 16px;
+    bottom: 16px;
+    height: calc(100vh - 32px);
+    width: 250px;
+    background-color: transparent;
+    z-index: 1000;
+  }
+  
+  /* Sidebar base */
+  .sidenav {
+    background-color: #ffffff;
+    height: 100%;
+    width: 250px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    border-radius: 0 20px 20px 0;
+    padding: 0;
+    overflow: hidden;
+    transition: width 0.3s ease;
+  }
+  
+  /* Collapsed state */
+  .sidenav.collapsed {
+    width: 80px !important;
+  }
+  
+  /* Inner content */
+  .sidenav-inner {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 32px 20px;
+    overflow: hidden;
+  }
+  
+  .sidenav-inner:hover {
+    overflow-y: auto;
+  }
+  
+  /* Logo */
+  .logo-link {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 40px;
+    border-radius: 12px;
+    padding: 16px;
+    transition: transform 0.3s ease;
+  }
+  
+  .logo-link:hover {
+    transform: scale(1.05);
+  }
+  
+  .logo {
+    max-width: 160px;
+    height: auto;
+  }
+  
+  /* Navigation List */
+  .nav-list {
+    flex-grow: 1;
+  }
+  
+  /* Navigation Item */
+  .nav-item {
+    border-radius: 12px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    color: #333;
+    font-weight: 600;
+    font-size: 18px;
+    padding: 14px 12px;
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+  
+  .nav-item:hover {
+    background-color: #f5f5f5;
+    color: #ff9800;
+  }
+  
+  /* Active nav link */
+  .active-link {
+    background-color: #ffe0b2 !important;
+    color: #ff9800 !important;
+    font-weight: bold;
+  }
+  
+  /* Logout section */
+  .logout-container {
+    margin-top: auto;
+  }
+  
+  .logout-link {
+    color: #4caf50;
+    border-radius: 12px;
+    margin-top: 16px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    display: flex;
+    align-items: center;
+    font-size: 18px;
+    padding: 14px 12px;
+  }
+  
+  .logout-link:hover {
+    background-color: #4caf50;
+    color: #fff;
+  }
+  </style>

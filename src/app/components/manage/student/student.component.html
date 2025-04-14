@@ -1,0 +1,128 @@
+<div>
+    <div class="flex flex-wrap items-center justify-between gap-4">
+        <h2 class="text-xl">Students</h2>
+        <div class="flex w-full flex-col gap-4 sm:w-auto sm:flex-row sm:items-center sm:gap-3">
+            <div class="flex gap-3">
+                <div>
+                    <button type="button" class="btn btn-primary" (click)="editStudent(null)">
+                        <icon-user-plus class="ltr:mr-2 rtl:ml-2" />
+                        Add Student
+                    </button>
+                </div>
+                <div>
+                    <button
+                        type="button"
+                        class="btn btn-outline-primary p-2"
+                        [ngClass]="{ 'bg-primary text-white': displayType === 'list' }"
+                        (click)="displayType = 'list'"
+                    >
+                        <icon-list-check />
+                    </button>
+                </div>
+                <div>
+                    <button
+                        type="button"
+                        class="btn btn-outline-primary p-2"
+                        [ngClass]="{ 'bg-primary text-white': displayType === 'grid' }"
+                        (click)="displayType = 'grid'"
+                    >
+                        <icon-layout-grid />
+                    </button>
+                </div>
+            </div>
+
+            <div class="relative">
+                <input
+                    type="text"
+                    placeholder="Search Students"
+                    class="peer form-input py-2 ltr:pr-11 rtl:pl-11"
+                    [(ngModel)]="searchQuery"
+                    (ngModelChange)="searchstudents()"
+                />
+                <icon-search class="absolute top-1/2 -translate-y-1/2 peer-focus:text-primary ltr:right-[11px] rtl:left-[11px]" />
+            </div>
+        </div>
+    </div>
+    <div class="panel mt-5 overflow-hidden border-0 p-0">
+        <ng-container *ngIf="displayType === 'list'">
+            <div class="table-responsive">
+                <table class="table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>First Name</th>
+                            <th>Last Name</th>
+                            <th>Phone Number</th>
+                            <th>Email</th>
+                            <th class="!text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let student of filteredStudents">
+                            <td>{{ student.firstName }}</td>
+                            <td>{{ student.lastName }}</td>
+                            <td>{{ student.phoneNumber }}</td>
+                            <td>{{ student.email }}</td>
+                            <td>
+                                <div class="flex items-center justify-center gap-4">
+                                    <button type="button" class="btn btn-sm btn-outline-primary" (click)="editStudent(student)">Edit</button>
+                                    <button type="button" class="btn btn-sm btn-outline-danger" (click)="deleteStudent(student.id)">Delete</button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </ng-container>
+
+        <ng-container *ngIf="displayType === 'grid'">
+            <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+                <div *ngFor="let student of filteredStudents" class="overflow-hidden rounded-md bg-white text-center shadow dark:bg-[#1c232f]">
+                    <div class="rounded-t-md bg-white/40 p-6 pb-0">
+                        <!-- Adjusted to use a placeholder image for students -->
+                        <img src="/assets/images/student-placeholder.png" class="mx-auto max-h-40 w-4/5 object-contain" alt="Student Image">
+                    </div>
+                    <div class="px-6 py-4">
+                        <div class="text-xl font-medium">{{ student.firstName }} {{ student.lastName }}</div>
+                        <div class="mt-2 text-gray-600">{{ student.phoneNumber }}</div>
+                        <div class="mt-2 text-gray-600">{{ student.email }}</div>
+                        <div class="mt-4 flex justify-center gap-4">
+                            <button type="button" class="btn btn-outline-primary" (click)="editStudent(student)">Edit</button>
+                            <button type="button" class="btn btn-outline-danger" (click)="deleteStudent(student.id)">Delete</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </ng-container>
+    </div>
+    
+    <!-- add student modal -->
+    <modal #studentModal class="no-footer">
+        <ng-template #modalHeader>
+            <div class="!font-medium">{{ studentForm.controls['id'].value ? 'Edit Student' : 'Add Student' }}</div>
+        </ng-template>
+        <ng-template #modalBody>
+            <form [formGroup]="studentForm" class="text-sm" (ngSubmit)="saveStudent()" ngNativeValidate>
+                <div class="mb-5">
+                    <label for="firstName">First Name</label>
+                    <input id="firstName" type="text" placeholder="Enter First Name" class="form-input" formControlName="firstName" />
+                </div>
+                <div class="mb-5">
+                    <label for="lastName">Last Name</label>
+                    <input id="lastName" type="text" placeholder="Enter Last Name" class="form-input" formControlName="lastName" />
+                </div>
+                <div class="mb-5">
+                    <label for="phoneNumber">Phone Number</label>
+                    <input id="phoneNumber" type="text" placeholder="Enter Phone Number" class="form-input" formControlName="phoneNumber" />
+                </div>
+                <div class="mb-5">
+                    <label for="email">Email</label>
+                    <input id="email" type="email" placeholder="Enter Email" class="form-input" formControlName="email" />
+                </div>
+                <div class="mt-8 flex items-center justify-end">
+                    <button type="button" class="btn btn-outline-danger" (click)="studentModal.close()">Cancel</button>
+                    <button type="submit" class="btn btn-primary ltr:ml-4 rtl:mr-4">{{ studentForm.controls['id'].value ? 'Update' : 'Add' }}</button>
+                </div>
+            </form>
+        </ng-template>
+    </modal>
+</div>

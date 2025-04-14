@@ -1,0 +1,55 @@
+body {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    overflow: hidden;
+    background-color: #f5f5f9;
+  }
+  
+  .video-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    object-fit: cover;
+    z-index: -1;
+  }
+  
+  .scrollable-container {
+    position: relative;
+    z-index: 1;
+    height: 100%;
+    width: 100%;
+    overflow-y: auto;
+    padding-top: 120px;
+    padding-bottom: 40px;
+    scroll-behavior: smooth;
+  }
+  
+  .bg-main-light {
+    background-color: rgba(255, 255, 255, 0.6);
+    border-radius: 15px;
+    box-shadow: 0 0.2rem 1rem rgba(0, 0, 0, 0.1);
+    padding: 3rem;
+    max-width: 400px;
+    backdrop-filter: blur(8px);
+  }
+  
+  .form-control {
+    margin-bottom: 1rem;
+  }
+  
+  .btn-main {
+    background-color: #007bff;
+    color: white;
+  }
+  
+  .btn-main:hover {
+    background-color: #0056b3;
+  }
+  
+  .alert-danger {
+    margin-top: 10px;
+  }
+  

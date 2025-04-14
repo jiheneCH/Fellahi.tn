@@ -1,0 +1,162 @@
+﻿<div class="header">
+  <div class="header-content">
+
+    <!-- LEFT SECTION -->
+    <div class="header-left">
+      <div class="breadcrumb">
+        <span class="breadcrumb-item">Dashboard</span>
+        <span class="breadcrumb-separator">
+          <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </span>
+        <span class="breadcrumb-item active">Overview</span>
+      </div>
+    </div>
+
+    <!-- RIGHT SECTION -->
+    <div class="header-right">
+      <input class="search-input" type="text" placeholder="Search anything..." />
+
+      <div class="header-icons">
+
+        <!-- Notifications -->
+        <div class="dropdown-wrapper">
+          <span class="material-icons icon-btn" (click)="toggleDropdown('notifications')">notifications_none</span>
+          <div class="dropdown-box" *ngIf="dropdownOpen.notifications" [@toggleAnimation]>
+            <div class="dropdown-item">No new notifications</div>
+          </div>
+        </div>
+
+        <!-- Messages -->
+        <div class="dropdown-wrapper">
+          <span class="material-icons icon-btn" (click)="toggleDropdown('messages')">chat_bubble_outline</span>
+          <div class="dropdown-box" *ngIf="dropdownOpen.messages" [@toggleAnimation]>
+            <div class="dropdown-item">No new messages</div>
+          </div>
+        </div>
+
+        <!-- Profile -->
+        <div class="profile-menu-wrapper dropdown-wrapper">
+          <img
+            class="profile-avatar icon-avatar"
+            [@avatarClickAnimation]="dropdownOpen.profile ? 'active' : 'inactive'"
+            src="https://i.pravatar.cc/32?img=3"
+            alt="Profile"
+            (click)="toggleDropdown('profile')"
+          />
+          <div class="dropdown-box profile-dropdown" *ngIf="dropdownOpen.profile" [@toggleAnimation]>
+            <div class="dropdown-item">Profile</div>
+            <div class="dropdown-item">Settings</div>
+            <div class="dropdown-item">Logout</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</div>
+<style>.header {
+  display: flex;
+  flex-direction: column;
+  background-color: #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+  padding: 10px 16px;
+  margin-left: 100px;
+
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-left .breadcrumb {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  color: #777;
+}
+
+.breadcrumb-item + .breadcrumb-separator {
+  margin: 0 6px;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+}
+
+.search-input {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  margin-right: 16px;
+}
+
+.header-icons {
+  display: flex;
+  align-items: center;
+}
+
+.icon-btn {
+  cursor: pointer;
+  font-size: 24px;
+  margin: 0 8px;
+  color: #444;
+}
+
+.icon-avatar {
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+}
+
+.dropdown-wrapper {
+  position: relative;
+}
+
+.dropdown-box {
+  position: absolute;
+  top: 42px;
+  right: 0;
+  width: 180px;
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  z-index: 1000;
+  animation: fadeIn 0.25s ease-in-out;
+}
+
+.dropdown-item {
+  padding: 10px 16px;
+  font-size: 14px;
+  color: #333;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.dropdown-item:hover {
+  background-color: #f5f5f5;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+}
+
+</style>
