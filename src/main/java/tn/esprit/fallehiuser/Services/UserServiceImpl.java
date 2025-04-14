@@ -45,4 +45,14 @@ public class UserServiceImpl implements IUserService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public List<UserDTO> findUsersByPartialUsername(String username) {
+        List<User> users = userRepository.findByUsernameContainingIgnoreCase(username);
+        return users.stream()
+                .map(user -> new UserDTO(user)) // Use the constructor directly
+                .collect(Collectors.toList());
+    }
+
+
+
 }

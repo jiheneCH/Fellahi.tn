@@ -52,5 +52,19 @@ public class UserController {
 
         return ResponseEntity.ok(allUsers);
     }
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/users/search/username/{username}")
+    @Operation(summary = "Search users by partial username", description = "Fetches users whose username contains the given string")
+    public ResponseEntity<?> searchUsersByUsername(@PathVariable String username) {
+        List<UserDTO> users = userServiceImpl.findUsersByPartialUsername(username);
+
+        if (users.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.OK).body("No users found with this username.");
+        }
+
+        return ResponseEntity.ok(users);
+    }
+
+
 
 }

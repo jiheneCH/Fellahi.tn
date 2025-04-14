@@ -18,6 +18,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     List<User> findByRole_RoleName(RoleName roleName);
     Optional<User> findByResetToken(String resetToken);
+    List<User> findByUsernameContainingIgnoreCase(String username);
+
 
 }
 
