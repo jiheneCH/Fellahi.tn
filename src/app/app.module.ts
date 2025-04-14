@@ -130,6 +130,7 @@ import { MatTableModule } from '@angular/material/table';
 
 
 
+
 @NgModule({
     imports: [
         RouterModule.forRoot(routes, { scrollPositionRestoration: 'enabled' }),
@@ -215,7 +216,8 @@ import { MatTableModule } from '@angular/material/table';
         ProfTableComponent,
         ActivateAccountComponent,
         ResetPasswordComponent,
-        ForgotPasswordComponent
+        ForgotPasswordComponent,
+        
     
        
         

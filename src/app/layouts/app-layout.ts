@@ -8,9 +8,11 @@ import { TranslateService } from '@ngx-translate/core';
     selector: 'app-root',
     templateUrl: './app-layout.html',
 })
+
 export class AppLayout {
     store: any;
     showTopButton = false;
+    currentRoutePrefix: string = '';
     constructor(public translate: TranslateService, public storeData: Store<any>, private service: AppService, private router: Router) {
         this.initStore();
     }

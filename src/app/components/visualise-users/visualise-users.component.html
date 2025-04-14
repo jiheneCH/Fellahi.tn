@@ -1,81 +1,83 @@
 <div class="visualise-users-wrapper">
   <mat-card>
 
-    <!-- 🔘 Header with Buttons + Role Filter -->
+    <!-- 🔘 Header with Title + Refresh + Role Combo -->
     <div class="card-header">
       <h2>Users Overview</h2>
       <div class="button-group">
+
+        
+
         <!-- 🔄 Refresh -->
         <button mat-raised-button color="primary" class="refresh-btn" (click)="Refresh()">
           <mat-icon>refresh</mat-icon>
           Refresh
         </button>
 
-        <!-- 👥 Filter + Role Select Combo -->
+        <!-- 🧃 Role Dropdown only -->
         <div class="filter-group">
-          <!-- 🎯 Filter -->
-          <button mat-stroked-button color="accent" class="filter-btn" (click)="onFilterByRole()">
-            <mat-icon>filter_list</mat-icon>
-            Filter
-          </button>
-
-          <!-- 🧃 Native Role Dropdown -->
           <select id="roleSelect" [(ngModel)]="selectedRole" (change)="onFilterByRole()" class="role-select">
-            <option value="">All Roles</option>
-            <option value="Client">Client</option>
-            <option value="Admin">Admin</option>
-            <option value="Transporter">Transporter</option>
-            <option value="Farmer">Farmer</option>
+            <option value="">🌐 All Roles</option>
+            <option value="Client">👤 Client</option>
+            <option value="Admin">🛡️ Admin</option>
+            <option value="Transporter">🚚 Transporter</option>
+            <option value="Farmer">🌾 Farmer</option>
           </select>
         </div>
+
       </div>
     </div>
 
-    <!-- 📊 Users Table -->
-    <table mat-table [dataSource]="users" class="mat-elevation-z2 hover-table">
 
-      <!-- Username -->
-      <ng-container matColumnDef="username">
-        <th mat-header-cell *matHeaderCellDef> Username </th>
-        <td mat-cell *matCellDef="let user"> {{ user.username }} </td>
-      </ng-container>
 
-      <!-- Email -->
-      <ng-container matColumnDef="email">
-        <th mat-header-cell *matHeaderCellDef> Email </th>
-        <td mat-cell *matCellDef="let user"> {{ user.email }} </td>
-      </ng-container>
+ <!-- 📊 Users Table -->
+ <table mat-table [dataSource]="users" class="mat-elevation-z2 hover-table">
 
-      <!-- Role -->
-      <ng-container matColumnDef="role">
-        <th mat-header-cell *matHeaderCellDef> Role </th>
-        <td mat-cell *matCellDef="let user">
-          <span [ngClass]="getRoleClass(user.roleName)" class="role-badge">
-            {{ user.roleName }}
-          </span>
-        </td>
-      </ng-container>
+  <!-- Username -->
+  <ng-container matColumnDef="username">
+    <th mat-header-cell *matHeaderCellDef> Username </th>
+    <td mat-cell *matCellDef="let user"> {{ user.username }} </td>
+  </ng-container>
 
-      <!-- Status -->
-      <ng-container matColumnDef="status">
-        <th mat-header-cell *matHeaderCellDef> Status </th>
-        <td mat-cell *matCellDef="let user">
-          <span [ngClass]="getStatusClass(user.status)">
-            {{ user.status }}
-          </span>
-        </td>
-      </ng-container>
+  <!-- Email -->
+  <ng-container matColumnDef="email">
+    <th mat-header-cell *matHeaderCellDef> Email </th>
+    <td mat-cell *matCellDef="let user"> {{ user.email }} </td>
+  </ng-container>
 
-      <!-- Created Date -->
-      <ng-container matColumnDef="createdDate">
-        <th mat-header-cell *matHeaderCellDef> Creation Date </th>
-        <td mat-cell *matCellDef="let user"> {{ user.createdDate | date:'mediumDate' }} </td>
-      </ng-container>
+  <!-- Role with Icons -->
+  <ng-container matColumnDef="role">
+    <th mat-header-cell *matHeaderCellDef> Role </th>
+    <td mat-cell *matCellDef="let user">
+      <span [ngClass]="getRoleClass(user.roleName)" class="role-badge">
+        <mat-icon class="role-icon" aria-hidden="false" aria-label="role icon">
+          {{ getRoleIcon(user.roleName) }}
+        </mat-icon>
+        {{ user.roleName }}
+      </span>
+    </td>
+  </ng-container>
 
-      <!-- Row Definitions -->
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="table-row"></tr>
-    </table>
+  <!-- Status -->
+  <ng-container matColumnDef="status">
+    <th mat-header-cell *matHeaderCellDef> Status </th>
+    <td mat-cell *matCellDef="let user">
+      <span [ngClass]="getStatusClass(user.status)">
+        {{ user.status }}
+      </span>
+    </td>
+  </ng-container>
 
-  </mat-card>
+  <!-- Created Date -->
+  <ng-container matColumnDef="createdDate">
+    <th mat-header-cell *matHeaderCellDef> Creation Date </th>
+    <td mat-cell *matCellDef="let user"> {{ user.createdDate | date:'mediumDate' }} </td>
+  </ng-container>
+
+  <!-- Row Definitions -->
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="table-row"></tr>
+</table>
+
+</mat-card>
 </div>

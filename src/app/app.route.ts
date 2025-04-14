@@ -56,6 +56,7 @@ import { VisualiseUsersComponent } from './components/visualise-users/visualise-
 
 
 
+
 export const routes: Routes = [
     {
         path:"",
@@ -101,6 +102,8 @@ export const routes: Routes = [
         path: 'users',
         component: AppLayout,
         children: [{ path: '', component: VisualiseUsersComponent, title: 'Admin Dashboard' },]},
+
+       
     {
         path: 'admin',
         component: AppLayout,

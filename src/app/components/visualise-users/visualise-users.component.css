@@ -299,7 +299,88 @@
           box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2);
         }
       }
+      /* Add these styles to your existing CSS */
+
+.search-section {
+  margin: 1.5rem 0;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.search-container {
+  position: relative;
+  width: 300px;
+  margin-left: auto; /* Align to right */
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.8rem 1rem 0.8rem 2.5rem;
+  border: none;
+  border-radius: 8px;
+  background-color: #f5f7fa;
+  font-size: 0.95rem;
+  color: #333;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.search-input:focus {
+  outline: none;
+  background-color: #fff;
+  box-shadow: 0 4px 12px rgba(33, 150, 243, 0.15);
+}
+
+.search-icon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #7a7a7a;
+  pointer-events: none;
+}
+
+.search-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.search-border {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(135deg, #3f51b5, #2196f3);
+  transition: width 0.3s ease;
+}
+
+.search-input:focus ~ .search-border {
+  width: 100%;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .search-container {
+    width: 100%;
+    margin-top: 1rem;
+  }
+  
+  .card-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .button-group {
+    width: 100%;
+    margin-top: 1rem;
+    justify-content: space-between;
+  }
+}
     }
   }
+
+  
+  
   
 }

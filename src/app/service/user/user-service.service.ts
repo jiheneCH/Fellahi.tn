@@ -45,6 +45,10 @@ export class UserService {
     return this.http.get<User[]>(`http://localhost:8080/Fallehi/users/role/${role.toUpperCase()}`);
 
   }
+  searchUsersByUsername(username: string) {
+    return this.http.get<User[]>(`${this.baseUrl}/users/search?username=${encodeURIComponent(username)}`);
+  }
+  
   
   
   

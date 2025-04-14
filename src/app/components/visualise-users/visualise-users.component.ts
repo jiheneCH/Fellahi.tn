@@ -9,6 +9,7 @@ import { UserService, User } from 'src/app/service/user/user-service.service';
 export class VisualiseUsersComponent implements OnInit {
   displayedColumns: string[] = ['username', 'email', 'role', 'status', 'createdDate'];
   users: User[] = [];
+  searchTerm: string = '';
   selectedRole: string = '';
   availableRoles: string[] = ['ADMIN', 'FARMER', 'CLIENT', 'TRANSPORTER'];
   isLoading = false;
@@ -92,5 +93,41 @@ export class VisualiseUsersComponent implements OnInit {
     this.selectedRole = role;
     this.onFilterByRole();
   }
+  getRoleIcon(role: string): string {
+    switch (role.toLowerCase()) {
+      case 'admin':
+        return 'admin_panel_settings';
+      case 'farmer':
+        return 'spa';
+      case 'transporter':
+        return 'local_shipping';
+      case 'client':
+        return 'person';
+      default:
+        return 'help_outline';
+    }
+  }
+  onSearchUsername(): void {
+    const trimmedSearch = this.searchTerm.trim();
+  
+    if (trimmedSearch.length === 0) {
+      this.Refresh(); // If search is cleared, load all users
+      return;
+    }
+  
+    this.isLoading = true;
+    this.userService.searchUsersByUsername(trimmedSearch).subscribe({
+      next: (data) => {
+        this.users = data;
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('❌ Error searching users by username:', err);
+        this.users = [];
+        this.isLoading = false;
+      }
+    });
+  }
+  
   
 }

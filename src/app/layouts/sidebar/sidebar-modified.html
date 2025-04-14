@@ -3,19 +3,22 @@
     mode="side"
     opened
     class="sidenav"
-    [ngClass]="{ collapsed: collapsed }"
+   
   >
     <!-- Only show the inner sidebar content if not collapsed -->
-    <div class="sidenav-inner" *ngIf="!collapsed">
-      <!-- Logo -->
-      <a mat-button routerLink="/" class="logo-link">
-        <img src="assets/fruitkha-1.0.0/assets/img/fallahi.png" alt="Logo" class="logo" />
-      </a>
+    <div class="sidenav-inner" >
+      <!-- Logo wrapper section with green background -->
+      <div class="logo-section">
+        <a mat-button routerLink="/" class="logo-link">
+          <img src="assets/fruitkha-1.0.0/assets/img/fallahi.png" alt="Logo" class="logo" />
+        </a>
+      </div>
 
       <!-- Navigation Items -->
       <mat-nav-list class="nav-list">
         <a
           mat-list-item
+          [disableRipple]="true"
           *ngFor="let item of navItems"
           [routerLink]="item.link"
           routerLinkActive="active-link"
@@ -63,17 +66,14 @@
     transition: width 0.3s ease;
   }
   
-  /* Collapsed state */
-  .sidenav.collapsed {
-    width: 80px !important;
-  }
+
   
   /* Inner content */
   .sidenav-inner {
     display: flex;
     flex-direction: column;
     height: 100%;
-    padding: 32px 20px;
+    padding: 0; /* No top padding — now handled by .logo-section */
     overflow: hidden;
   }
   
@@ -81,14 +81,18 @@
     overflow-y: auto;
   }
   
-  /* Logo */
+  /* Logo Section */
+  .logo-section {
+    background-color: #f4e3d7; /* Light green */
+    padding: 32px 20px 22px 20px; /* Top: 32, Bottom: 16 */
+    border-radius: 0 20px 0 0;
+  }
+  
+  /* Logo Link */
   .logo-link {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-bottom: 40px;
-    border-radius: 12px;
-    padding: 16px;
     transition: transform 0.3s ease;
   }
   
@@ -104,6 +108,7 @@
   /* Navigation List */
   .nav-list {
     flex-grow: 1;
+    padding: 32px 20px 0 20px; /* Add top padding so items don’t stick to logo section */
   }
   
   /* Navigation Item */
@@ -134,6 +139,7 @@
   /* Logout section */
   .logout-container {
     margin-top: auto;
+    padding: 0 20px 20px 20px;
   }
   
   .logout-link {
