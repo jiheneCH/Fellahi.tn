@@ -1,0 +1,56 @@
+<div class="container">
+    <h2>Informations de Paiement</h2>
+  
+    <form (ngSubmit)="payerEnLigne()" #paymentForm="ngForm">
+  
+      <!-- Informations du client -->
+      <div class="form-group">
+        <label for="name">Nom</label>
+        <input type="text" id="name" name="name" [(ngModel)]="client.name" class="form-control" required readonly />
+      </div>
+  
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" [(ngModel)]="client.email" class="form-control" required readonly />
+      </div>
+  
+      <div class="form-group">
+        <label for="address">Adresse</label>
+        <input type="text" id="address" name="address" [(ngModel)]="client.address" class="form-control" required readonly />
+      </div>
+  
+      <div class="form-group">
+        <label for="phone">Téléphone</label>
+        <input type="text" id="phone" name="phone" [(ngModel)]="client.phone" class="form-control" required readonly />
+      </div>
+  
+      <!-- Informations de commande -->
+      <div class="form-group">
+        <label for="montant">Montant de la commande</label>
+        <input type="number" id="montant" name="montant" [(ngModel)]="montant" class="form-control" required readonly />
+      </div>
+  
+      <!-- Informations de paiement -->
+      <div class="form-group">
+        <label for="card-element">Numéro de carte</label>
+        <!-- Ce div va héberger le champ de la carte Stripe -->
+        <div id="card-element" class="form-control"></div>
+      </div>
+  
+      <div class="form-group">
+        <label for="expiry">Date d'expiration</label>
+        <input type="text" id="expiry" name="expiry" [(ngModel)]="payment.expiry" class="form-control" placeholder="MM/AA" required />
+      </div>
+  
+      <div class="form-group">
+        <label for="cvv">CVV</label>
+        <input type="text" id="cvv" name="cvv" [(ngModel)]="payment.cvv" class="form-control" placeholder="123" required />
+      </div>
+  
+      <!-- Bouton de soumission -->
+      <button type="submit" class="btn btn-primary" [disabled]="!paymentForm.form.valid">
+        Confirmer le paiement
+      </button>
+    </form>
+  </div>
+  

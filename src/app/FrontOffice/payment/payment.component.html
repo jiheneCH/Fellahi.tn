@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Paiement Stripe</title>
+  <!-- Inclure Stripe.js -->
+  <script src="https://js.stripe.com/v3/"></script>
+  <style>
+    /* Pour améliorer l'apparence */
+    #payment-form {
+      max-width: 400px;
+      margin: 0 auto;
+      padding: 20px;
+      background: #f9f9f9;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .StripeElement {
+      background-color: #ffffff;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      padding: 10px;
+      margin-bottom: 20px;
+    }
+
+    button {
+      background-color: #5469d4;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 10px;
+      cursor: pointer;
+      font-size: 16px;
+      width: 100%;
+    }
+
+    button:disabled {
+      background-color: #cfd7e6;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+  <div id="payment-form">
+    <h2>Payer avec Carte</h2>
+
+    <!-- Formulaire de paiement -->
+    <form id="payment-form">
+      <div id="card-element">
+        <!-- L'élément Stripe pour la carte de crédit sera injecté ici -->
+      </div>
+      <!-- Affichage des erreurs -->
+      <div id="card-errors" role="alert"></div>
+      <button type="submit" id="submit-button">Payer</button>
+    </form>
+  </div>
+
+  <script>
+    // Charger Stripe.js
+    const stripe = Stripe('pk_test_XXXXXXXXXXXXXXXXXXXX'); // Remplace par ta clé publique Stripe
+    const elements = stripe.elements();
+
+    // Créer un élément de carte
+    const card = elements.create('card');
+    card.mount('#card-element');
+
+    // Gérer l'envoi du formulaire
+    const form = document.getElementById('payment-form');
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      
+      // Récupérer le clientSecret (ex: depuis le backend via une requête HTTP)
+      const clientSecret = 'votre_client_secret_ici'; // Remplacer par le client secret que vous avez reçu du backend
+
+      const { token, error } = await stripe.createToken(card);
+      if (error) {
+        // Si une erreur se produit lors de la création du token
+        const errorElement = document.getElementById('card-errors');
+        errorElement.textContent = error.message;
+      } else {
+        // Si le token est créé avec succès
+        const { paymentIntent, error: paymentError } = await stripe.confirmCardPayment(clientSecret, {
+          payment_method: {
+            card: card,
+            billing_details: {
+              name: 'Test User', // Vous pouvez remplacer par le nom du client
+            },
+          },
+        });
+
+        if (paymentError) {
+          const errorElement = document.getElementById('card-errors');
+          errorElement.textContent = paymentError.message;
+        } else if (paymentIntent.status === 'succeeded') {
+          // Paiement réussi
+          alert('Paiement réussi!');
+        }
+      }
+    });
+  </script>
+</body>
+</html>

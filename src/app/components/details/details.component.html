@@ -1,0 +1,49 @@
+<div *ngIf="commande" class="order-container">
+    <div class="order-card">
+      <div class="order-header">
+        <h2>Order Details - {{ commande.referenceCommande }}</h2>
+      </div>
+  
+      <div class="section">
+        <h3 class="section-title">Customer Information</h3>
+        <div class="customer-info">
+          <div class="info-item"><strong>Name:</strong> {{ commande.client.name }}</div>
+          <div class="info-item"><strong>Phone:</strong> {{ commande.client.phone }}</div>
+          <div class="info-item"><strong>Address:</strong> {{ commande.client.address }}</div>
+        </div>
+      </div>
+  
+      <div class="section">
+        <h3 class="section-title">Ordered Items</h3>
+        <table class="items-table">
+          <thead>
+            <tr>
+              <th>Item</th>
+              <th class="text-center">Quantity</th>
+              <th class="text-right">Total Price</th>
+              <th class="text-center">Loyalty Points</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let detail of commande.detailsCommande">
+              <td>{{ detail.article.nom }}</td>
+              <td class="text-center">{{ detail.quantite }}</td>
+              <td class="text-right">{{ detail.prixTotalArticle | currency:'TND':'symbol' }}</td>
+              <td class="text-center">{{ detail.pointfidelityTotalArticle }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+  
+      <div *ngIf="commande.totalCommande || commande.totalPointsFidelite" class="section">
+        <div class="totals-section">
+          <div class="total-item">
+            Order Total: <span class="total-value price-total">{{ commande.totalCommande | currency:'TND':'symbol' }}</span>
+          </div>
+          <div class="total-item">
+            Total Points: <span class="total-value points-total">{{ commande.totalPointsFidelite }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

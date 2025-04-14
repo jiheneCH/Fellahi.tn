@@ -1,0 +1,61 @@
+<div class="flex flex-col ms-auto justify-center min-h-[80vh] items-center text-center border-4 border-[#949690] dark:border-[#333a5f]" >
+    <div class="flex flex-col justify-center" *ngIf="!checkFile">
+    
+    <p class="text-3xl text-gray-900 dark:text-white pb-3">Here you upload your resume</p>
+    <label class="focus:outline-none text-white bg-[#949690] hover:bg-[#808a6d] focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-[#344873] dark:hover:bg-[#333a5f] dark:focus:ring-[#333a5f] h-fit cursor-pointer">
+        <input type="file" class="absolute mt-10 hidden" (change)="onChangeResume($event)">Add Resume
+    </label>
+        
+    </div>
+    <ng-container *ngIf="checkFile">
+        <div>
+            <div class="flex justify-center">
+                <p class="text-3xl text-gray-900 dark:text-white pb-3">Resume already uploaded</p> 
+                <icon-circle-check class="h-[2rem] w-[2rem] ml-2"/>
+            </div>
+            
+            <div>
+                <!-- <button type="button" class="focus:outline-none text-white bg-[#2a9d8f] hover:bg-[#3b8077] focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-[#344873] dark:hover:bg-[#333a5f] dark:focus:ring-green-800"><icon-cloud-download/></button> -->
+                <button type="button" class="focus:outline-none text-white bg-[#2a9d8f] hover:bg-[#3b8077] focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-[#344873] dark:hover:bg-[#333a5f] dark:focus:ring-green-800"(click)="viewResume()"><icon-eye/></button>
+                <button type="button" class="focus:outline-none text-white bg-[#2a9d8f] hover:bg-[#3b8077] focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-[#344873] dark:hover:bg-[#333a5f] dark:focus:ring-green-800" (click)="viewResumeInfos()"><icon-send/></button>  
+            </div>       
+           <pdf-viewer src="{{pdf}}" [original-size]="true" [show-all]="false" style="width: 100%; height: 100%;"></pdf-viewer>     
+           <label class="focus:outline-none text-white bg-[#949690] hover:bg-[#2a9d8f] focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-[#949690] dark:hover:bg-[#333a5f] dark:focus:ring-green-800 h-fit cursor-pointer">
+                <input type="file" class="absolute mt-10 hidden" (change)="onChangeResume($event)">Add New Resume
+            </label>   
+            
+        </div>
+        <modal #isAddNoteModal class="no-footer">
+            <ng-template #modalHeader>
+            </ng-template>
+            <ng-template #modalBody>
+                <form [formGroup]="applyForm" (ngSubmit)="saveProfile(applyForm)" class="text-sm">
+                    <ng-container *ngFor="let key of keys">
+                        
+                        <div class="mb-5">
+                        <label for='key'>{{key}}</label>
+                        <textarea
+                            class="form-textarea min-h-[130px] resize-none"
+                            value={{values[keys.indexOf(key)]}}
+                            name={{key}}
+                            formControlName={{key}}
+                        ></textarea>
+                        </div>
+                    </ng-container>
+                    <!-- <div class="mb-5">
+                        <label>Description</label>
+                        <textarea
+                            class="form-textarea min-h-[130px] resize-none"
+                            placeholder="Enter Description"
+                        ></textarea>
+                    </div> -->
+                    <div class="mt-8 flex items-center justify-end">
+                        <button type="submit" class="btn btn-outline-info gap-2 mr-2" (click)="submitContent()">Submit</button>
+                        <button type="button" class="btn btn-outline-danger gap-2" (click)="isAddNoteModal.close()">Cancel</button>
+                    </div>
+                </form>
+            </ng-template>
+        </modal>
+    </ng-container>
+    
+</div>

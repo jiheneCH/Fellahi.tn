@@ -1,0 +1,53 @@
+<div class="container my-5">
+  <h2 class="text-center mb-4">Our Fresh Products</h2>
+
+  <!-- Input pour le nom du client + bouton -->
+  <div class="mb-3 d-flex align-items-center">
+    <label for="clientName" class="form-label me-2">Nom du Client</label>
+    <input
+      type="text"
+      id="clientName"
+      [(ngModel)]="clientName"
+      class="form-control me-2"
+      style="width: 250px;"
+    />
+    <button class="btn btn-primary" (click)="fetchClientId()">Chercher ID</button>
+  </div>
+
+  <!-- Affichage de l'ID du client -->
+  <div *ngIf="clientId !== null" class="mb-3">
+    <span class="text-success fw-bold">ID du client : {{ clientId }}</span>
+  </div>
+
+  <!-- Liste des produits -->
+  <div class="row row-cols-1 row-cols-md-3 g-4">
+    <div class="col" *ngFor="let product of products">
+      <div class="card h-100 shadow-sm border-0">
+        <img [src]="product.image" class="card-img-top" alt="{{ product.name }}" style="object-fit: cover; height: 200px;">
+        <div class="card-body d-flex flex-column justify-content-between">
+          <div>
+            <h5 class="card-title">{{ product.name }}</h5>
+            <p class="card-text text-muted">{{ product.description }}</p>
+          </div>
+
+          <!-- Prix, quantité et bouton -->
+          <div class="d-flex justify-content-between align-items-center mt-3">
+            <span class="fw-bold text-success">{{ product.price | currency:'TND' }}</span>
+
+            <!-- Sélecteur de quantité -->
+            <div class="d-flex align-items-center">
+              <button class="btn btn-outline-secondary btn-sm" (click)="decreaseQuantity(product)">-</button>
+              <input type="number" [(ngModel)]="product.quantity" min="1" class="form-control mx-2" style="width: 60px;" />
+              <button class="btn btn-outline-secondary btn-sm" (click)="increaseQuantity(product)">+</button>
+            </div>
+
+            <!-- Bouton Ajouter au panier -->
+            <button class="btn btn-outline-primary btn-sm" (click)="addToCart(product)">
+              <i class="bi bi-cart-plus"></i> Add to Cart
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
