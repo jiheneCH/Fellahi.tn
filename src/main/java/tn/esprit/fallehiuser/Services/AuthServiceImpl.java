@@ -186,18 +186,21 @@ public class AuthServiceImpl {
 
         if (LocalDateTime.now().isAfter(savedToken.getExpiresAt())) {
             sendValidationEmail(savedToken.getUser());
-            throw new TokenExpiredException("Activation token has expired. A new token has been sent to the same email address.");
+            throw new TokenExpiredException("Activation token has expired. A new token has been sent to your email.");
         }
 
-        var user = userRepository.findById(savedToken.getUser().getId())
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        if(savedToken.getValidatedAt() != null) {
+            throw new IllegalStateException("Account already activated");
+        }
 
-        logger.info("Enabling account for user: {}", user.getUsername());
+        User user = savedToken.getUser();
+        if(user.isEnabled()) {
+            throw new IllegalStateException("Account already activated");
+        }
+
         user.setEnabled(true);
         user.setAccountLocked(false);
         userRepository.save(user);
-        logger.info("Account enabled and unlocked for user: {}", user.getUsername());
-
 
         savedToken.setValidatedAt(LocalDateTime.now());
         tokenRepository.save(savedToken);
@@ -226,13 +229,22 @@ public class AuthServiceImpl {
         );
     }
 
+    @Transactional
     public void resetPassword(String token, String newPassword) {
         User user = userRepository.findByResetToken(token)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid or expired reset token"));
 
+        // Add token expiration check
+        if (user.getResetTokenExpiry().isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("Reset token has expired");
+        }
+
+        // Only update necessary fields
         user.setPassword(passwordEncoder.encode(newPassword));
         user.setResetToken(null);
-        user.setResetTokenExpiry(LocalDateTime.now());
+        user.setResetTokenExpiry(null);
+
+        // Add this to prevent role updates
         userRepository.save(user);
     }
 }

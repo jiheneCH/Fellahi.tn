@@ -32,55 +32,55 @@ public class jwtFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
-        String requestURI = request.getRequestURI();
-        logger.debug("Request URI: {}", requestURI);
+        String requestURI = request.getRequestURI().replace("/Fallehi", "");
+        logger.debug("Processing request to: {}", requestURI);
 
-        // Skip JWT validation for public endpoints
-        if (requestURI.startsWith("/auth/") || requestURI.equals("/Fallehi/reclamations/add")) { // 🔼 Add this condition
-            logger.debug("Skipping JWT validation for public endpoint: {}", requestURI);
+        if (shouldSkipValidation(requestURI)) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        // Extract Bearer token from Authorization header
         String authHeader = request.getHeader("Authorization");
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            logger.warn("No Bearer token found in Authorization header for request URI: {}", requestURI);
+            logger.warn("Missing Bearer token for: {}", requestURI);
             filterChain.doFilter(request, response);
             return;
         }
 
-        String token = authHeader.substring(7); // Remove "Bearer "
-        logger.debug("Extracted token: {}", token);
+        processJwtToken(authHeader.substring(7), request);
+        filterChain.doFilter(request, response);
+    }
 
+    private boolean shouldSkipValidation(String requestURI) {
+        return requestURI.startsWith("/auth/") ||
+                requestURI.equals("/reclamations/add");
+    }
+
+    private void processJwtToken(String token, HttpServletRequest request) {
         try {
-            // Get all claims from the token
             Claims claims = jwtUtils.getAllClaimsFromToken(token);
             String username = claims.getSubject();
             String role = (String) claims.get("role");
 
-            // Authenticate only if user is not already authenticated
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
                 if (jwtService.validateToken(token)) {
-                    UsernamePasswordAuthenticationToken authToken =
-                            new UsernamePasswordAuthenticationToken(userDetails, null, AuthorityUtils.createAuthorityList("ROLE_" + role));
-                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                    SecurityContextHolder.getContext().setAuthentication(authToken);
-
-                    logger.debug("Authentication successful for user: {}", username);
-                } else {
-                    logger.warn("Invalid token for user: {}", username);
+                    setAuthentication(userDetails, role, request);
                 }
-            } else {
-                logger.debug("User is already authenticated or username is null.");
             }
-
         } catch (Exception e) {
-            logger.error("Error occurred while processing JWT token: {}", e.getMessage());
+            logger.error("JWT processing error: {}", e.getMessage());
         }
+    }
 
-        filterChain.doFilter(request, response);
+    private void setAuthentication(UserDetails userDetails, String role, HttpServletRequest request) {
+        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                userDetails,
+                null,
+                AuthorityUtils.createAuthorityList("ROLE_" + role)
+        );
+        authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+        SecurityContextHolder.getContext().setAuthentication(authToken);
     }
 }

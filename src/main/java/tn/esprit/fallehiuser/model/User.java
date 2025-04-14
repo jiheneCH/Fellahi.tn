@@ -8,6 +8,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
+
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -34,8 +36,6 @@ public class User implements UserDetails, Principal {
     @Column(nullable = false)
     private String password;
 
-
-    // New column to store the role name directly
     @Column(name = "role_name", nullable = false)
     private String roleName;
 
@@ -43,9 +43,11 @@ public class User implements UserDetails, Principal {
     @JoinColumn(name = "ID_ROLE", referencedColumnName = "id")
     private Role role;
 
-
     private boolean accountLocked;
     private boolean enabled;
+
+    @Enumerated(EnumType.STRING)
+    private status status; // ✅ Add status field (as enum)
 
     @CreatedDate
     @Column(nullable = false, updatable = false)
@@ -55,36 +57,28 @@ public class User implements UserDetails, Principal {
     @Column(insertable = false)
     private LocalDateTime lastModifiedDate;
 
-
-
-
     private String resetToken;
 
-
     private LocalDateTime resetTokenExpiry;
-
 
     @PrePersist
     @PreUpdate
     protected void onCreate() {
         if (role != null) {
-            System.out.println("Role is present. Role name: " + role.getRoleName());  // Log role name
-            this.roleName = role.getRoleName().name();  // Set roleName to the actual Role name
-        } else {
-            System.out.println("Role is null!");  // Log if role is null
+            this.roleName = role.getRoleName().name();
         }
-
-        // Ensure createdDate is set before persisting
         if (createdDate == null) {
-            createdDate = LocalDateTime.now(); // Automatically set createdDate
+            createdDate = LocalDateTime.now();
+        }
+        if (status == null) {
+            status = tn.esprit.fallehiuser.model.status.ACTIVE; // ✅ Set default status if not defined
         }
     }
 
-
-    /* Principal interface implementation */
+    // Principal interface
     @Override
     public String getName() {
-        return username;  // Using username as the principal name for login
+        return username;
     }
 
     @Override
@@ -92,7 +86,7 @@ public class User implements UserDetails, Principal {
         return false;
     }
 
-    /* UserDetails interface implementation */
+    // UserDetails interface
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.singletonList(new SimpleGrantedAuthority(role.getRoleName().name()));
@@ -100,12 +94,12 @@ public class User implements UserDetails, Principal {
 
     @Override
     public String getPassword() {
-        return password;  // Return actual password
+        return password;
     }
 
     @Override
     public String getUsername() {
-        return username;  // Use username for login
+        return username;
     }
 
     @Override
@@ -128,82 +122,48 @@ public class User implements UserDetails, Principal {
         return enabled;
     }
 
-    // Getters and Setters
-    public Long getId() {
-        return id;
-    }
+    // Getters and setters
+    public Long getId() { return id; }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public void setId(Long id) { this.id = id; }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
+    public void setUsername(String username) { this.username = username; }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
+    public void setPassword(String password) { this.password = password; }
 
-    public boolean isAccountLocked() {
-        return accountLocked;
-    }
+    public boolean isAccountLocked() { return accountLocked; }
 
-    public void setAccountLocked(boolean accountLocked) {
-        this.accountLocked = accountLocked;
-    }
+    public void setAccountLocked(boolean accountLocked) { this.accountLocked = accountLocked; }
 
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
+    public void setEnabled(boolean enabled) { this.enabled = enabled; }
 
-    public LocalDateTime getCreatedDate() {
-        return createdDate;
-    }
+    public LocalDateTime getCreatedDate() { return createdDate; }
 
-    public LocalDateTime getLastModifiedDate() {
-        return lastModifiedDate;
-    }
+    public LocalDateTime getLastModifiedDate() { return lastModifiedDate; }
 
-    public void setLastModifiedDate(LocalDateTime lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
-    }
+    public void setLastModifiedDate(LocalDateTime lastModifiedDate) { this.lastModifiedDate = lastModifiedDate; }
 
-    public Role getRole() {
-        return role;
-    }
+    public Role getRole() { return role; }
 
-    public void setRole(Role role) {
-        this.role = role;
-    }
+    public void setRole(Role role) { this.role = role; }
 
-    public String getRoleName() {
-        return roleName;
-    }
+    public String getRoleName() { return roleName; }
 
-    public void setRoleName(String roleName) {
-        this.roleName = roleName;
-    }
+    public void setRoleName(String roleName) { this.roleName = roleName; }
 
-    public String getEmail() {
-        return email;
-    }
+    public String getEmail() { return email; }
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
-    public LocalDateTime getResetTokenExpiry() {
-        return resetTokenExpiry;
-    }
-    public void setResetTokenExpiry(LocalDateTime resetTokenExpiry) {
-        this.resetTokenExpiry = resetTokenExpiry;
-    }
+    public void setEmail(String email) { this.email = email; }
 
-    public void setResetToken(String resetToken) {
-        this.resetToken = resetToken;
-    }
-    public String getResetToken() {
-        return resetToken;
-    }
+    public LocalDateTime getResetTokenExpiry() { return resetTokenExpiry; }
 
+    public void setResetTokenExpiry(LocalDateTime resetTokenExpiry) { this.resetTokenExpiry = resetTokenExpiry; }
+
+    public void setResetToken(String resetToken) { this.resetToken = resetToken; }
+
+    public String getResetToken() { return resetToken; }
+
+    public status getStatus() { return status; }
+
+    public void setStatus(status status) { this.status = status; }
 }

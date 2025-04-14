@@ -38,4 +38,11 @@ public class UserServiceImpl implements IUserService {
                 .map(user -> new UserDTO(user))  // Map each User to a UserDTO
                 .collect(Collectors.toList());
     }
+    public List<UserDTO> getAllUsers() {
+        return userRepository.findAll()
+                .stream()
+                .map(user -> new UserDTO(user)) // convert entity to DTO
+                .collect(Collectors.toList());
+    }
+
 }

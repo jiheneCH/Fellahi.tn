@@ -25,5 +25,8 @@ public class SignUpRequest {
     private String password;
 
     @NotBlank(message = "Role cannot be empty")
-    private String role;  // Role can be a string like "USER", "ADMIN", etc.
+    private String role;
+
+    // ✅ Just let Lombok handle this field like the others
+    private String recaptchaToken;
 }
