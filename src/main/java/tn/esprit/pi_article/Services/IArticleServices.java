@@ -5,6 +5,7 @@ import tn.esprit.pi_article.Entities.Status;
 import tn.esprit.pi_article.Entities.TypeProduit;
 
 import java.util.List;
+import java.util.Map;
 
 public interface IArticleServices {
 
@@ -22,6 +23,16 @@ public interface IArticleServices {
 
     public List<Article> rechercherArticles(String nom, Status status, TypeProduit typeProduit);
     public List<Article> getArticlesTendanceeee() ;
+    public List<Object[]> getAjoutsParJour() ;
+    public Double getChiffreAffairesTotal() ;
+    public Map<String, Object> getChiffreAffairesParArticle() ;
+    public Double getQuantiteTotalVendue() ;
+    public List<Map<String, Object>> getChiffreAffairesParCategorie() ;
+    public List<Map<String, Object>> getAjoutsParMois() ;
+    public List<Article> getArticlesByUtilisateurId(Long id) ;
+    public List<Article> getArticlesParUtilisateur(Long id) ;
+    public Article ajouterArticleparuser(Long id, Article article) ;
 
-}
+
+    }
 

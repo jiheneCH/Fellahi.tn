@@ -2,10 +2,13 @@ package tn.esprit.pi_article.Repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+
+import org.springframework.data.repository.query.Param;
 import tn.esprit.pi_article.Entities.Article;
 import tn.esprit.pi_article.Entities.Status;
 import tn.esprit.pi_article.Entities.TypeProduit;
 
+import java.awt.print.Pageable;
 import java.util.List;
 import java.util.Optional;
 
@@ -43,6 +46,28 @@ public interface ArticleRepository extends JpaRepository<Article, Long > {
 
 
 
+
+
+
+    @Query("SELECT SUM(a.prix * a.quantiteVendue) FROM Article a")
+    Double getChiffreAffairesTotal();
+    @Query("SELECT DATE(a.dateAjout), COUNT(a) FROM Article a GROUP BY DATE(a.dateAjout)")
+    List<Object[]> countAjoutsParJour();
+
+    @Query("SELECT a, (a.prix * a.quantiteVendue) FROM Article a")
+    List<Object[]> getChiffreAffairesParArticle();
+
+    @Query("SELECT SUM(a.quantiteVendue) FROM Article a")
+    Double getQuantiteTotalVendue();
+    @Query("SELECT a.typeProduit, SUM(a.prix * a.quantiteVendue) FROM Article a GROUP BY a.typeProduit")
+    List<Object[]> getChiffreAffairesParCategorie();
+    @Query("SELECT FUNCTION('MONTH', a.dateAjout), COUNT(a) " +
+            "FROM Article a GROUP BY FUNCTION('MONTH', a.dateAjout) ORDER BY FUNCTION('MONTH', a.dateAjout)")
+    List<Object[]> getAjoutsParMois();
+
+    List<Article> findByUtilisateurId(Long utilisateurId);  // Trouver les articles par utilisateur
+    List<Article> findTop3ByUtilisateurIdOrderByQuantiteVendueDesc(@Param("userId") Long userId);
+    List<Article> findByUtilisateurIdAndArchivedFalse(Long utilisateurId);
 
 
 

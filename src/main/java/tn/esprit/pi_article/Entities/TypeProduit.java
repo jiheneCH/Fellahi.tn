@@ -1,5 +1,11 @@
 package tn.esprit.pi_article.Entities;
 
 public enum TypeProduit {
-    legumes_et_fruits, equipements, insec
+    fruits,
+    legume,
+    cereale,
+    produitLaitier,
+    equipements,
+    viande,
+    insec
 }

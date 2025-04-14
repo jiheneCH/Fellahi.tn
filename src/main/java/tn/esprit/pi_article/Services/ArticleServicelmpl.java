@@ -8,16 +8,21 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.server.ResponseStatusException;
 import tn.esprit.pi_article.Entities.Article;
 import tn.esprit.pi_article.Entities.Status;
 import tn.esprit.pi_article.Entities.TypeProduit;
+import tn.esprit.pi_article.Entities.utilisateur;
 import tn.esprit.pi_article.Repositories.ArticleRepository;
+import tn.esprit.pi_article.Repositories.UtilisateurRepository;
 
 import java.lang.module.ResolutionException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.*;
+@CrossOrigin(origins = "*") // Permet les requêtes CORS depuis n'importe quelle origine (utile en développement)
+
 
 @AllArgsConstructor
 @Service
@@ -25,7 +30,8 @@ public class ArticleServicelmpl implements IArticleServices {
     @Autowired
     ArticleRepository articleRepository;
     private final Random random = new Random();
-
+    @Autowired
+    private UtilisateurRepository utilisateurRepository;
 
     @Override
     public List<Article> retriveAllArticle() {
@@ -83,8 +89,7 @@ public class ArticleServicelmpl implements IArticleServices {
         // Calcul des points de fidélité (si nécessaire)
         existingArticle.calculerPointsFidelite();
 
-        // Générer un pack si nécessaire (si la logique le requiert)
-        genererPackSiNecessaire();
+
 
         // Sauvegarde de l'article après mise à jour
         return articleRepository.save(existingArticle);
@@ -162,16 +167,14 @@ public void archiverArticle(Long id) {
          throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La quantité vendue ne peut pas être négative.");
      }
 
-     if (article.getQuantiteVendue() > article.getQuantiteDisponible()) {
-         throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La quantité vendue ne peut pas dépasser la quantité disponible.");
-     }
+
      article.setReference(genererReferenceArticle(article.getNom()));
      article.calculerPointsFidelite();
      article.setStatus(getStatusByQuantity(article.getQuantiteDisponible(), article.getQuantiteInitiale()));
      article.setDateAjout(LocalDate.now());
-     if (article.getUtilisateur().getId() == null) {
+     /*if (article.getUtilisateur().getId() == null) {
          throw new IllegalArgumentException("L'agriculteur doit être spécifié");
-     }
+     }*/
 
      ajusterPrix(article);
 
@@ -460,15 +463,128 @@ public void archiverArticle(Long id) {
             }
         }
 
-        // Extraire top 5
-        List<Article> top5 = new ArrayList<>();
-        int max = Math.min(5, articlesRecents.size());
+        // Extraire top 3
+        List<Article> top3 = new ArrayList<>();
+        int max = Math.min(3, articlesRecents.size());
         for (int i = 0; i < max; i++) {
-            top5.add(articlesRecents.get(i));
+            top3.add(articlesRecents.get(i));
         }
 
-        return top5;
+        return top3;
+    }
+    public List<Object[]> getAjoutsParJour() {
+        return articleRepository.countAjoutsParJour();
+    }
+    public Double getChiffreAffairesTotal() {
+        return articleRepository.getChiffreAffairesTotal();
+    }
+    public Map<String, Object> getChiffreAffairesParArticle() {
+        List<Object[]> result = articleRepository.getChiffreAffairesParArticle();
+
+        // On initialise une variable pour stocker le total
+        double totalChiffreAffaires = 0.0;
+
+        // On crée une liste pour stocker le chiffre d'affaire de chaque article
+        List<Map<String, Object>> articlesChiffreAffaires = new ArrayList<>();
+
+        // On parcourt les résultats et on calcule le chiffre d'affaire par article
+        for (Object[] row : result) {
+            Article article = (Article) row[0];
+            double chiffreAffairesArticle = (double) row[1];
+            totalChiffreAffaires += chiffreAffairesArticle;
+
+            // On crée un map pour chaque article
+            Map<String, Object> articleData = new HashMap<>();
+            articleData.put("article", article);
+            articleData.put("chiffreAffaires", chiffreAffairesArticle);
+
+            articlesChiffreAffaires.add(articleData);
+        }
+
+        // On prépare la réponse avec les données des articles et le total
+        Map<String, Object> response = new HashMap<>();
+        response.put("articles", articlesChiffreAffaires);
+        response.put("totalChiffreAffaires", totalChiffreAffaires);
+
+        return response;
+    }
+    public Double getQuantiteTotalVendue() {
+        return articleRepository.getQuantiteTotalVendue();
+    }
+    public List<Map<String, Object>> getChiffreAffairesParCategorie() {
+        List<Object[]> result = articleRepository.getChiffreAffairesParCategorie();
+        List<Map<String, Object>> response = new ArrayList<>();
+        for (Object[] row : result) {
+            Map<String, Object> data = new HashMap<>();
+            data.put("categorie", row[0]);
+            data.put("chiffreAffaires", row[1]);
+            response.add(data);
+        }
+        return response;
+    }
+    public List<Map<String, Object>> getAjoutsParMois() {
+        List<Object[]> result = articleRepository.getAjoutsParMois();
+        List<Map<String, Object>> response = new ArrayList<>();
+
+        for (Object[] row : result) {
+            Map<String, Object> data = new HashMap<>();
+            Integer monthNumber = (Integer) row[0];
+            Long count = (Long) row[1];
+
+            String monthName = getMonthName(monthNumber);
+
+            data.put("mois", monthName);
+            data.put("nombreAjouts", count);
+
+            response.add(data);
+        }
+
+        return response;
     }
 
+    private String getMonthName(int monthNumber) {
+        String[] mois = {
+                "Janvier", "Février", "Mars", "Avril", "Mai", "Juin",
+                "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"
+        };
+        return mois[monthNumber - 1]; // -1 car les tableaux commencent à 0
+    }
+    public List<Article> getArticlesByUtilisateurId(Long id) {
+        return articleRepository.findByUtilisateurId(id);
+    }
+    // Trouver un agriculteur par son nom et obtenir ses articles
+
+    public List<Article> getArticlesParUtilisateur(Long id) {
+        utilisateur utilisateur = utilisateurRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
+
+        return articleRepository.findByUtilisateurIdAndArchivedFalse(utilisateur.getId());
+    }
+
+    public Article ajouterArticleparuser(Long id, Article article) {
+        utilisateur utilisateur = utilisateurRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
+
+        if (existsByNom(article.getNom())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Un article avec ce nom existe déjà.");
+        }
+
+        if (article.getQuantiteDisponible() == null || article.getQuantiteDisponible() < 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La quantité disponible ne peut pas être négative ou nulle.");
+        }
+
+        if (article.getQuantiteVendue() == null || article.getQuantiteVendue() < 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La quantité vendue ne peut pas être négative.");
+        }
+
+        article.setReference(genererReferenceArticle(article.getNom()));
+        article.calculerPointsFidelite();
+        article.setStatus(getStatusByQuantity(article.getQuantiteDisponible(), article.getQuantiteInitiale()));
+        article.setDateAjout(LocalDate.now());
+        article.setUtilisateur(utilisateur);
+        ajusterPrix(article);
+
+        return articleRepository.save(article);
+    }
 
 }

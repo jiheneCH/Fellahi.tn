@@ -1,11 +1,16 @@
 package tn.esprit.pi_article.Controller;
 
 
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.client.j2se.MatrixToImageWriter;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.QRCodeWriter;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -13,16 +18,22 @@ import org.springframework.web.server.ResponseStatusException;
 import tn.esprit.pi_article.Entities.Article;
 import tn.esprit.pi_article.Entities.Status;
 import tn.esprit.pi_article.Entities.TypeProduit;
+import tn.esprit.pi_article.Entities.utilisateur;
 import tn.esprit.pi_article.Services.ArticleServicelmpl;
 import tn.esprit.pi_article.Services.IArticleServices;
 
+import java.io.ByteArrayOutputStream;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+@CrossOrigin(origins = "http://localhost:4200")
+
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/Article")
+@RequestMapping("/PI_article")
 @Validated
+
 
 public class ArticleRestController {
     @Autowired
@@ -160,4 +171,65 @@ public ResponseEntity<?> archiverArticle(@PathVariable("id") Long id) {
     public ResponseEntity<List<Article>> getArticlesTendanceee() {
         return ResponseEntity.ok(iArticleServices.getArticlesTendanceeee());
     }
+    @GetMapping(value = "/articles/{id}/qrcode", produces = MediaType.IMAGE_PNG_VALUE)
+    public byte[] getArticleQRCode(@PathVariable Long id) throws Exception {
+        Article article = iArticleServices.retriveArticle(id);
+        String qrContent = "ID:" + article.getIdArticle() + "|Nom:" + article.getNom();
+
+        QRCodeWriter qrCodeWriter = new QRCodeWriter();
+        BitMatrix bitMatrix = qrCodeWriter.encode(qrContent, BarcodeFormat.QR_CODE, 200, 200);
+
+        ByteArrayOutputStream pngOutputStream = new ByteArrayOutputStream();
+        MatrixToImageWriter.writeToStream(bitMatrix, "PNG", pngOutputStream);
+        return pngOutputStream.toByteArray();
+    }
+    @GetMapping("/ajouts-par-jour")
+    public ResponseEntity<List<Object[]>> getAjoutsParJour() {
+        List<Object[]> ajoutsParJour = iArticleServices.getAjoutsParJour();
+
+        if (ajoutsParJour.isEmpty()) {
+            return ResponseEntity.noContent().build(); // Retourne 204 si aucun ajout n'est trouvé
+        }
+
+        return ResponseEntity.ok(ajoutsParJour); // Retourne les ajouts par jour
+    }
+    @GetMapping("/chiffre-affaires")
+    public ResponseEntity<Double> getChiffreAffairesTotal() {
+        Double chiffreAffaires = iArticleServices.getChiffreAffairesTotal();
+        return ResponseEntity.ok(chiffreAffaires);
+    }
+    @GetMapping("/chiffre-affaires-article")
+    public ResponseEntity<Map<String, Object>> getChiffreAffairesParArticle() {
+        Map<String, Object> response = iArticleServices.getChiffreAffairesParArticle();
+        return ResponseEntity.ok(response);
+    }
+    @GetMapping("/quantite-total-vendue")
+    public Double getQuantiteTotalVendue() {
+        return iArticleServices.getQuantiteTotalVendue();
+    }
+    @GetMapping("/chiffre-affaires-par-categorie")
+    public List<Map<String, Object>> getChiffreAffairesParCategorie() {
+        return iArticleServices.getChiffreAffairesParCategorie();
+    }
+    @GetMapping("/ajouts-par-mois")
+    public List<Map<String, Object>> getAjoutsParMois() {
+        return iArticleServices.getAjoutsParMois();
+    }
+    @GetMapping("/mes-articles/{id}")
+    public ResponseEntity<List<Article>> getMesArticles(@PathVariable Long id) {
+        return ResponseEntity.ok(iArticleServices.getArticlesByUtilisateurId(id));
+    }
+    // Récupérer les articles de l'agriculteur
+    @GetMapping("/afficherproduitagriculteur/{id}")
+    public List<Article> getArticlesParAgriculteur(@PathVariable Long id) {
+        return iArticleServices.getArticlesParUtilisateur(id);
+    }
+
+    // Ajouter un article pour l'agriculteur
+    @PostMapping("/ajouterproduitagriculteur/{id}")
+    public Article ajouterArticle(@PathVariable Long id, @RequestBody Article article) {
+        return iArticleServices.ajouterArticleparuser(id, article);
+    }
+
+
 }

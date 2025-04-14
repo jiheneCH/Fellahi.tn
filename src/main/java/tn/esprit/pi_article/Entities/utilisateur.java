@@ -1,5 +1,6 @@
 package tn.esprit.pi_article.Entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -10,8 +11,8 @@ public class utilisateur {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "nom")
-    private String nom;
+
+    private String username;
 
     @Column(name = "email", unique = true)
     private String email;
@@ -19,6 +20,7 @@ public class utilisateur {
 
     @Column(name = "role")
     private String role;
+
 
     public Long getId() {
         return id;
@@ -28,12 +30,13 @@ public class utilisateur {
         this.id = id;
     }
 
-    public String getNom() {
-        return nom;
+
+    public String getUsername() {
+        return username;
     }
 
-    public void setNom(String nom) {
-        this.nom = nom;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getEmail() {

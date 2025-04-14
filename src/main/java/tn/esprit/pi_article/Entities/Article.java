@@ -131,6 +131,7 @@ public class Article {
     public void setQuantiteVendue(Integer quantiteVendue) {
         this.quantiteVendue = quantiteVendue;
     }
+    @Column(name = "quantite_vendue")
 
     @NotNull(message = "La quantité vendue ne peut pas être vide.")
     @Min(value = 0, message = "La quantité vendue ne peut pas être négative.")
@@ -142,10 +143,7 @@ public class Article {
     Double prix;
 
 
-    @AssertTrue(message = "La quantité vendue ne peut pas dépasser la quantité disponible.")
-    public boolean isQuantiteVendueValide() {
-        return quantiteVendue != null && quantiteDisponible != null && quantiteVendue <= quantiteDisponible;
-    }
+
 
 
     @Enumerated(EnumType.STRING)
@@ -253,5 +251,15 @@ public class Article {
 
     public void setArticlesPack(List<Long> articlesPack) {
         this.articlesPack = articlesPack;
+    }
+    @Lob  // Très important pour stocker une longue chaîne base64
+    private String image;
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 }
