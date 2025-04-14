@@ -98,19 +98,17 @@ export const routes: Routes = [
          
         ]
       },
-      {
-        path: 'users',
-        component: AppLayout,
-        children: [{ path: '', component: VisualiseUsersComponent, title: 'Admin Dashboard' },]},
-
+      
+        
        
     {
         path: 'admin',
         component: AppLayout,
         children: [
             // dashboard
-            { path: 'dashboard', component: DashboardComponent, title: 'Admin Dashboard' },
-            { path: 'template', component: IndexComponent, title: 'Sales Admin | VRISTO - Multipurpose Tailwind Dashboard Template' },
+            { path: 'template', component: DashboardComponent, title: 'Admin Dashboard' },
+            { path: 'users', component: VisualiseUsersComponent, title: 'Admin Dashboard' },
+            { path: 'dashboard', component: IndexComponent, title: 'Sales Admin | VRISTO - Multipurpose Tailwind Dashboard Template' },
             { path: 'analytics', component: AnalyticsComponent, title: 'Analytics Admin | VRISTO - Multipurpose Tailwind Dashboard Template' },
             // { path: 'finance', component: FinanceComponent, title: 'Finance Admin | VRISTO - Multipurpose Tailwind Dashboard Template' },
             { path: 'crypto', component: CryptoComponent, title: 'Crypto Admin | VRISTO - Multipurpose Tailwind Dashboard Template' },

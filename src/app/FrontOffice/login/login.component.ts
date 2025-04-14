@@ -97,7 +97,7 @@ export class LoginComponent {
           return;
         }
 
-        this.router.navigate(['/admin/template']);
+        this.router.navigate(['/admin']);
       },
       error: (err) => {
         this.isLoading = false;
