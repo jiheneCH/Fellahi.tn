@@ -175,4 +175,9 @@ export class AuthenticationService {
       default: return 'Unexpected error occurred';
     }
   }
+  logout(): void {
+    localStorage.removeItem('token');
+     // Or however you're storing auth
+  }
+  
 }

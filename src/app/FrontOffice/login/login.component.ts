@@ -85,17 +85,21 @@ export class LoginComponent {
         try {
           const decoded = jwtDecode<JwtPayload>(token);
           const role = decoded.role;
-
+          const username = decoded.sub;
+        
+          // Store in localStorage
+          localStorage.setItem('userRole', role);
+          localStorage.setItem('username', username);
+        
           if (role === 'ADMIN') {
             localStorage.setItem('adminToken', token);
           }
-
-          localStorage.setItem('userRole', role); // Optional
         } catch (decodeError) {
           console.error('Error decoding token:', decodeError);
           this.errorMessage = 'Invalid token received from server.';
           return;
         }
+        
 
         this.router.navigate(['/admin']);
       },

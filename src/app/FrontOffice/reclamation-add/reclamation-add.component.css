@@ -1,0 +1,61 @@
+.table thead th {
+    color: #333;
+    font-weight: 600;
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+  }
+  
+  .table tbody tr:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  .custom-report-table thead {
+    background-color: #4caf50;
+    color: white;
+  }
+  
+  .custom-report-table th {
+    font-weight: 600;
+    border-bottom: none;
+  }
+  
+  .custom-report-table tbody tr {
+    transition: background-color 0.3s ease;
+  }
+  
+  .custom-report-table tbody tr:hover {
+    background-color: #f1fdf3;
+  }
+  
+  .shadow {
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  }
+  .btn-outline-secondary {
+    border-radius: 6px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+  }
+  
+  .btn-outline-secondary:hover {
+    background-color: #d4e2d4;
+    color: #2e7d32;
+    border-color: #a8d5a2;
+  }
+  .btn-icon-only {
+    padding: 6px 10px;
+    font-size: 1rem;
+    line-height: 1;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .btn-icon-only:hover {
+    background-color: #d4e2d4;
+    color: #2e7d32;
+    border-color: #a8d5a2;
+  }
+  
+  
+  

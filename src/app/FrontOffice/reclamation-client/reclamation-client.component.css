@@ -1,0 +1,33 @@
+.table thead th {
+    color: #333;
+    font-weight: 600;
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+  }
+  
+  .table tbody tr:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  .custom-report-table thead {
+    background-color: #4caf50;
+    color: white;
+  }
+  
+  .custom-report-table th {
+    font-weight: 600;
+    border-bottom: none;
+  }
+  
+  .custom-report-table tbody tr {
+    transition: background-color 0.3s ease;
+  }
+  
+  .custom-report-table tbody tr:hover {
+    background-color: #f1fdf3;
+  }
+  
+  .shadow {
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  }
+  

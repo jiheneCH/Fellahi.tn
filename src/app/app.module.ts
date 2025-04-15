@@ -126,6 +126,10 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatCardModule } from '@angular/material/card';
 import { MatTableModule } from '@angular/material/table';
+import { HeaderClientComponent } from './FrontOffice/header-client/header-client.component';
+import { ClientLayoutComponent } from './FrontOffice/client-layout/client-layout.component';
+import { ReclamationClientComponent } from './FrontOffice/reclamation-client/reclamation-client.component';
+import { ReclamationAddComponent } from './FrontOffice/reclamation-add/reclamation-add.component';
 
 
 
@@ -217,6 +221,10 @@ import { MatTableModule } from '@angular/material/table';
         ActivateAccountComponent,
         ResetPasswordComponent,
         ForgotPasswordComponent,
+        HeaderClientComponent,
+        ClientLayoutComponent,
+        ReclamationClientComponent,
+        ReclamationAddComponent,
         
     
        

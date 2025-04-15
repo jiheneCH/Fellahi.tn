@@ -53,6 +53,9 @@ import { ForgotPasswordComponent} from './FrontOffice/forgot-password/forgot-pas
 import { ResetPasswordComponent } from './FrontOffice/reset-password/reset-password.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { VisualiseUsersComponent } from './components/visualise-users/visualise-users.component';
+import { ClientLayoutComponent } from './FrontOffice/client-layout/client-layout.component';
+import { ReclamationClientComponent } from './FrontOffice/reclamation-client/reclamation-client.component';
+import { ReclamationAddComponent } from './FrontOffice/reclamation-add/reclamation-add.component';
 
 
 
@@ -98,6 +101,8 @@ export const routes: Routes = [
          
         ]
       },
+
+      
       
         
        
@@ -181,6 +186,26 @@ export const routes: Routes = [
       
         ],
     },
+    {
+      path: 'client',
+      component: ClientLayoutComponent,
+      children: [
+        {
+          path: 'reclamation',
+          component: ReclamationClientComponent
+          ,
+          title: 'Column Chooser Table | VRISTO - Multipurpose Tailwind Dashboard Template',
+      },
+      {
+        path: 'reclamation/add',
+        component: ReclamationAddComponent
+        ,
+        title: 'Column Chooser Table | VRISTO - Multipurpose Tailwind Dashboard Template',
+    },
+          // pages
+          
+      ],
+  },
     
     {
         path: '',
