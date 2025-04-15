@@ -3,7 +3,7 @@ export const allNavItems = {
     { label: 'Dashboard', link: '/admin/dashboard' },
     { label: 'Users', link: '/admin/users' },
     { label: 'Orders', link: '/admin/orders' },
-    { label: 'Reports', link: '/admin/reports' },
+    { label: 'Reports', link: '/admin/reclamation' },
   ],
   farmer: [
     { label: 'Products', link: '/farmer/products' },

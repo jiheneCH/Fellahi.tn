@@ -56,6 +56,7 @@ import { VisualiseUsersComponent } from './components/visualise-users/visualise-
 import { ClientLayoutComponent } from './FrontOffice/client-layout/client-layout.component';
 import { ReclamationClientComponent } from './FrontOffice/reclamation-client/reclamation-client.component';
 import { ReclamationAddComponent } from './FrontOffice/reclamation-add/reclamation-add.component';
+import { ReclamationAdminComponent } from './components/reclamation-admin/reclamation-admin.component';
 
 
 
@@ -103,6 +104,8 @@ export const routes: Routes = [
       },
 
       
+
+      
       
         
        
@@ -117,7 +120,7 @@ export const routes: Routes = [
             { path: 'analytics', component: AnalyticsComponent, title: 'Analytics Admin | VRISTO - Multipurpose Tailwind Dashboard Template' },
             // { path: 'finance', component: FinanceComponent, title: 'Finance Admin | VRISTO - Multipurpose Tailwind Dashboard Template' },
             { path: 'crypto', component: CryptoComponent, title: 'Crypto Admin | VRISTO - Multipurpose Tailwind Dashboard Template' },
-
+            { path: 'reclamation', component: ReclamationAdminComponent, title: 'Crypto Admin | VRISTO - Multipurpose Tailwind Dashboard Template' },
             //apps
             { path: '', loadChildren: () => import('./apps/apps.module').then((d) => d.AppsModule) },
 
@@ -190,12 +193,7 @@ export const routes: Routes = [
       path: 'client',
       component: ClientLayoutComponent,
       children: [
-        {
-          path: 'reclamation',
-          component: ReclamationClientComponent
-          ,
-          title: 'Column Chooser Table | VRISTO - Multipurpose Tailwind Dashboard Template',
-      },
+        
       {
         path: 'reclamation/add',
         component: ReclamationAddComponent
@@ -206,6 +204,19 @@ export const routes: Routes = [
           
       ],
   },
+
+  {
+    path: 'reclamation',
+      component: ClientLayoutComponent,
+      children: [
+        {
+          path: '',
+          component: ReclamationClientComponent
+          ,
+          title: 'Column Chooser Table | VRISTO - Multipurpose Tailwind Dashboard Template',
+      },
+    ],
+},
     
     {
         path: '',

@@ -64,6 +64,7 @@ import { PdfViewerComponent, PdfViewerModule } from 'ng2-pdf-viewer';
 import { CommonModule } from '@angular/common';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { VisualiseUsersComponent } from './visualise-users/visualise-users.component';
+import { ReclamationAdminComponent } from './reclamation-admin/reclamation-admin.component';
 
 
 const routes: Routes = [
@@ -131,7 +132,8 @@ const routes: Routes = [
         SupervisorComponent,
         ResumeComponent,
         DashboardComponent,
-        VisualiseUsersComponent
+        VisualiseUsersComponent,
+        ReclamationAdminComponent
         
 
         

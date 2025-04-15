@@ -18,4 +18,6 @@ export class ReclamationService {
   getAllReclamations(): Observable<any[]> {
     return this.http.get<any[]>(`${this.baseUrl}/myReclamations`);
   }
+
+  
 }
