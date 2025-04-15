@@ -53,11 +53,12 @@ public class ReclamationController {
 
     // Endpoint for admin to get all pending complaints
     @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/pending")
-    public ResponseEntity<List<Reclamation>> getPendingReclamations() {
-        List<Reclamation> pendingReclamations = reclamationService.getAllPendingReclamations();
-        return ResponseEntity.ok(pendingReclamations);
+    @GetMapping("/bystatus")
+    public ResponseEntity<List<Reclamation>> getReclamationsByStatus(@RequestParam ReclamationStatus status) {
+        List<Reclamation> reclamations = reclamationService.getReclamationsByStatus(status);
+        return ResponseEntity.ok(reclamations);
     }
+
 
     // Endpoint for admin to treat a reclamation (update status)
     @PreAuthorize("hasRole('ADMIN')")
@@ -99,4 +100,13 @@ public class ReclamationController {
         List<Reclamation> reclamationsByDate = reclamationService.getReclamationsByDate(latest);
         return ResponseEntity.ok(reclamationsByDate);
     }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/all")
+    public ResponseEntity<List<Reclamation>> getAllReclamations() {
+        List<Reclamation> reclamations = reclamationService.getAllReclamations();
+        return ResponseEntity.ok(reclamations);
+    }
+
+
 }

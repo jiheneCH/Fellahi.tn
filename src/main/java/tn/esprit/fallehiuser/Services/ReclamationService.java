@@ -137,4 +137,15 @@ public class ReclamationService {
             return reclamationRepository.findAllByOrderByCreatedAtAsc();
         }
     }
+    @PreAuthorize("hasRole('ADMIN')")
+    public List<Reclamation> getReclamationsByStatus(ReclamationStatus status) {
+        return reclamationRepository.findByStatus(status);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    public List<Reclamation> getAllReclamations() {
+        return reclamationRepository.findAll();
+    }
+
+
 }

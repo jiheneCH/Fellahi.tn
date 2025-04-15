@@ -18,4 +18,5 @@ public interface ReclamationRepository extends JpaRepository<Reclamation, Long> 
 
     // Method to find reclamations ordered by 'createdAt' in ascending order (oldest first)
     List<Reclamation> findAllByOrderByCreatedAtAsc();
+
 }
