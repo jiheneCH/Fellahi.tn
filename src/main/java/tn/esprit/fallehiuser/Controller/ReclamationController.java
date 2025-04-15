@@ -1,6 +1,7 @@
 package tn.esprit.fallehiuser.Controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -44,10 +45,11 @@ public class ReclamationController {
     }
     // Endpoint for users to get their own complaints (viewing complaint status)
     @GetMapping("/myReclamations")
-    public ResponseEntity<List<Reclamation>> getUserReclamations(@RequestParam String username) {
-        List<Reclamation> reclamations = reclamationService.getReclamationsByUser(username);
-        return ResponseEntity.ok(reclamations);
+    public List<Reclamation> getUserReclamations(Authentication authentication) {
+        String username = authentication.getName();
+        return reclamationService.getReclamationsByUser(username);
     }
+
 
     // Endpoint for admin to get all pending complaints
     @PreAuthorize("hasRole('ADMIN')")
