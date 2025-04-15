@@ -27,6 +27,7 @@ export class ReclamationAdminComponent implements OnInit {
   // Added 'userId' to displayedColumns
   displayedColumns: string[] = ['id', 'userId', 'username', 'subject', 'description', 'status', 'createdDate', 'actions'];
   selectedStatus: string = '';
+  showLatest: boolean = true;
 
   constructor(private reclamationService: ReclamationAdminService, private router: Router) {}
 
@@ -84,4 +85,25 @@ export class ReclamationAdminComponent implements OnInit {
     console.log('Marking as resolved:', reclamation);
     // Implement status update logic here
   }
+  toggleDateFilter() {
+    this.showLatest = !this.showLatest;
+    this.filterByDate(this.showLatest);
+  }
+  
+  filterByDate(latest: boolean) {
+    this.reclamationService.getReclamationsByDate(latest).subscribe({
+      next: (data: Reclamation[]) => {
+        this.reclamations = data.map(reclamation => ({
+          ...reclamation,
+          username: reclamation.user?.username || 'Unknown',
+          userId: reclamation.user?.id || 'N/A',
+          createdDate: reclamation.createdAt
+        }));
+      },
+      error: (err) => {
+        console.error('Failed to filter by date:', err);
+      }
+    });
+  }
+  
 }

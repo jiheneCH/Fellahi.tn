@@ -50,7 +50,16 @@ export class ReclamationAdminService {
       }
     ) as Observable<string>;
   }
+  getReclamationsByDate(latest: boolean): Observable<Reclamation[]> {
+    return this.http.get<Reclamation[]>(`${this.baseUrl}/filterByDate`, {
+      params: new HttpParams().set('latest', latest.toString())
+    });
+  }
+  
+  
+  }
+  
   
 
   
-}
+

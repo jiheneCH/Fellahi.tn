@@ -3,6 +3,13 @@
     <div class="card-header">
       <h2>Reclamations Overview</h2>
       <div class="button-group">
+
+        <!-- Add this inside .button-group -->
+<button mat-raised-button color="accent" (click)="toggleDateFilter()" class="date-filter-btn">
+  <mat-icon>calendar_today</mat-icon>
+  {{ showLatest ? 'Latest First' : 'Oldest First' }}
+</button>
+
         <button mat-raised-button color="primary" class="refresh-btn" (click)="loadReclamations()">
           <mat-icon>refresh</mat-icon>
           Refresh
