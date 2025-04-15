@@ -4,7 +4,6 @@ import { Router } from '@angular/router';
 import { AuthenticationService } from 'src/app/service/auth/auth.service';
 import { jwtDecode } from 'jwt-decode';
 
-
 interface LoginFormControls {
   [key: string]: AbstractControl;
   emailOrUsername: AbstractControl;
@@ -81,27 +80,48 @@ export class LoginComponent {
     this.authService.login(loginData).subscribe({
       next: (response) => {
         const token = response.token;
+        let role = '';
+        let username = '';
 
         try {
           const decoded = jwtDecode<JwtPayload>(token);
-          const role = decoded.role;
-          const username = decoded.sub;
-        
+          role = decoded.role;
+          username = decoded.sub;
+
           // Store in localStorage
           localStorage.setItem('userRole', role);
           localStorage.setItem('username', username);
-        
+
           if (role === 'ADMIN') {
             localStorage.setItem('adminToken', token);
           }
         } catch (decodeError) {
           console.error('Error decoding token:', decodeError);
           this.errorMessage = 'Invalid token received from server.';
+          this.isLoading = false;
           return;
         }
-        
 
-        this.router.navigate(['/admin']);
+        setTimeout(() => {
+          switch (role) {
+            case 'ADMIN':
+              this.router.navigate(['/admin/template']);
+              break;
+            case 'CLIENT':
+              this.router.navigate(['/reclamation']);
+              break;
+            case 'FARMER':
+              this.router.navigate(['/reclamation']);
+              break;
+            case 'TRANSPORTER':
+              this.router.navigate(['/reclamation']);
+              break;
+            default:
+              this.router.navigate(['/']);
+              break;
+          }
+          this.isLoading = false;
+        }, 300);
       },
       error: (err) => {
         this.isLoading = false;
