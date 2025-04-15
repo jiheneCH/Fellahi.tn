@@ -65,6 +65,7 @@ import { CommonModule } from '@angular/common';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { VisualiseUsersComponent } from './visualise-users/visualise-users.component';
 import { ReclamationAdminComponent } from './reclamation-admin/reclamation-admin.component';
+import { ReclamationAdminTreatComponent } from './reclamation-admin-treat/reclamation-admin-treat.component';
 
 
 const routes: Routes = [
@@ -133,7 +134,8 @@ const routes: Routes = [
         ResumeComponent,
         DashboardComponent,
         VisualiseUsersComponent,
-        ReclamationAdminComponent
+        ReclamationAdminComponent,
+        ReclamationAdminTreatComponent
         
 
         

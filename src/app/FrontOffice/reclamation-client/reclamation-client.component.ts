@@ -50,7 +50,7 @@ export class ReclamationClientComponent implements OnInit {
   }
 
   onAddReport() {
-    this.router.navigate(['/client/reclamation/add']);
+    this.router.navigate(['/reclamation/add']);
     
   }
 }

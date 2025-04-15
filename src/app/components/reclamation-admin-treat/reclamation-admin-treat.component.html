@@ -1,0 +1,73 @@
+<div class="reclamation-admin-wrapper">
+  <div class="card" *ngIf="selectedReclamation">
+    <div class="card-header">
+      <h2>Respond to Reclamation</h2>
+    </div>
+
+    <form (ngSubmit)="submitResponse()" #responseForm="ngForm" class="card-body">
+
+      <!-- Subject Field -->
+      <div class="form-group mb-3">
+        <label for="subject"><strong>Subject</strong></label>
+        <input
+          type="text"
+          id="subject"
+          class="form-control"
+          [(ngModel)]="selectedReclamation.subject"
+          name="subject"
+          disabled>
+      </div>
+
+      <!-- Description Field -->
+      <div class="form-group mb-3">
+        <label for="description"><strong>Description</strong></label>
+        <textarea
+          id="description"
+          class="form-control"
+          [(ngModel)]="selectedReclamation.description"
+          name="description"
+          rows="4"
+          disabled>
+        </textarea>
+      </div>
+
+      <!-- Status Dropdown -->
+      <div class="form-group mb-3">
+        <label for="status"><strong>Status</strong></label>
+        <select
+          id="status"
+          class="form-control"
+          [(ngModel)]="selectedStatus"
+          name="status"
+          required>
+          <option value="IN_PROGRESS">In Progress</option>
+          <option value="RESOLVED">Resolved</option>
+        </select>
+      </div>
+
+      <!-- Response Textarea -->
+      <div class="form-group mb-4">
+        <label for="response"><strong>Your Response</strong></label>
+        <textarea
+          id="response"
+          class="form-control"
+          name="response"
+          [(ngModel)]="responseMessage"
+          rows="4"
+          placeholder="Write your response here..."
+          required>
+        </textarea>
+      </div>
+
+      <!-- Buttons -->
+      <div class="d-flex justify-content-between">
+        <button class="btn btn-primary" type="submit" [disabled]="responseForm.invalid">
+          Submit
+        </button>
+        <button class="btn btn-secondary" type="button" (click)="goBack()">
+          Back
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

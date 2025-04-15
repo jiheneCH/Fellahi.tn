@@ -102,7 +102,7 @@ export class ReclamationAddComponent implements OnInit {
   }
 
   goBack(): void {
-    this.router.navigate(['/client/reclamation']);
+    this.router.navigate(['/reclamation']);
   }
   
   

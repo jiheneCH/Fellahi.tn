@@ -15,6 +15,13 @@ export interface Reclamation {
     roleName: string;
   } | null;
 }
+export interface ReclamationResponseDTO {
+  reclamationId: number;
+  adminUsername: string;
+  responseMessage: string;
+  updatedStatus: 'IN_PROGRESS' | 'RESOLVED';
+}
+
 
 @Injectable({
   providedIn: 'root'
@@ -34,4 +41,16 @@ export class ReclamationAdminService {
   getAllReclamations(): Observable<Reclamation[]> {
     return this.http.get<Reclamation[]>(`${this.baseUrl}/all`);
   }
+  respondToReclamation(reclamationId: number, response: ReclamationResponseDTO): Observable<string> {
+    return this.http.post(
+      `${this.baseUrl}/treat/${reclamationId}`,
+      response,
+      {
+        responseType: 'text' as 'json'
+      }
+    ) as Observable<string>;
+  }
+  
+
+  
 }

@@ -57,6 +57,7 @@ import { ClientLayoutComponent } from './FrontOffice/client-layout/client-layout
 import { ReclamationClientComponent } from './FrontOffice/reclamation-client/reclamation-client.component';
 import { ReclamationAddComponent } from './FrontOffice/reclamation-add/reclamation-add.component';
 import { ReclamationAdminComponent } from './components/reclamation-admin/reclamation-admin.component';
+import { ReclamationAdminTreatComponent } from './components/reclamation-admin-treat/reclamation-admin-treat.component';
 
 
 
@@ -121,6 +122,8 @@ export const routes: Routes = [
             // { path: 'finance', component: FinanceComponent, title: 'Finance Admin | VRISTO - Multipurpose Tailwind Dashboard Template' },
             { path: 'crypto', component: CryptoComponent, title: 'Crypto Admin | VRISTO - Multipurpose Tailwind Dashboard Template' },
             { path: 'reclamation', component: ReclamationAdminComponent, title: 'Crypto Admin | VRISTO - Multipurpose Tailwind Dashboard Template' },
+            { path: 'reclamation/treat', component: ReclamationAdminTreatComponent, title: 'Crypto Admin | VRISTO - Multipurpose Tailwind Dashboard Template' },
+            
             //apps
             { path: '', loadChildren: () => import('./apps/apps.module').then((d) => d.AppsModule) },
 
@@ -194,12 +197,7 @@ export const routes: Routes = [
       component: ClientLayoutComponent,
       children: [
         
-      {
-        path: 'reclamation/add',
-        component: ReclamationAddComponent
-        ,
-        title: 'Column Chooser Table | VRISTO - Multipurpose Tailwind Dashboard Template',
-    },
+      
           // pages
           
       ],
@@ -214,7 +212,15 @@ export const routes: Routes = [
           component: ReclamationClientComponent
           ,
           title: 'Column Chooser Table | VRISTO - Multipurpose Tailwind Dashboard Template',
+
+          
       },
+      {
+        path: 'add',
+        component: ReclamationAddComponent
+        ,
+        title: 'Column Chooser Table | VRISTO - Multipurpose Tailwind Dashboard Template',
+    },
     ],
 },
     

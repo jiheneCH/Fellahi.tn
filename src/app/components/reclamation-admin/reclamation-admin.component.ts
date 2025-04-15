@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ReclamationAdminService } from 'src/app/service/reclamation-admin/reclamation-admin.service';
+import { Router } from '@angular/router';
+
 
 export interface Reclamation {
   id: number;
@@ -26,7 +28,7 @@ export class ReclamationAdminComponent implements OnInit {
   displayedColumns: string[] = ['id', 'userId', 'username', 'subject', 'description', 'status', 'createdDate', 'actions'];
   selectedStatus: string = '';
 
-  constructor(private reclamationService: ReclamationAdminService) {}
+  constructor(private reclamationService: ReclamationAdminService, private router: Router) {}
 
   ngOnInit(): void {
     this.loadReclamations();
@@ -67,17 +69,16 @@ export class ReclamationAdminComponent implements OnInit {
 
   getStatusClass(status: string): string {
     switch (status) {
-      case 'PENDING': return 'status-pending';
       case 'IN_PROGRESS': return 'status-progress';
       case 'RESOLVED': return 'status-resolved';
       default: return '';
     }
   }
 
-  openResponseDialog(reclamation: any): void {
-    console.log('Responding to:', reclamation);
-    // Implement dialog logic here
-  }
+  openResponseDialog(reclamation: Reclamation) {
+    this.router.navigate(['/admin/reclamation/treat'], {
+      state: { reclamation: reclamation }
+    })}
 
   markAsResolved(reclamation: any): void {
     console.log('Marking as resolved:', reclamation);

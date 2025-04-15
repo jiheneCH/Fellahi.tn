@@ -1,0 +1,143 @@
+.reclamation-admin-wrapper {
+    padding: 2rem;
+    display: flex;
+    justify-content: center;
+  
+    mat-card {
+      width: 100%;
+      max-width: 1200px;
+      padding: 1.5rem;
+      border-radius: 12px;
+      background: #fff;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+  
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+  
+      h2 {
+        margin: 0;
+        font-size: 1.8rem;
+        font-weight: 600;
+        color: #333;
+      }
+  
+      .button-group {
+        display: flex;
+        gap: 1rem;
+  
+        button {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          font-weight: 600;
+          border-radius: 8px;
+          padding: 0.6rem 1.4rem;
+          transition: all 0.3s ease;
+        }
+  
+        .refresh-btn {
+          background: linear-gradient(135deg, #1e88e5, #42a5f5);
+          color: #fff;
+          box-shadow: 0 2px 8px rgba(33, 150, 243, 0.3);
+  
+          &:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(33, 150, 243, 0.4);
+          }
+  
+          mat-icon {
+            margin-right: 0.3rem;
+          }
+        }
+      }
+    }
+  
+    table {
+      width: 100%;
+      border-spacing: 0;
+      border-radius: 12px;
+      overflow: hidden;
+  
+      th {
+        background-color: #f5f7fa;
+        color: #333;
+        font-weight: 600;
+      }
+  
+      td {
+        color: #444;
+      }
+  
+      .mat-header-cell,
+      .mat-cell {
+        padding: 1rem;
+        border-bottom: 1px solid #e0e0e0;
+      }
+  
+      .table-row {
+        transition: background-color 0.2s;
+  
+        &:hover {
+          background-color: #f0f4ff;
+          cursor: pointer;
+        }
+      }
+    }
+  
+    .status-badge {
+      padding: 0.4rem 0.8rem;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      display: inline-block;
+      text-transform: capitalize;
+    }
+  
+    .status-pending {
+      background-color: #fff8e1;
+      color: #f9a825;
+    }
+  
+    .status-progress {
+      background-color: #cce5ff;
+      color: #004085;
+    }
+  
+    .status-resolved {
+      background-color: #d4edda;
+      color: #155724;
+    }
+  
+    .no-data {
+      text-align: center;
+      color: #999;
+      font-style: italic;
+      margin-top: 2rem;
+      font-size: 1rem;
+    }
+
+    
+  }    .full-width {
+    width: 100%;
+  }
+  
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1rem;
+  }
+  
+  .form-control {
+    padding: 0.75rem;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+    background-color: #fff;
+  }
+  
+  
