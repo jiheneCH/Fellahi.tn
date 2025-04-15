@@ -80,4 +80,17 @@ export class SidebarComponent implements OnInit {
       this.activeDropdown.push(name);
     }
   }
+  isLoggingOut = false;
+
+  logout(): void {
+    this.isLoggingOut = true;
+  
+    setTimeout(() => {
+      localStorage.clear();
+      this.isLoggingOut = false;
+      this.router.navigate(['']);
+    }, 2000); // 2-second delay
+  }
+  
+  
 }

@@ -30,13 +30,14 @@
         </a>
       </mat-nav-list>
 
+  
       <!-- Log out -->
       <div class="logout-container">
         <mat-divider></mat-divider>
         <mat-nav-list>
-          <a mat-list-item routerLink="/logout" class="logout-link">
+          <a mat-list-item [disableRipple]="true" (click)="logout()" class="logout-link">
             <span>Log out</span>
-          </a>
+          </a>          
         </mat-nav-list>
       </div>
     </div>
