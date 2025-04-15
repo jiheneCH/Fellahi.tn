@@ -1,0 +1,152 @@
+
+<div class="flex flex-wrap gap-4 mb-4 items-end">
+    <!-- Liste déroulante des statuts -->
+    <div>
+      <label class="block text-sm font-medium mb-1">Status</label>
+      <select [(ngModel)]="selectedStatut" 
+              (change)="appliquerFiltres()"
+              class="p-2 border rounded-md shadow-sm w-full">
+        <option *ngFor="let statut of statuts" [value]="statut">
+          {{ statut === 'TOUS' ? 'Toutes les livraisons' : statut }}
+        </option>
+      </select>
+    </div>
+  
+    <!-- Calendrier - Date de début -->
+    <div>
+      <label class="block text-sm font-medium mb-1">From</label>
+      <input type="date" 
+             [(ngModel)]="dateRange.start"
+             (change)="appliquerFiltres()"
+             class="p-2 border rounded-md shadow-sm">
+    </div>
+  
+    <!-- Calendrier - Date de fin -->
+    <div>
+      <label class="block text-sm font-medium mb-1">To</label>
+      <input type="date" 
+             [(ngModel)]="dateRange.end"
+             (change)="appliquerFiltres()"
+             class="p-2 border rounded-md shadow-sm">
+    </div>
+    <div class="flex items-center gap-2 min-w-[300px]">
+      <input
+        type="text"
+        [(ngModel)]="telephone"
+        placeholder="Find by client phone number"
+        class="p-2 border rounded-md w-full"
+      />
+    
+      <button
+        (click)="rechercherParTelephone()"
+        class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+      >
+        Search
+      </button>
+    
+      <button
+        (click)="rafraichirDonnees()"
+        class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
+      >
+        Refresh
+      </button>
+    </div>
+    
+    
+  
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>id</th>
+        <th>Client Name</th>
+        <th>Client Adress</th>
+        <th>Delivery Date</th>
+        <th>Total Price</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let livraison of paginatedLivraisons">
+        
+        <td>{{ livraison.id }}</td>
+        <td>{{ livraison.prenomClient }}</td>
+        <td>{{ livraison.adresseClient }}</td>
+        <td>{{ livraison.dateLivraison | date: 'dd/MM/yyyy' }}</td>
+        <td>{{ livraison.prixTotal }} TND</td>
+        <td><div [class]="'inline-block px-3 py-1 rounded-full text-sm font-semibold ' + 
+          (livraison.statut === 'ANNULE' ? 'bg-red-100 text-red-800' : 
+          livraison.statut === 'LIVRE' ? 'bg-green-100 text-green-800' : 
+           livraison.statut === 'RETARDE' ? 'bg-orange-100 text-orange-800' :
+           livraison.statut === 'EN_ATTENTE' ? 'bg-yellow-100 text-yellow-800' :
+           'bg-blue-100 text-blue-800')">
+  {{ livraison.statut }}
+  </div></td>
+  
+  <td class="px-6 py-4 whitespace-nowrap">
+    <div class="flex flex-row space-x-2"> <!-- Ajout d'un conteneur flex -->
+      <!-- Bouton Voir Détails -->
+      <button class="btn btn-outline-primary p-2 rounded-md hover:bg-blue-50 transition-colors" 
+              [routerLink]="['/admin/deliveries/details', livraison.id]"
+              title="Voir détails">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16">
+          <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8M1.173 8a13 13 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13 13 0 0 1 14.828 8q-.086.13-.195.288c-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5s-3.879-1.168-5.168-2.457A13 13 0 0 1 1.172 8z"/>
+          <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5M4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0"/>
+        </svg>
+      </button>
+  
+      <!-- Bouton Annuler (conditionnel) -->
+      <button [disabled]="livraison.statut === 'ANNULE' || livraison.statut === 'LIVRE' "
+              class="btn btn-outline-danger p-2 rounded-md hover:bg-red-50 transition-colors"
+              (click)="annulerLivraison(livraison.id)"
+              title="Annuler la livraison">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16">
+                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
+              </svg>
+      </button>
+      <!-- Nouveau Bouton Archiver -->
+    <button [disabled]="livraison.statut === 'EN_COURS' || livraison.statut === 'EN_ATTENTE'|| livraison.statut === 'RETARDE'  "
+    class="btn btn-outline-secondary p-2 rounded-md hover:bg-gray-50 transition-colors"
+    (click)="archiverLivraison(livraison.id)"
+    title="Archiver la livraison">
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-archive" viewBox="0 0 16 16">
+<path d="M0 2a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1v7.5a2.5 2.5 0 0 1-2.5 2.5h-9A2.5 2.5 0 0 1 1 12.5V5a1 1 0 0 1-1-1zm2 3v7.5A1.5 1.5 0 0 0 3.5 14h9a1.5 1.5 0 0 0 1.5-1.5V5zm13-3H1v2h14zM5 7.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5"/>
+</svg>
+</button>
+<button [disabled]="livraison.statut === 'LIVRE' || livraison.statut === 'ANNULE'  "
+ (click)="onReaffecter(livraison.id)"   class="btn btn-outline-success p-2 rounded-md hover:bg-red-50 transition-colors">
+    <i class="fa fa-refresh"></i>
+  </button>
+    </div>
+  </td>
+
+      </tr>
+     
+      
+    </tbody>
+    
+  </table>
+  <!-- Pagination -->
+  <div class="flex justify-center items-center gap-2 mt-4">
+    <button (click)="page = page - 1" [disabled]="page === 1"
+            class="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-50">
+      Précédent
+    </button>
+  
+    <span *ngFor="let p of [].constructor(totalPages); let i = index"
+          (click)="page = i + 1"
+          class="px-3 py-1 rounded cursor-pointer"
+          [ngClass]="{
+            'bg-blue-500 text-white': page === i + 1,
+            'bg-gray-200': page !== i + 1
+          }">
+      {{ i + 1 }}
+    </span>
+  
+    <button (click)="page = page + 1" [disabled]="page === totalPages"
+            class="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 disabled:opacity-50">
+      Suivant
+    </button>
+  </div>
+  

@@ -1,0 +1,141 @@
+<div>
+    <div class="flex flex-wrap items-center justify-between gap-4">
+        <h2 class="text-xl">Internship Offers</h2>
+        <div class="flex w-full flex-col gap-4 sm:w-auto sm:flex-row sm:items-center sm:gap-3">
+            <div class="flex gap-3">
+                <div>
+                    <button type="button" class="btn btn-primary" (click)="editOffer()">
+                    <icon-plus class="h-6 w-6" />
+                    </button>
+                </div>
+                <div>
+                    <input type="file" id="file"  accept=".xlsx" (change)="onFileChange($event)" hidden />
+                    <label for="file" class="btn btn-secondary">Import from Excel</label>
+                </div>
+                <div>
+                    <button
+                        type="button"
+                        class="btn btn-outline-primary p-2"
+                        [ngClass]="{ 'bg-primary text-white': displayType === 'list' }"
+                        (click)="displayType = 'list'">
+                        <icon-list-check class="h-6 w-6" />
+                    </button>
+                </div>
+                <div>
+                    <button
+                        type="button"
+                        class="btn btn-outline-primary p-2"
+                        [ngClass]="{ 'bg-primary text-white': displayType === 'grid' }"
+                        (click)="displayType = 'grid'">
+                    <icon-gallery class="h-6 w-6" />
+
+                    </button>
+                </div>
+            </div>
+
+            <div class="relative">
+                <input
+                    type="text"
+                    placeholder="Search Offers"
+                    class="peer form-input py-2 ltr:pr-11 rtl:pl-11"
+                    [(ngModel)]="searchOffer"
+                    name="searchOffer"
+                    (ngModelChange)="filterInternshipOffers()"
+                />
+                <div class="absolute top-1/2 -translate-y-1/2 peer-focus:text-primary ltr:right-[11px] rtl:left-[11px]">
+                    <!-- Place your search icon here -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="panel mt-5 overflow-hidden border-0 p-0">
+        <ng-container *ngIf="displayType === 'list'">
+            <div class="table-responsive">
+                <table class="table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Location</th>
+                            <th>Duration</th>
+                            <th>Type</th>
+                            <th>is Paid</th>
+                            <th class="!text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <ng-container *ngFor="let offer of filteredInternshipOffers">
+                            <tr>
+                                <td>{{ offer.title }}</td>
+                                <td>{{ offer.location }}</td>
+                                <td>{{ offer.duration }}</td>
+                                <td>{{ offer.type }}</td>
+                                <td>{{ offer.paid? 'Yes' : 'No' }}</td> 
+
+                                <td>
+                                    <div class="flex items-center justify-center gap-4">
+                                        <button type="button" class="btn btn-sm btn-outline-primary" (click)="editOffer(offer)">Edit</button>
+                                        <button type="button" class="btn btn-sm btn-outline-danger" (click)="deleteOffer(offer)">Delete</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </ng-container>
+                    </tbody>
+                </table>
+            </div>
+        </ng-container>
+    </div>
+    <ng-container *ngIf="displayType === 'grid'">
+        <div class="grid w-full grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+            <ng-container *ngFor="let offer of filteredInternshipOffers">
+                <div class="relative overflow-hidden rounded-md bg-white text-center shadow">
+                    <div class="p-4">
+                        <h3 class="text-lg font-bold">{{ offer.title }}</h3>
+                        <p class="text-sm">{{ offer.description }}</p>
+                        <div class="mt-4 text-sm">
+                            <p>Location: {{ offer.location }}</p>
+                            <p>Duration: {{ offer.duration }}</p>
+                            <p>Type: {{ offer.type }}</p>
+                        </div>
+                        <div class="mt-4 flex justify-around">
+                            <button type="button" class="btn btn-outline-primary" (click)="editOffer(offer)">Edit</button>
+                            <button type="button" class="btn btn-outline-danger" (click)="deleteOffer(offer)">Delete</button>
+                        </div>
+                    </div>
+                </div>
+            </ng-container>
+        </div>
+    </ng-container>
+
+    <!-- Add/Edit Offer Modal -->
+    <modal #addOfferModal class="no-footer bg-white rounded-lg shadow-lg overflow-hidden">
+        <ng-template #modalHeader>
+            <h3 class="font-semibold text-lg p-6 bg-gray-100 border-b">{{ offerForm.controls['id'].value ? 'Edit Offer' : 'Add Offer' }}</h3>
+        </ng-template>
+        <ng-template #modalBody>
+            <form [formGroup]="offerForm" class="p-6" (ngSubmit)="saveOffer()" novalidate>
+                <div class="space-y-6">
+                    <input type="text" placeholder="Title" class="form-input w-full rounded-md border-gray-300" formControlName="title" />
+                    <input type="text" placeholder="Location" class="form-input w-full rounded-md border-gray-300" formControlName="location" />
+                    <input type="text" placeholder="Duration" class="form-input w-full rounded-md border-gray-300" formControlName="duration" />
+                    <select class="form-select w-full rounded-md border-gray-300" formControlName="type">
+                        <option value="">Select Type</option>
+                        <option value="REMOTE">REMOTE</option>
+                        <option value="HYBRID">HYBRID</option>
+                        <option value="ONSITE">ONSITE</option>
+                    </select>
+                    <textarea placeholder="Description" class="form-textarea w-full rounded-md border-gray-300" formControlName="description"></textarea>
+                    <div class="flex items-center">
+                        <input type="checkbox" id="ispaidCheckbox" class="form-checkbox h-5 w-5 text-blue-600 rounded border-gray-300" formControlName="is_paid" />
+                        <label for="ispaidCheckbox" class="ml-2 text-sm font-medium text-gray-700">Is Paid?</label>
+                    </div>
+                </div>
+                <div class="flex justify-end space-x-3 mt-6">
+                    <button type="button" class="btn btn-outline-secondary" (click)="addOfferModal.close()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">{{ offerForm.controls['id'].value ? 'Update' : 'Add' }}</button>
+                </div>
+            </form>
+        </ng-template>
+    </modal>
+    
+    
+</div>

@@ -1,0 +1,75 @@
+  <!-- Boutons d'action -->
+  <div class="mt-6 flex justify-end space-x-3">
+    <button class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 transition" routerLink="/admin/deliveriesAdmin">
+      Retour à la liste
+    </button>
+   
+  </div>
+<div class="container mx-auto p-6 bg-white rounded-lg shadow-md">
+  <!-- En-tête -->
+  <div class="border-b pb-4 mb-6">
+    <h1 class="text-2xl font-bold text-gray-800">Détails de la livraison #{{ delivery?.id }}</h1>
+    <div [class]="'inline-block mt-2 px-3 py-1 rounded-full text-sm font-semibold ' + 
+                 (delivery?.statut === 'ANNULE' ? 'bg-red-100 text-red-800' : 
+                  delivery?.statut === 'LIVRE' ? 'bg-green-100 text-green-800' : 
+                  delivery?.statut === 'RETARDE' ? 'bg-red-100 text-red-800' :
+                  'bg-blue-100 text-blue-800')">
+      {{ delivery?.statut }}
+    </div>
+  </div>
+
+  <!-- Grille d'informations -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <!-- Section Client -->
+    <div class="bg-gray-50 p-4 rounded-lg">
+      <h2 class="text-lg font-semibold mb-3 text-gray-700">Informations Client</h2>
+      <div class="space-y-2">
+        <p><span class="font-medium">Nom complet:</span> {{ delivery?.client?.prenom }} {{ delivery?.client?.nom }}</p>
+        <p><span class="font-medium">Email:</span> {{ delivery?.client?.email }}</p>
+        <p><span class="font-medium">Téléphone:</span> {{ delivery?.client?.telephone }}</p>
+        <p><span class="font-medium">Adresse:</span> {{ delivery?.client?.adresse }}, {{ delivery?.client?.delegation }}</p>
+      </div>
+    </div>
+    <div class="bg-gray-50 p-4 rounded-lg">
+      <h2 class="text-lg font-semibold mb-3 text-gray-700">Informations Transporteur</h2>
+      <div class="space-y-2">
+        <p><span class="font-medium">Nom Transporteur:</span> {{ delivery?.transporteur?.prenom }}{{ delivery?.transporteur?.nom }} </p>
+  
+        <p><span class="font-medium">Adresse:</span> {{ delivery?.transporteur?.delegation }}</p>
+        <p><span class="font-medium">Numéro:</span> {{ delivery?.transporteur?.telephone }}</p>
+      </div>
+    </div>
+    <!-- Section Transporteur -->
+    <div class="bg-gray-50 p-4 rounded-lg">
+      <h2 class="text-lg font-semibold mb-3 text-gray-700">Détails de la Commande</h2>
+      <div class="grid grid-cols-3 gap-4">
+      
+        <div>
+          <p class="font-medium">Date livraison</p>
+          <p>{{ delivery?.dateLivraison | date:'dd/MM/yyyy' }}</p>
+        </div>
+        <div>
+          <p class="font-medium">Prix Total</p>
+          <p>{{ delivery?.prixTotal }} TND</p>
+        </div>
+      </div>
+    </div>
+   
+
+
+     <!-- Section Client -->
+     <div class="bg-gray-50 p-4 rounded-lg">
+      <h2 class="text-lg font-semibold mb-3 text-gray-700">Information Probléme</h2>
+      <div class="space-y-2">
+        <p><span class="font-medium">Date réclamation</span> {{ delivery?.dateIncident}}</p>
+        <p><span class="font-medium">Description:</span> {{ delivery?.descriptionIncident }}</p>
+        <p><span class="font-medium">Type Incident:</span> {{ delivery?.typeIncident }}</p>
+        <p><span class="font-medium">Statut Incident:</span> {{ delivery?.statutIncident}}</p>
+      </div>
+    </div>
+    
+   
+  </div>
+
+
+</div>
