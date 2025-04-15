@@ -1,9 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ReclamationService } from 'src/app/service/reclamation/reclamation.service';
 import { Router } from '@angular/router';
-
-
+import { ReclamationService } from 'src/app/service/reclamation/reclamation.service';
 
 @Component({
   selector: 'app-reclamation-client',
@@ -11,27 +8,14 @@ import { Router } from '@angular/router';
   styleUrls: ['./reclamation-client.component.css']
 })
 export class ReclamationClientComponent implements OnInit {
-  forgotForm: FormGroup;
-  reclamationForm: FormGroup;
-  isLoading = false;
-  errorMessage: string | null = null;
-  successMessage: string | null = null;
-
   reports: any[] = [];
+  selectedReport: any = null;
+  showModal = false;
 
-  constructor(private router: Router, 
-    private fb: FormBuilder,
+  constructor(
+    private router: Router,
     private reclamationService: ReclamationService
-  ) {
-    this.forgotForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]]
-    });
-
-    this.reclamationForm = this.fb.group({
-      subject: ['', Validators.required],
-      description: ['', Validators.required]
-    });
-  }
+  ) {}
 
   ngOnInit(): void {
     this.fetchReports();
@@ -40,17 +24,27 @@ export class ReclamationClientComponent implements OnInit {
   fetchReports() {
     this.reclamationService.getAllReclamations().subscribe({
       next: (data) => {
+        console.log('Fetched reclamations:', data); // 👈 Log the full response
         this.reports = data;
       },
       error: (err) => {
         console.error('Failed to load reports:', err);
-        this.errorMessage = 'Failed to load reports.';
       }
     });
   }
+  
 
   onAddReport() {
     this.router.navigate(['/reclamation/add']);
-    
+  }
+
+  onViewReport(report: any) {
+    this.selectedReport = report;
+    this.showModal = true;
+  }
+
+  closeModal() {
+    this.showModal = false;
+    this.selectedReport = null;
   }
 }
