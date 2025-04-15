@@ -1,0 +1,34 @@
+/* register.component.css */
+.register-page-container {
+    min-height: 155vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Pour centrer le contenu verticalement */
+    align-items: center; /* Pour centrer le contenu horizontalement */
+  }
+  
+  .bg-main-light {
+    background-color: #fff;
+    border-radius: 15px;
+    box-shadow: 0 0.2rem 1rem rgba(0, 0, 0, 0.1);
+    padding: 3rem;
+  }
+  
+  /* Autres styles spécifiques au formulaire */
+  .form-control {
+    margin-bottom: 1rem;
+  }
+  
+  .btn-main {
+    background-color: #007bff;
+    color: white;
+  }
+  
+  .btn-main:hover {
+    background-color: #0056b3;
+  }
+  
+  .alert-danger {
+    margin-top: 10px;
+  }
+  

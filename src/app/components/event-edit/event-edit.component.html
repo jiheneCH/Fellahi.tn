@@ -1,0 +1,131 @@
+<div class="container">
+    <h2>Edit Event</h2>
+  
+    <!-- Affichage du message de succès ou d'erreur -->
+    <div *ngIf="message" [ngClass]="{'alert-success': !isError, 'alert-danger': isError}" class="alert">
+      {{ message }}
+    </div>
+  
+    <form [formGroup]="eventForm" (ngSubmit)="onSubmit()" enctype="multipart/form-data">
+      <!-- Champ Titre -->
+      <div class="form-group">
+        <label for="title">Title</label>
+        <input id="title" type="text" class="form-control" formControlName="title" />
+        <div *ngIf="eventForm.get('title')?.touched && eventForm.get('title')?.invalid" class="text-danger">
+          <div *ngIf="eventForm.get('title')?.errors?.['required']">Title is required</div>
+          <div *ngIf="eventForm.get('title')?.errors?.['minlength']">Title must be at least 3 characters</div>
+          <div *ngIf="eventForm.get('title')?.errors?.['maxlength']">Title must be less than 100 characters</div>
+          <div *ngIf="eventForm.get('title')?.errors?.['pattern']">Title cannot start or end with spaces</div>
+        </div>
+      </div>
+  
+      <!-- Champ Description -->
+      <div class="form-group">
+        <label for="description">Description</label>
+        <textarea id="description" class="form-control" formControlName="description"></textarea>
+        <div *ngIf="eventForm.get('description')?.touched && eventForm.get('description')?.invalid" class="text-danger">
+          <div *ngIf="eventForm.get('description')?.errors?.['required']">Description is required</div>
+          <div *ngIf="eventForm.get('description')?.errors?.['minlength']">Description must be at least 3 characters</div>
+          <div *ngIf="eventForm.get('description')?.errors?.['maxlength']">Description must be less than 100 characters</div>
+        </div>
+      </div>
+  
+      <!-- Champ Date Event -->
+      <div class="form-group">
+        <label for="dateEvent">Event Date</label>
+        <input id="dateEvent" type="date" class="form-control" formControlName="dateEvent" [min]="minDate" />
+        <div *ngIf="eventForm.get('dateEvent')?.touched && eventForm.get('dateEvent')?.invalid" class="text-danger">
+          <div *ngIf="eventForm.get('dateEvent')?.errors?.['required']">Event date is required</div>
+          <div *ngIf="eventForm.get('dateEvent')?.errors?.['pastDate']">Event date cannot be in the past</div>
+        </div>
+      </div>
+  
+      <!-- Champ Heure Event -->
+      <div class="form-group">
+        <label for="heureEvent">Event Time</label>
+        <input id="heureEvent" type="time" class="form-control" formControlName="heureEvent" />
+        <div *ngIf="eventForm.get('heureEvent')?.touched && eventForm.get('heureEvent')?.invalid" class="text-danger">
+          <div *ngIf="eventForm.get('heureEvent')?.errors?.['required']">Event time is required</div>
+        </div>
+      </div>
+  
+      <!-- Champ Prix -->
+      <div class="form-group">
+        <label for="prix">Price</label>
+        <input id="prix" type="number" class="form-control" formControlName="prix" />
+        <div *ngIf="eventForm.get('prix')?.touched && eventForm.get('prix')?.invalid" class="text-danger">
+          <div *ngIf="eventForm.get('prix')?.errors?.['required']">Price is required</div>
+          <div *ngIf="eventForm.get('prix')?.errors?.['min']">Price must be at least 0.01</div>
+          <div *ngIf="eventForm.get('prix')?.errors?.['pattern']">Invalid price format</div>
+        </div>
+      </div>
+  
+      <!-- Champ Nombre Places -->
+      <div class="form-group">
+        <label for="nombrePlaces">Number of Places</label>
+        <input id="nombrePlaces" type="number" class="form-control" formControlName="nombrePlaces" />
+        <div *ngIf="eventForm.get('nombrePlaces')?.touched && eventForm.get('nombrePlaces')?.invalid" class="text-danger">
+          <div *ngIf="eventForm.get('nombrePlaces')?.errors?.['required']">Number of places is required</div>
+          <div *ngIf="eventForm.get('nombrePlaces')?.errors?.['min']">Number of places cannot be less than 0</div>
+          <div *ngIf="eventForm.get('nombrePlaces')?.errors?.['max']">Number of places cannot be more than 10,000</div>
+        </div>
+      </div>
+  
+      <!-- Champ Location -->
+      <div class="form-group">
+        <label for="location">Location</label>
+        <input id="location" type="text" class="form-control" formControlName="location" />
+        <div *ngIf="eventForm.get('location')?.touched && eventForm.get('location')?.invalid" class="text-danger">
+          <div *ngIf="eventForm.get('location')?.errors?.['required']">Location is required</div>
+          <div *ngIf="eventForm.get('location')?.errors?.['minlength']">Location must be at least 3 characters</div>
+          <div *ngIf="eventForm.get('location')?.errors?.['maxlength']">Location must be less than 255 characters</div>
+          <div *ngIf="eventForm.get('location')?.errors?.['pattern']">Location contains invalid characters</div>
+        </div>
+      </div>
+  
+      <!-- Champ Type Event -->
+      <div class="form-group">
+        <label for="typeEvent">Event Type</label>
+        <input id="typeEvent" type="text" class="form-control" formControlName="typeEvent" />
+        <div *ngIf="eventForm.get('typeEvent')?.touched && eventForm.get('typeEvent')?.invalid" class="text-danger">
+          <div *ngIf="eventForm.get('typeEvent')?.errors?.['required']">Event type is required</div>
+        </div>
+      </div>
+  
+      <!-- Champ Status -->
+      <div class="form-group">
+        <label for="status">Status</label>
+        <input id="status" type="text" class="form-control" formControlName="status" />
+        <div *ngIf="eventForm.get('status')?.touched && eventForm.get('status')?.invalid" class="text-danger">
+          <div *ngIf="eventForm.get('status')?.errors?.['required']">Status is required</div>
+        </div>
+      </div>
+  
+      <!-- Champ Image -->
+   <div class="form-group">
+    <label for="image">Event Image</label>
+  
+    <!-- Input pour choisir une nouvelle image -->
+    <input 
+      id="image" 
+      type="file" 
+      class="form-control" 
+      (change)="onFileSelected($event)" 
+    />
+  
+    <!-- Affichage du nom de l'image actuelle -->
+    <div *ngIf="eventForm.get('image')?.value && !selectedFile" class="mt-2">
+      Image actuelle : <strong>{{ eventForm.get('image')?.value }}</strong>
+    </div>
+  
+    <!-- Message d'erreur -->
+    <div *ngIf="imageError" class="text-danger mt-1">
+      Please select an image file.
+    </div>
+  </div>
+  
+  
+      <button type="submit" class="btn btn-primary" [disabled]="eventForm.invalid">Update Event</button>
+    </form>
+  </div>
+  

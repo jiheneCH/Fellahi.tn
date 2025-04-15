@@ -1,0 +1,66 @@
+.reservation-card {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    padding: 25px;
+    margin-top: 30px;
+    position: sticky;
+    top: 20px;
+}
+
+.reservation-header {
+    border-bottom: 1px solid #eee;
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+}
+
+.reservation-header h3 {
+    color: #333;
+    font-size: 1.5rem;
+}
+
+.reservation-body p {
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.price-display {
+    margin: 20px 0;
+    text-align: center;
+}
+
+.price-display .price {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #F28123; /* Couleur orange comme dans votre thème */
+}
+
+.price-display .per-person {
+    display: block;
+    color: #888;
+    font-size: 0.9rem;
+}
+
+.reservation-btn {
+    padding: 12px;
+    font-size: 1.1rem;
+    margin: 15px 0;
+    background: #F28123;
+    border: none;
+}
+
+.reservation-btn:hover {
+    background: #e5721a;
+}
+
+.availability-info {
+    color: #666;
+    font-size: 0.9rem;
+    text-align: center;
+    margin-top: 15px;
+}
+
+.availability-info i {
+    color: #F28123;
+    margin-right: 5px;
+}

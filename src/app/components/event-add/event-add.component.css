@@ -1,0 +1,247 @@
+:root {
+  --primary-color: #4361ee;
+  --primary-light: #4895ef;
+  --dark-color: #2b2d42;
+  --light-color: #f8f9fa;
+  --success-color: #4cc9f0;
+  --border-radius: 8px;
+  --box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  --transition: all 0.3s ease;
+}
+
+.form-container {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: white;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+}
+
+.form-title {
+  text-align: center;
+  color: var(--dark-color);
+  margin-bottom: 2rem;
+  font-size: 1.8rem;
+  position: relative;
+  padding-bottom: 0.5rem;
+}
+
+.form-title:after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 4px;
+  background: linear-gradient(90deg, var(--primary-color), var(--success-color));
+  border-radius: 2px;
+}
+
+.modern-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.form-group {
+  position: relative;
+}
+
+.floating {
+  margin-top: 1rem;
+}
+
+.form-label {
+  position: absolute;
+  top: 1rem;
+  left: 0;
+  color: #6c757d;
+  transition: var(--transition);
+  pointer-events: none;
+}
+
+.form-input {
+  width: 100%;
+  padding: 1rem 0;
+  border: none;
+  border-bottom: 1px solid #ced4da;
+  font-size: 1rem;
+  background-color: transparent;
+  transition: var(--transition);
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: transparent;
+}
+
+.form-input:focus + .form-label,
+.form-input:not(:placeholder-shown) + .form-label {
+  top: -0.5rem;
+  font-size: 0.8rem;
+  color: var(--primary-color);
+}
+
+.underline {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: var(--primary-color);
+  transition: var(--transition);
+}
+
+.form-input:focus ~ .underline {
+  width: 100%;
+}
+
+.form-control {
+  width: 100%;
+  padding: 0.75rem 0;
+  border: none;
+  border-bottom: 1px solid #ced4da;
+  background-color: transparent;
+  font-size: 1rem;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+.form-row .form-group.floating label.form-label {
+  top: -0.5rem;
+  font-size: 0.8rem;
+}
+
+/* Description group - full width */
+.description-group {
+  grid-column: span 2;
+}
+
+.description-group textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+/* File upload styles */
+.file-group {
+  margin-top: 1.5rem;
+  padding: 1.5rem;
+  border-radius: var(--border-radius);
+  background-color: #f8f9fa;
+  border: 1px dashed #ced4da;
+  transition: var(--transition);
+}
+
+.file-group:hover {
+  border-color: var(--primary-color);
+  background-color: #f0f8ff;
+}
+
+/* Centered file upload */
+.centered-file-group {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  text-align: center;
+}
+
+.file-upload-wrapper {
+  width: 100%;
+  max-width: 400px;
+}
+
+.file-upload-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.file-upload-label {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  background: white;
+  color: var(--primary-color);
+  border: 2px solid var(--primary-color);
+  border-radius: var(--border-radius);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.file-upload-label:hover {
+  background: var(--primary-color);
+  color: white;
+}
+
+.form-input-file {
+  width: 0.1px;
+  height: 0.1px;
+  opacity: 0;
+  overflow: hidden;
+  position: absolute;
+  z-index: -1;
+}
+
+.file-name {
+  display: block;
+  margin-top: 0.5rem;
+  color: #666;
+  font-size: 0.9rem;
+  text-align: center;
+  width: 100%;
+}
+
+.submit-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1rem 2rem;
+  background: linear-gradient(135deg, #4cc9f0, #4895ef);
+  color: white !important;
+  border: none;
+  border-radius: var(--border-radius);
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition);
+  margin-top: 2rem;
+  width: 100%;
+  box-shadow: 0 2px 10px rgba(76, 201, 240, 0.3);
+}
+
+.submit-btn:hover {
+  background: linear-gradient(135deg, #4895ef, #4361ee);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(67, 97, 238, 0.4);
+}
+
+.message {
+  margin: 1rem 0;
+  padding: 1rem;
+  border-radius: 4px;
+  background-color: #4CAF50;
+  color: white;
+}
+
+.message.error {
+  background-color: #f44336;
+}
+
+.alert-danger {
+  color: red;
+  font-size: 0.8rem;
+  margin-top: 0.5rem;
+}

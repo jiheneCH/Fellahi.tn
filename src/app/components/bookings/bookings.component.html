@@ -1,0 +1,80 @@
+<div class="flex items-center justify-between gap-4 mb-6">
+    <!-- Barre de recherche modernisée -->
+    <div class="relative flex-grow max-w-xl">
+      <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+      </div>
+      <input type="text"
+              [(ngModel)]="searchReference" 
+              (input)="searchReservationByReference()" 
+             class="block w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+             placeholder="Search booking by reference">
+    </div>
+  
+    
+  
+</div>
+  
+  
+  
+  <table class="table mt-4">
+    <thead>
+      <tr>
+        <th scope="col">Reference</th>
+       <th scope="col">reservation date</th>
+        <th scope="col">total price</th>
+        <th scope="col">number_of_pass</th>
+        <th scope="col">client name</th>
+        <th scope="col">Event title</th>
+        
+        <th scope="col">Action</th>
+      </tr>
+    </thead>
+    <tbody> 
+      <tr *ngFor="let booking of bookings">
+        <td class="text-green-600">
+          {{ booking.reference }}
+        </td>
+  <td>{{ booking.reservationDate | date: 'short' }}</td>
+  <td>{{ booking.prixTotal }} DT</td>
+  <td>{{ booking.numberOfPass }}</td>
+  <td>{{ booking.user?.username}}</td>
+  <td>{{ booking.event?.title}}</td>
+        
+       
+        
+        <td>
+          <div class="flex space-x-2">
+            <!-- Bouton Modifier -->
+            <!-- <button class="btn btn-outline-primary p-2 rounded-md hover:bg-blue-50 transition-colors"
+            [routerLink]="['/admin/event-edit', event.idEvent]"
+            title="Modifier l'événement">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+        <path d="M12.146 0.854a2 2 0 0 1 2.828 2.828L5.707 11.293a1 1 0 0 1-.38.213l-4 1a1 1 0 0 1-1.21-1.21l1-4a1 1 0 0 1 .213-.38L10.707 2.022a2 2 0 0 1 2.828-.168z"/>
+      </svg>
+    </button>
+     -->
+            
+            <!-- Bouton Archiver, conditionnellement désactivé si déjà archivé -->
+            <!-- <button class="btn btn-outline-danger p-2 rounded-md hover:bg-red-50 transition-colors"
+          [disabled]="event.status === 'archive'"
+          (click)="archiverEvent(event.idEvent)"
+          title="Archiver l'événement">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-archive" viewBox="0 0 16 16">
+      <path d="M4 2a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1H4zm0 1h8v9H4V3zm1 4h6v1H5V7z"/>
+    </svg>
+  </button> -->
+  
+            
+            <!-- Bouton Archiver désactivé si l'événement est déjà archivé -->
+            <!-- <button *ngIf="event.status === 'archive'" class="btn btn-secondary btn-sm" disabled title="Événement déjà archivé">
+              <i class="fas fa-lock"></i>
+            </button> -->
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  

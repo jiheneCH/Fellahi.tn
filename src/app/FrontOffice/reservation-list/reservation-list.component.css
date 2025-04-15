@@ -1,0 +1,193 @@
+/* breadcrumb section - Conservé identique */
+.breadcrumb-section {
+    padding: 100px 0;
+    position: relative;
+}
+
+.breadcrumb-bg {
+    background-size: cover;
+    background-position: center;
+}
+
+.breadcrumb-text {
+    position: relative;
+    z-index: 1;
+}
+
+.breadcrumb-text p {
+    font-size: 18px;
+    color: #fff;
+    margin-bottom: 10px;
+}
+
+.breadcrumb-text h1 {
+    font-size: 50px;
+    color: #fff;
+    font-weight: 700;
+    margin-bottom: 0;
+}
+
+/* Nouveau style pour le tableau de réservations */
+.reservation-section {
+    padding: 100px 0;
+    background-color: #f8f9fa;
+}
+
+.reservation-table-container {
+    overflow-x: auto;
+    margin-bottom: 40px;
+    width: 100%; /* Élargissement du tableau */
+    max-width: 1200px; /* Largeur maximale augmentée */
+    margin-left: auto;
+    margin-right: auto;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    padding: 20px;
+}
+
+.reservation-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 1000px; /* Largeur minimale garantie */
+}
+
+.reservation-table th {
+    background-color: #343a40; /* Noir pour l'en-tête */
+    color: #fff;
+    padding: 15px;
+    text-align: left;
+    font-weight: 500;
+    border-bottom: 2px solid #495057;
+}
+
+.reservation-table td {
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+    vertical-align: middle;
+}
+
+.reservation-table tr:hover {
+    background-color: #f8f9fa;
+}
+
+/* Style des cellules spéciales */
+.reference-badge {
+    background: #e8f5e9; /* Fond vert très clair */
+    color: #2e7d32; /* Texte vert foncé */
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    display: inline-block;
+}
+
+.price-cell {
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.passengers-badge {
+    display: inline-block;
+    width: 25px;
+    height: 25px;
+    line-height: 25px;
+    text-align: center;
+    background: #e3f2fd;
+    border-radius: 50%;
+    color: #1976d2;
+    font-weight: 500;
+}
+
+.event-title {
+    max-width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Boutons d'action */
+.action-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.cancel-btn, .review-btn {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.2s;
+}
+
+.cancel-btn {
+    background: #ffebee;
+    color: #c62828;
+}
+
+.cancel-btn:hover {
+    background: #ffcdd2;
+}
+
+.review-btn {
+    background: #e8f5e9;
+    color: #2e7d32;
+}
+
+.review-btn:hover {
+    background: #c8e6c9;
+}
+
+/* Pagination */
+.pagination-wrap {
+    margin-top: 40px;
+}
+
+.pagination-wrap ul {
+    display: inline-flex;
+    list-style: none;
+    padding: 0;
+}
+
+.pagination-wrap ul li a {
+    padding: 8px 15px;
+    margin: 0 5px;
+    border: 1px solid #dee2e6;
+    color: #495057;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: all 0.2s;
+}
+
+.pagination-wrap ul li a.active,
+.pagination-wrap ul li a:hover {
+    background: #343a40;
+    color: #fff;
+    border-color: #343a40;
+}
+
+/* logo carousel - Conservé identique */
+.logo-carousel-section {
+    padding: 50px 0;
+    background: #f9f9f9;
+}
+
+.logo-carousel-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.single-logo-item img {
+    max-width: 150px;
+    filter: grayscale(100%);
+    transition: all 0.3s;
+}
+
+.single-logo-item img:hover {
+    filter: grayscale(0);
+}

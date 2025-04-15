@@ -1,0 +1,311 @@
+<div>
+    <ng-container class="pt-5">
+        <div class="mb-5 grid grid-cols-1 gap-5 lg:grid-cols-3 xl:grid-cols-4">
+            <div class="panel">
+                <div class="mb-5">
+                    <div class="flex flex-col items-center justify-center">
+                        <!-- <img src="/assets/images/profile-34.jpeg" alt="" class="mb-5 h-24 w-24 rounded-full object-cover" /> -->
+                        <p class="text-xl font-semibold text-primary">{{student.firstName}} {{student.lastName}}</p>
+                    </div>
+                    <ul class="m-auto mt-5 flex max-w-[160px] flex-col space-y-4 font-semibold text-white-dark">
+                        <!-- <li class="flex items-center gap-2">
+                            <icon-coffee class="shrink-0" />
+                            School Year
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <icon-calendar class="shrink-0" />
+                            Jan 20, 1989
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <icon-map-pin class="shrink-0" />
+                            New York, USA
+                        </li> -->
+                        <li>
+                            <a href="javascript:;" class="flex items-center gap-2">
+                                <icon-mail class="h-5 w-5 shrink-0" />
+                                <span class="truncate text-primary">{{student.email}}</span></a
+                            >
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <icon-phone />
+                            <span class="whitespace-nowrap" dir="ltr">{{student.phoneNumber}}</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="panel lg:col-span-2 xl:col-span-3">
+                <div class="mb-5">
+                    <h5 class="text-lg font-semibold dark:text-white-light">My documents</h5>
+                </div>
+                <div class="mb-5">
+                    <div *ngIf="student.studentFiles!=null" class="flex flex-row font-semibold text-[#515365] dark:text-white-light">
+                        <div class="flex flex-col min-w-[150px] h-[100px] border-solid border-2 border-black">
+                            <h3 class="flex flex-col text-center">Resume</h3>
+                            <div class="flex items-center">
+                                <icon-book class="size-7"/>
+                                <div  class="float-right">{{student.studentFiles.resume.name}}</div>
+                            </div>
+                        </div>
+                        <div class=" min-w-[150px] h-[100px] border-solid border-2 border-black">
+                            <h3 class="flex flex-col text-center">Cover letter</h3>
+                            <div class="flex items-center">
+                                <icon-book class="size-7"/>
+                                <div class="float-right">{{student.studentFiles.coverLetter}}</div>
+                            </div>
+                        </div>
+                        <div class="border-solid border-2 border-black w-full h-[100px]">
+                            <ng-scrollbar class="relative h-full grow" appearance="compact">
+                            <h3 class="flex flex-col text-center">Archive</h3>
+                            
+                                <div *ngFor="let file of files">
+                                    {{file}}
+                                </div>
+                            </ng-scrollbar>
+                        </div>
+                    </div>
+                </div>
+                <div *ngIf="markedInternships.length>0">
+                    <div class="mb-5">
+                        <h5 class="text-lg font-semibold dark:text-white-light">My internships</h5>
+                    </div>
+                    <div class="mb-5">
+                        <ng-container *ngFor="let internship of markedInternships" class="font-semibold text-[#515365] dark:text-white-light">
+                            <div
+                                class="panel pb-12"
+                                [ngClass]="{'bg-primary-light shadow-primary': internship.tag === 'personal',
+                                        'bg-warning-light shadow-warning': internship.tag === 'work',
+                                        'bg-info-light shadow-info': internship.tag === 'social',
+                                        'bg-danger-light shadow-danger': internship.tag === 'important',
+                                        'dark:shadow-dark': !internship.tag}"
+                            >
+                                <div class="min-h-[142px]">
+                                    <div class="flex justify-between">
+                                        <div class="flex w-max items-center">
+                                            <div class="flex-none">
+                                                <div *ngIf="internship.image" class="rounded-full bg-gray-300 p-0.5 dark:bg-gray-700">
+                                                    <img class="h-8 w-8 rounded-full object-cover" [src]="'/assets/images/' + internship.image" />
+                                                </div>
+                                                <div
+                                                    *ngIf="!internship.image && internship.title"
+                                                    class="grid h-8 w-8 place-content-center rounded-full bg-gray-300 text-sm font-semibold dark:bg-gray-700"
+                                                >
+                                                    {{ internship.title.charAt(0) + internship.title.charAt(internship.title.indexOf(' ') + 1) }}
+                                                </div>
+                                                <div
+                                                    *ngIf="!internship.thumb && !internship.title"
+                                                    class="grid h-8 w-8 place-content-center rounded-full bg-gray-300 dark:bg-gray-700"
+                                                >
+                                                    <icon-user class="h-4.5 w-4.5" />
+                                                </div>
+                                            </div>
+                                            <div class="ltr:ml-2 rtl:mr-2">
+                                                <p class="text-xl font-semibold text-gray-900 dark:text-white">{{ internship.title }}</p>
+                                                <div class="text-sx text-white-dark">{{ internship.company.name }}</div>
+                                            </div>
+                                        </div>
+                                        <!-- <div hlMenu class="dropdown">
+                                            <button hlMenuButton type="button" class="text-primary">
+                                                <icon-horizontal-dots class="rotate-90 opacity-70 hover:opacity-100" />
+                                            </button>
+                                            <ul *hlMenuItems @toggleAnimation class="text-sm font-medium ltr:right-0 rtl:left-0">
+                                                <li>
+                                                    <a href="javascript:;" class="w-full" *hlMenuItem="let menuItem" (click)="editNote(internship)">
+                                                        <icon-pencil class="h-4 w-4 shrink-0 ltr:mr-3 rtl:ml-3" />
+
+                                                        Edit
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="javascript:;" class="w-full" *hlMenuItem="let menuItem" (click)="viewNote(internship)">
+                                                        <icon-eye class="h-4.5 w-4.5 shrink-0 ltr:mr-3 rtl:ml-3" />
+
+                                                        View
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div> -->
+                                        <div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h4 class="mt-4 font-semibold text-justify">{{ internship.description }}</h4>
+                                        <p class="mt-2 text-white-dark">{{ internship.location }} - {{internship.duration}}</p>
+                                    </div>
+                                </div>
+                                <div class="absolute bottom-5 left-0 w-full px-5">
+                                    <div class="mt-2 flex items-center justify-between">
+                                        <div class="flex">
+                                            <div
+                                                [ngClass]="{
+                                                        'text-danger': internship.style === 'HYBRID',
+                                                        'text-primary': internship.style === 'ONSITE',
+                                                        'text-warning': internship.style === 'REMOTE'}"
+                                            >
+                                                <icon-square-rotated
+                                                    [class]="{'fill-danger': internship.style === 'HYBRID','fill-warning': internship.style === 'REMOTE','fill-primary': internship.style === 'ONSITE'}"
+                                                />
+                                            </div>
+                                            <div
+                                                [ngClass]="{
+                                                        'text-primary': internship.type === 'immersionCourse',
+                                                        'text-danger': internship.type === 'humanAndSocialTraining',
+                                                        'text-warning': internship.type === 'engineerInternship',
+                                                        'text-[#8b8c89]': internship.type === 'optionalInternship'
+                                                    }"
+                                            >
+                                                <icon-square-rotated
+                                                    [class]="{'fill-primary': internship.type === 'immersionCourse','fill-danger': internship.type === 'humanAndSocialTraining','fill-warning': internship.type === 'engineerInternship','fill-[#8b8c89]': internship.type === 'optionalInternship'}"
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </ng-container>
+                    </div>
+                </div>
+                
+                <div *ngIf="applications.length>0">
+                    <div class="mb-5">
+                        <h5 class="text-lg font-semibold dark:text-white-light">My applications</h5>
+                    </div>
+                    <div class="mb-5">
+                        <ng-container *ngFor="let application of applications" class="table-responsive font-semibold text-[#515365] dark:text-white-light">
+                            <div class="min-h-[400px] sm:min-h-[300px]">
+                                <div class="flex flex-col gap-5 ">
+                                    <ng-container *ngFor="let application of applications">
+                                        <div
+                                            class="pb-12 p-2"
+                                        >
+                                            <div class="min-h-[142px]">
+                                                <div class="flex justify-between">
+                                                    <div class="flex w-max items-center">
+                                                        <!-- <div class="flex-none">
+                                                            <div *ngIf="application.company.image" class="rounded-full bg-gray-300 p-0.5 dark:bg-gray-700">
+                                                                <img class="h-8 w-8 rounded-full object-cover" [src]="'/assets/images/' + application.image" />
+                                                            </div>
+                                                            <div
+                                                                *ngIf="!application.company.image && application.title"
+                                                                class="grid h-8 w-8 place-content-center rounded-full bg-gray-300 text-sm font-semibold dark:bg-gray-700"
+                                                            >
+                                                                {{ application.title.charAt(0) + application.title.charAt(application.title.indexOf(' ') + 1) }}
+                                                            </div>
+                                                            <div
+                                                                *ngIf="!application.thumb && !application.title"
+                                                                class="grid h-8 w-8 place-content-center rounded-full bg-gray-300 dark:bg-gray-700"
+                                                            >
+                                                                <icon-user class="h-4.5 w-4.5" />
+                                                            </div>
+                                                        </div> -->
+                                                        <div class="flex flex-row items-center">
+                                                            <div class="">
+                                                                <div class="flex flex-row items-center justify-between">
+                                                                    <p class="text-xl font-semibold text-gray-900 dark:text-white">{{ application.internshipOffer.title }}</p>
+                                                                    <div class="font-serif">{{application.status}}</div>
+                                                                </div>
+                                                                <div class="text-sx text-white-dark">{{ application.applicationDate |date:"MMM dd, yyyy 'at' hh:mm a"}}</div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div>
+                                                        <!-- <button type="button" class="text-primary opacity-70 hover:opacity-100" (click)="viewNote(application)">
+                                                            <icon-info-circle/>
+                                                        </button> -->
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <h4 class="mt-4 font-semibold text-justify">{{ application.internshipOffer.description }}</h4>
+                                                    <p class="mt-2 text-white-dark">{{ application.internshipOffer.location }} - {{application.internshipOffer.duration}}</p>
+                                                    
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </ng-container>
+                                </div>
+                            </div>
+                        </ng-container>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
+            <div *ngFor="let content of contents " class="panel">
+                <div class="mb-5">
+                    <h5 class="text-lg font-semibold dark:text-white-light">{{content.title}}</h5>
+                </div>
+                <div class="space-y-4">
+                    <div>{{content.description}}</div>
+                </div>
+            </div>
+            <div class="panel flex flex-col gap-3">
+                <button type="button" class="text-white flex mx-auto bg-green-700 hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800" (click)="addOtherDetail()">Add other detail</button>
+                <button type="button" class="text-white flex mx-auto bg-green-700 hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800" (click)="viewResumeTemplate()">Create new resume</button>
+
+            </div>
+        </div>
+        <modal #isAddDetailModal class="no-footer">
+            <ng-template #modalHeader>
+                <h2>Add detail</h2>
+            </ng-template>
+            <ng-template #modalBody>
+                <form [formGroup]="detailForm" class="text-sm">
+                    <ng-container>
+                        <div class="mb-5">
+                            <input class="form-input mb-3 max-w-[100px] resize-none" placeholder="Title" name="title" formControlName="title"/>
+                            <textarea
+                                placeholder="Description"
+                                class="form-textarea min-h-[130px] resize-none"
+                                value=""
+                                name="description"
+                                formControlName="description"
+                            ></textarea>
+                            </div>
+                    </ng-container>
+                    <div class="mt-8 flex items-center justify-end">
+                        <button type="submit" class="btn btn-outline-info gap-2 mr-2" (click)="saveDetail(detailForm)">Submit</button>
+                        <button type="button" class="btn btn-outline-danger gap-2" (click)="isAddDetailModal.close()">Cancel</button>
+                    </div>
+                </form>
+            </ng-template>
+        </modal>
+        <modal #isAddResumeDetailsModal class="no-footer">
+            <ng-template #modalHeader>
+                <h2 class="p-3">Add detail</h2>
+            </ng-template>
+            <ng-template #modalBody>
+                    <form [formGroup]="additionalForm" class="text-sm">
+                        <div class="flex flex-col">
+                            <div class="mb-5 flex flex-col gap-3">
+                                <input class="form-input mb-3 max-w-[150px] resize-none" placeholder="Adress" name="adress" formControlName="adress"/>
+                                <input class="form-input mb-3 max-w-[300px] resize-none" placeholder="LinkedIn" name="linkedIn" formControlName="linkedIn"/>
+                                <input class="form-input mb-3 max-w-[300px] resize-none" placeholder="Github" name="github" formControlName="github"/>
+                            </div>
+                            <div class="mt-4">
+                                <h2>Choose template</h2>
+                                <div class="flex flex-row gap-2">
+                                    <img src="/assets/images/template1.png" *ngIf="templateIndex!=1" alt="No image" class="flex mx-auto mb-5 h-64 w-44 rounded-sm border-solid border-2 object-cover cursor-pointer" (click)="setTemplate(1)"/>
+                                    <div *ngIf="templateIndex==1" class="flex flex-col">
+                                        <img src="/assets/images/template1.png" alt="No image" class="mx-auto mb-5 h-64 w-44 rounded-sm border-solid border-2 object-cover border-blue-700 cursor-pointer" (click)="setTemplate(0)"/>
+                                        <icon-square-check class="mx-auto mt-[-50px]"/>
+                                    </div>
+                                    <img src="/assets/images/template2.png" *ngIf="templateIndex!=2" alt="No image" class="flex mx-auto mb-5 h-64 w-44 rounded-sm border-solid border-2 object-cover cursor-pointer" (click)="setTemplate(2)"/>
+                                    <div *ngIf="templateIndex==2" class="flex flex-col">
+                                        <img src="/assets/images/template2.png" alt="No image" class="mx-auto mb-5 h-64 w-44 rounded-sm border-solid border-2 object-cover border-blue-700 cursor-pointer" (click)="setTemplate(0)"/>
+                                        <icon-square-check class="mx-auto mt-[-50px]"/>
+                                    </div>
+                                </div>
+                                
+                                
+                            </div>
+                        </div>
+                        <div class="mt-8 flex items-center justify-end">
+                            <button type="submit" class="btn btn-outline-info gap-2 mr-2" (click)="createNewResume(additionalForm)">Create Resume</button>
+                            <button type="button" class="btn btn-outline-danger gap-2" (click)="isAddResumeDetailsModal.close()">Cancel</button>
+                        </div>
+                    </form>
+               
+            </ng-template>
+        </modal>
+    </ng-container>
+    <pdf-viewer *ngIf="fileURL" src="{{fileURL}}" [original-size]="true" [show-all]="false" style="width: 100%; height: 100%;"></pdf-viewer>     
+</div>

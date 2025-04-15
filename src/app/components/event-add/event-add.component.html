@@ -1,0 +1,155 @@
+<div class="form-container">
+  <h2 class="form-title">🎉 Add event</h2>
+
+  <form [formGroup]="eventForm" (ngSubmit)="onSubmit()" class="modern-form">
+    <div *ngIf="message" class="message" [class.error]="isError">
+      {{ message }}
+    </div>
+    
+    <!-- Line 1 - Title and status -->
+    <div class="form-row">
+      <!-- Title -->
+      <div class="form-group floating">
+        <input type="text" formControlName="title" id="title" placeholder=" " class="form-input">
+        <label for="title" class="form-label">Event Title</label>
+        <div class="underline"></div>
+        <div class="alert alert-danger" *ngIf="eventForm.get('title')?.touched && eventForm.get('title')?.errors">
+          <p *ngIf="eventForm.get('title')?.getError('required')">Title is required</p>
+          <p *ngIf="eventForm.get('title')?.getError('minlength')">Minimum 3 characters</p>
+          <p *ngIf="eventForm.get('title')?.getError('maxlength')">Maximum 100 characters</p>
+          <p *ngIf="eventForm.get('title')?.getError('pattern')">Title cannot start or end with spaces</p>
+        </div>
+      </div>
+
+      <!-- Status -->
+      <div class="form-group floating">
+        <label for="status" class="form-label">Status</label>
+        <select class="form-control" id="status" formControlName="status">
+          <option value="">-- Select --</option>
+          <option value="complete">Complete</option>
+          <option value="disponible">Available</option>
+          <option value="archive">Archive</option>
+        </select>
+        <div class="alert alert-danger" *ngIf="eventForm.get('status')?.touched && eventForm.get('status')?.errors">
+          <p *ngIf="eventForm.get('status')?.getError('required')">Status is required</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Line 2 - Date and Time -->
+    <div class="form-row">
+      <!-- Date -->
+      <div class="form-group floating">
+        <input type="date" formControlName="dateEvent" id="dateEvent" placeholder=" " class="form-input" [min]="minDate">
+        <label for="dateEvent" class="form-label">Event Date</label>
+        <div class="underline"></div>
+        <div class="alert alert-danger" *ngIf="eventForm.get('dateEvent')?.touched && eventForm.get('dateEvent')?.errors">
+          <p *ngIf="eventForm.get('dateEvent')?.getError('required')">Date is required</p>
+          <p *ngIf="eventForm.get('dateEvent')?.getError('pastDate')">Date must be today or in the future</p>
+        </div>
+      </div>
+
+      <!-- Time -->
+      <div class="form-group floating">
+        <input type="time" formControlName="heureEvent" id="heureEvent" placeholder=" " class="form-input">
+        <label for="heureEvent" class="form-label">Event Time</label>
+        <div class="underline"></div>
+        <div class="alert alert-danger" *ngIf="eventForm.get('heureEvent')?.touched && eventForm.get('heureEvent')?.errors">
+          <p *ngIf="eventForm.get('heureEvent')?.getError('required')">Time is required</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Line 3 - Price and Number of seats -->
+    <div class="form-row">
+      <!-- Price -->
+      <div class="form-group floating">
+        <input type="number" formControlName="prix" id="prix" placeholder=" " class="form-input" step="0.01">
+        <label for="prix" class="form-label">Price</label>
+        <div class="underline"></div>
+        <div class="alert alert-danger" *ngIf="eventForm.get('prix')?.touched && eventForm.get('prix')?.errors">
+          <p *ngIf="eventForm.get('prix')?.getError('required')">Price is required</p>
+          <p *ngIf="eventForm.get('prix')?.getError('min')">Price must be greater than 0</p>
+          <p *ngIf="eventForm.get('prix')?.getError('pattern')">Price should have up to 2 decimal places</p>
+        </div>
+      </div>
+
+      <!-- Number of seats -->
+      <div class="form-group floating">
+        <input type="number" formControlName="nombrePlaces" id="nombrePlaces" placeholder=" " class="form-input">
+        <label for="nombrePlaces" class="form-label">Number of Seats</label>
+        <div class="underline"></div>
+        <div class="alert alert-danger" *ngIf="eventForm.get('nombrePlaces')?.touched && eventForm.get('nombrePlaces')?.errors">
+          <p *ngIf="eventForm.get('nombrePlaces')?.getError('required')">Number of seats is required</p>
+          <p *ngIf="eventForm.get('nombrePlaces')?.getError('max')">Cannot exceed 10,000</p>
+          <p *ngIf="eventForm.get('nombrePlaces')?.getError('min')">Must be at least 0</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Line 4 - Location and Event Type -->
+    <div class="form-row">
+      <!-- Location -->
+      <div class="form-group floating">
+        <input type="text" formControlName="location" id="location" placeholder=" " class="form-input">
+        <label for="location" class="form-label">Location</label>
+        <div class="underline"></div>
+        <div class="alert alert-danger" *ngIf="eventForm.get('location')?.touched && eventForm.get('location')?.errors">
+          <p *ngIf="eventForm.get('location')?.getError('required')">Location is required</p>
+          <p *ngIf="eventForm.get('location')?.getError('pattern')">Must be alphanumeric</p>
+          <p *ngIf="eventForm.get('location')?.getError('minlength')">Minimum 3 characters</p>
+          <p *ngIf="eventForm.get('location')?.getError('maxlength')">Maximum 255 characters</p>
+        </div>
+      </div>
+
+      <!-- Event Type -->
+      <div class="form-group floating">
+        <label for="typeEvent" class="form-label">Event Type</label>
+        <select class="form-control" id="typeEvent" formControlName="typeEvent">
+          <option value="">-- Select --</option>
+          <option value="WORKSHOP">WORKSHOP</option>
+          <option value="SEMINAIRE">SEMINAR</option>
+          <option value="CONFERENCE">CONFERENCE</option>
+        </select>
+        <div class="alert alert-danger" *ngIf="eventForm.get('typeEvent')?.touched && eventForm.get('typeEvent')?.errors">
+          <p *ngIf="eventForm.get('typeEvent')?.getError('required')">Event type is required</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Line 5 - Description (full width) -->
+    <div class="form-row">
+      <div class="form-group floating description-group">
+        <textarea formControlName="description" id="description" placeholder=" " class="form-input" rows="5"></textarea>
+        <label for="description" class="form-label">Description</label>
+        <div class="underline"></div>
+        <div class="alert alert-danger" *ngIf="eventForm.get('description')?.touched && eventForm.get('description')?.errors">
+          <p *ngIf="eventForm.get('description')?.getError('required')">Description is required</p>
+          <p *ngIf="eventForm.get('description')?.getError('minlength')">Minimum 3 characters</p>
+          <p *ngIf="eventForm.get('description')?.getError('maxlength')">Maximum 100 characters</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Image - centered -->
+    <div class="form-group file-group centered-file-group">
+      <div class="file-upload-wrapper">
+        <label class="form-label">Event Image</label>
+        <div class="file-upload-container">
+          <input type="file" id="image" (change)="onFileSelected($event)" class="form-input-file">
+          <label for="image" class="file-upload-label">
+            <span>Choose a file</span>
+          </label>
+          <span class="file-name" *ngIf="!selectedFile">No file chosen</span>
+          <span class="file-name" *ngIf="selectedFile">{{selectedFile.name}}</span>
+        </div>
+        <div class="alert alert-danger" *ngIf="imageError">Image is required</div>
+      </div>
+    </div>
+
+    <!-- Submit button -->
+    <button type="submit" class="submit-btn">
+      <span>Add Event</span>
+    </button>
+  </form>
+</div>

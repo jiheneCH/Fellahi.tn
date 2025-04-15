@@ -1,0 +1,479 @@
+<div>
+    <div class="relative flex h-full gap-5 sm:h-[calc(100vh_-_150px)]">
+        <div
+            class="absolute z-10 hidden h-full w-full rounded-md bg-black/60"
+            [ngClass]="{ '!block xl:!hidden': isShowNoteMenu }"
+            (click)="isShowNoteMenu = !isShowNoteMenu"
+        ></div>
+        <div
+            class="panel absolute z-10 hidden h-full w-[240px] flex-none space-y-4 overflow-hidden p-4 ltr:rounded-r-none rtl:rounded-l-none ltr:lg:rounded-r-md rtl:lg:rounded-l-md xl:relative xl:block xl:h-auto"
+            [ngClass]="{ 'hidden shadow': !isShowNoteMenu, '!block h-full ltr:left-0 rtl:right-0': isShowNoteMenu }"
+        >
+        <ng-scrollbar class="relative h-full grow ltr:pr-3.5 rtl:pl-3.5" appearance="compact">
+            <div class="flex h-full flex-col pb-16">
+                <div class="flex items-center text-center">
+                    <div class="shrink-0">
+                        <icon-notes />
+                    </div>
+                    <h3 class="text-lg font-semibold ltr:ml-3 rtl:mr-3">Internships</h3>
+                </div>
+                <div class="my-4 h-px w-full border-b border-[#e0e6ed] dark:border-[#1b2e4b]"></div>
+                    <div class="space-y-1">
+                        
+                        <button
+                            type="button"
+                            class="flex h-10 w-full items-center justify-between rounded-md p-2 font-medium hover:bg-white-dark/10 hover:text-primary dark:hover:bg-[#181F32] dark:hover:text-primary"
+                            [ngClass]="{'bg-gray-100 dark:text-primary text-primary dark:bg-[#181F32]': selectedTab === 'all' }"
+                            (click)="tabChanged('all')"
+                        >
+                            <div class="flex items-center">
+                                <icon-notes-edit class="shrink-0" />
+
+                                <div class="ltr:ml-3 rtl:mr-3">All Internships</div>
+                            </div>
+                        </button>
+                        <button
+                            type="button"
+                            class="flex h-10 w-full items-center justify-between rounded-md p-2 font-medium hover:bg-white-dark/10 hover:text-primary dark:hover:bg-[#181F32] dark:hover:text-primary"
+                            [ngClass]="{'bg-gray-100 dark:text-primary text-primary dark:bg-[#181F32]': selectedTab === 'fav' }"
+                            (click)="tabChanged('fav')"
+                        >
+                            <div class="flex items-center">
+                                <icon-star class="shrink-0" />
+                                <div class="ltr:ml-3 rtl:mr-3">Favourites</div>
+                            </div>
+                        </button>
+                        <button
+                            type="button"
+                            class="flex h-10 w-full items-center justify-between rounded-md p-2 font-medium hover:bg-white-dark/10 hover:text-primary dark:hover:bg-[#181F32] dark:hover:text-primary"
+                            [ngClass]="{'bg-gray-100 dark:text-primary text-primary dark:bg-[#181F32]': selectedTab === 'app' }"
+                            (click)="tabChanged('app')"
+                        >
+                            <div class="flex items-center">
+                                <icon-archive class="shrink-0" />
+                                <div class="ltr:ml-3 rtl:mr-3">Applications</div>
+                            </div>
+                        </button>
+                        <div class="h-px w-full border-b border-[#e0e6ed] dark:border-[#1b2e4b]"></div>
+                        <div class="px-1 py-3 text-white-dark">Internship Styles</div>
+                        <button
+                            type="button"
+                            class="flex h-10 w-full items-center rounded-md p-1 font-medium text-primary duration-300 hover:bg-white-dark/10 ltr:hover:pl-3 rtl:hover:pr-3 dark:hover:bg-[#181F32]"
+                            [ngClass]="{'ltr:pl-3 rtl:pr-3 bg-gray-100 dark:bg-[#181F32]': selectedTab === 'ONSITE' }"
+                            (click)="tabChanged('ONSITE')"
+                        >
+                            <icon-square-rotated class="shrink-0 fill-primary" />
+                            <div class="ltr:ml-3 rtl:mr-3">OnSite</div>
+                        </button>
+                        <button
+                            type="button"
+                            class="flex h-10 w-full items-center rounded-md p-1 font-medium text-danger duration-300 hover:bg-white-dark/10 ltr:hover:pl-3 rtl:hover:pr-3 dark:hover:bg-[#181F32]"
+                            [ngClass]="{'ltr:pl-3 rtl:pr-3 bg-gray-100 dark:bg-[#181F32]': selectedTab === 'HYBRID' }"
+                            (click)="tabChanged('HYBRID')"
+                        >
+                            <icon-square-rotated class="shrink-0 fill-danger" />
+                            <div class="ltr:ml-3 rtl:mr-3">Hybrid</div>
+                        </button>
+                        <button
+                            type="button"
+                            class="flex h-10 w-full items-center rounded-md p-1 font-medium text-warning duration-300 hover:bg-white-dark/10 ltr:hover:pl-3 rtl:hover:pr-3 dark:hover:bg-[#181F32]"
+                            [ngClass]="{ 'ltr:pl-3 rtl:pr-3 bg-gray-100 dark:bg-[#181F32]': selectedTab === 'REMOTE' }"
+                            (click)="tabChanged('REMOTE')"
+                        >
+                            <icon-square-rotated class="shrink-0 fill-warning" />
+                            <div class="ltr:ml-3 rtl:mr-3">Remote</div>
+                        </button>
+                        <div class="px-1 py-3 text-white-dark">Available internships for you</div>
+                        <button
+                            type="button"
+                            class="flex h-10 w-full items-center rounded-md p-1 font-medium text-primary duration-300 hover:bg-white-dark/10 ltr:hover:pl-3 rtl:hover:pr-3 dark:hover:bg-[#181F32]"
+                            [ngClass]="{ 'ltr:pl-3 rtl:pr-3 bg-gray-100 dark:bg-[#181F32]': selectedTab === 'immersionCourse' }"
+                            (click)="tabChanged('immersionCourse')"
+                        >
+                            <icon-square-rotated class="shrink-0 fill-primary" />
+                            <div class="ltr:ml-3 rtl:mr-3">Immersion Course</div>
+                        </button>
+
+                        <button
+                            type="button"
+                            class="flex h-10 w-full items-center rounded-md p-1 font-medium text-danger duration-300 hover:bg-white-dark/10 ltr:hover:pl-3 rtl:hover:pr-3 dark:hover:bg-[#181F32]"
+                            [ngClass]="{ 'ltr:pl-3 rtl:pr-3 bg-gray-100 dark:bg-[#181F32]': selectedTab === 'humanAndSocialTraining' }"
+                            (click)="tabChanged('humanAndSocialTraining')"
+                        >
+                            <icon-square-rotated class="shrink-0 fill-danger" />
+                            <div class="ltr:ml-3 rtl:mr-3">Human and Social Training</div>
+                        </button>
+                        <button
+                            type="button"
+                            class="flex h-10 w-full items-center rounded-md p-1 font-medium text-warning duration-300 hover:bg-white-dark/10 ltr:hover:pl-3 rtl:hover:pr-3 dark:hover:bg-[#181F32]"
+                            [ngClass]="{ 'ltr:pl-3 rtl:pr-3 bg-gray-100 dark:bg-[#181F32]': selectedTab === 'engineerInternship' }"
+                            (click)="tabChanged('engineerInternship')"
+                        >
+                            <icon-square-rotated class="shrink-0 fill-warning" />
+                            <div class="ltr:ml-3 rtl:mr-3">Engineer Internship</div>
+                        </button>
+                        <button
+                            type="button"
+                            class="flex h-10 w-full items-center rounded-md p-1 font-medium text-[#8b8c89] duration-300 hover:bg-white-dark/10 ltr:hover:pl-3 rtl:hover:pr-3 dark:hover:bg-[#181F32]"
+                            [ngClass]="{ 'ltr:pl-3 rtl:pr-3 bg-gray-100 dark:bg-[#181F32]': selectedTab === 'optionalInternship' }"
+                            (click)="tabChanged('optionalInternship')"
+                        >
+                            <icon-square-rotated class="shrink-0 fill-[#8b8c89]" />
+                            <div class="ltr:ml-3 rtl:mr-3">Optional</div>
+                        </button>
+                    </div>
+            </div>
+        </ng-scrollbar>
+        </div>
+
+        <div class="panel h-full flex-1 overflow-auto">
+            <!-- <div>
+                <input
+
+                    [(ngModel)]="searchText"
+
+                    type="text"
+
+                    class="peer form-input bg-gray-100 placeholder:tracking-widest ltr:pl-9 ltr:pr-9 rtl:pl-9 rtl:pr-9 sm:bg-transparent ltr:sm:pr-4 rtl:sm:pl-4"
+
+                    placeholder="Search..."
+
+
+                />
+
+                <button type="button" class="absolute inset-x-5 h-9 w-9 appearance-none peer-focus:text-primary ltr:right-auto rtl:left-auto mb-5">
+
+                    <icon-search class="mx-auto" />
+
+                </button>
+            </div> -->
+            <div class="pb-5">
+                <button type="button" class="hover:text-primary xl:hidden" (click)="isShowNoteMenu = !isShowNoteMenu">
+                    <icon-menu />
+                </button>
+            </div>
+            <ng-container *ngIf="!internships.length">
+                <div class="flex h-full min-h-[400px] items-center justify-center text-lg font-semibold sm:min-h-[300px]">No data available</div>
+            </ng-container>
+            <ng-container *ngIf="internships.length && selectedTab!='app'">
+                <div class="min-h-[400px] sm:min-h-[300px]">
+                    <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
+                        <ng-container *ngFor="let internship of internships">
+                            <div
+                                class="panel pb-12"
+                                [ngClass]="{'bg-primary-light shadow-primary': internship.tag === 'personal',
+                                        'bg-warning-light shadow-warning': internship.tag === 'work',
+                                        'bg-info-light shadow-info': internship.tag === 'social',
+                                        'bg-danger-light shadow-danger': internship.tag === 'important',
+                                        'dark:shadow-dark': !internship.tag}"
+                            >
+                                <div class="min-h-[142px]">
+                                    <div class="flex justify-between">
+                                        <div class="flex w-max items-center">
+                                            <div class="flex-none">
+                                                <div *ngIf="internship.image" class="rounded-full bg-gray-300 p-0.5 dark:bg-gray-700">
+                                                    <img class="h-8 w-8 rounded-full object-cover" [src]="'/assets/images/' + internship.image" />
+                                                </div>
+                                                <div
+                                                    *ngIf="!internship.image && internship.title"
+                                                    class="grid h-8 w-8 place-content-center rounded-full bg-gray-300 text-sm font-semibold dark:bg-gray-700"
+                                                >
+                                                    {{ internship.title.charAt(0) + internship.title.charAt(internship.title.indexOf(' ') + 1) }}
+                                                </div>
+                                                <div
+                                                    *ngIf="!internship.thumb && !internship.title"
+                                                    class="grid h-8 w-8 place-content-center rounded-full bg-gray-300 dark:bg-gray-700"
+                                                >
+                                                    <icon-user class="h-4.5 w-4.5" />
+                                                </div>
+                                            </div>
+                                            <div class="ltr:ml-2 rtl:mr-2">
+                                                <p class="text-xl font-semibold text-gray-900 dark:text-white">{{ internship.title }}</p>
+                                                <div class="text-sx text-white-dark">{{ internship.company.name }}</div>
+                                            </div>
+                                        </div>
+                                        <!-- <div hlMenu class="dropdown">
+                                            <button hlMenuButton type="button" class="text-primary">
+                                                <icon-horizontal-dots class="rotate-90 opacity-70 hover:opacity-100" />
+                                            </button>
+                                            <ul *hlMenuItems @toggleAnimation class="text-sm font-medium ltr:right-0 rtl:left-0">
+                                                <li>
+                                                    <a href="javascript:;" class="w-full" *hlMenuItem="let menuItem" (click)="editNote(internship)">
+                                                        <icon-pencil class="h-4 w-4 shrink-0 ltr:mr-3 rtl:ml-3" />
+
+                                                        Edit
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="javascript:;" class="w-full" *hlMenuItem="let menuItem" (click)="viewNote(internship)">
+                                                        <icon-eye class="h-4.5 w-4.5 shrink-0 ltr:mr-3 rtl:ml-3" />
+
+                                                        View
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div> -->
+                                        <div>
+                                            <button type="button" class="text-primary opacity-70 hover:opacity-100" (click)="viewNote(internship)">
+                                                <icon-info-circle/>
+                                                <div *ngIf="resumeUploaded">
+                                                    <h3 *ngIf="percentageMatch.length>0" class="mt-3">
+                                                        {{percentageMatch[internships.indexOf(internship)]}}
+                                                    </h3>
+                                                    <h3 *ngIf="percentageMatch.length==0" class="mt-3">
+                                                        <icon-loader/>
+                                                    </h3>
+                                                </div>
+                                                
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h4 class="mt-4 font-semibold text-justify">{{ internship.description }}</h4>
+                                        <p class="mt-2 text-white-dark">{{ internship.location }} - {{internship.duration}}</p>
+                                    </div>
+                                </div>
+                                <div class="absolute bottom-5 left-0 w-full px-5">
+                                    <div class="mt-2 flex items-center justify-between">
+                                        <div class="flex">
+                                            <div
+                                                [ngClass]="{
+                                                        'text-danger': internship.style === 'HYBRID',
+                                                        'text-primary': internship.style === 'ONSITE',
+                                                        'text-warning': internship.style === 'REMOTE'}"
+                                            >
+                                                <icon-square-rotated
+                                                    [class]="{'fill-danger': internship.style === 'HYBRID','fill-warning': internship.style === 'REMOTE','fill-primary': internship.style === 'ONSITE'}"
+                                                />
+                                            </div>
+                                            <div
+                                                [ngClass]="{
+                                                        'text-primary': internship.type === 'immersionCourse',
+                                                        'text-danger': internship.type === 'humanAndSocialTraining',
+                                                        'text-warning': internship.type === 'engineerInternship',
+                                                        'text-[#8b8c89]': internship.type === 'optionalInternship'
+                                                    }"
+                                            >
+                                                <icon-square-rotated
+                                                    [class]="{'fill-primary': internship.type === 'immersionCourse','fill-danger': internship.type === 'humanAndSocialTraining','fill-warning': internship.type === 'engineerInternship','fill-[#8b8c89]': internship.type === 'optionalInternship'}"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center">
+                                            <button type="button" class="group text-warning ltr:ml-2 rtl:mr-2" (click)="setFav(internship)">
+                                                <icon-star [class]="'h-4.5 w-4.5 group-hover:fill-warning ' + [internship.isFav ? 'fill-warning' : ''  ]" />
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </ng-container>
+                    </div>
+                </div>
+            </ng-container>
+            <ng-container *ngIf="!applications.length && selectedTab=='app'">
+                <div class="flex h-full min-h-[400px] items-center justify-center text-lg font-semibold sm:min-h-[300px]">No data available</div>
+            </ng-container>
+            <ng-container *ngIf="applications.length && selectedTab=='app'">
+                <div class="min-h-[400px] sm:min-h-[300px]">
+                    <div class="flex flex-col gap-5 ">
+                        <ng-container *ngFor="let application of applications">
+                            <div
+                                class="pb-12 p-2"
+                            >
+                                <div class="min-h-[142px]">
+                                    <div class="flex justify-between">
+                                        <div class="flex w-max items-center">
+                                            <!-- <div class="flex-none">
+                                                <div *ngIf="application.company.image" class="rounded-full bg-gray-300 p-0.5 dark:bg-gray-700">
+                                                    <img class="h-8 w-8 rounded-full object-cover" [src]="'/assets/images/' + application.image" />
+                                                </div>
+                                                <div
+                                                    *ngIf="!application.company.image && application.title"
+                                                    class="grid h-8 w-8 place-content-center rounded-full bg-gray-300 text-sm font-semibold dark:bg-gray-700"
+                                                >
+                                                    {{ application.title.charAt(0) + application.title.charAt(application.title.indexOf(' ') + 1) }}
+                                                </div>
+                                                <div
+                                                    *ngIf="!application.thumb && !application.title"
+                                                    class="grid h-8 w-8 place-content-center rounded-full bg-gray-300 dark:bg-gray-700"
+                                                >
+                                                    <icon-user class="h-4.5 w-4.5" />
+                                                </div>
+                                            </div> -->
+                                            <div class="flex flex-row items-center">
+                                                <div class="">
+                                                    <div class="flex flex-row items-center justify-between">
+                                                        <p class="text-xl font-semibold text-gray-900 dark:text-white">{{ application.internshipOffer.title }}</p>
+                                                        <div class="font-serif">{{application.status}}</div>
+                                                    </div>
+                                                    <div class="text-sx text-white-dark">{{ application.applicationDate |date:"MMM dd, yyyy 'at' hh:mm a"}}</div>
+                                                </div>
+                                                <button (click)="deleteApp(application.id)" class="flex justify-end">
+                                                    <icon-minus-circle/>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <!-- <button type="button" class="text-primary opacity-70 hover:opacity-100" (click)="viewNote(application)">
+                                                <icon-info-circle/>
+                                            </button> -->
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h4 class="mt-4 font-semibold text-justify">{{ application.internshipOffer.description }}</h4>
+                                        <p class="mt-2 text-white-dark">{{ application.internshipOffer.location }} - {{application.internshipOffer.duration}}</p>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                        </ng-container>
+                    </div>
+                </div>
+            </ng-container>
+            <modal #isViewNoteModal class="no-footer bg-black">
+                <ng-template #modalHeader>
+                    <div class="flex flex-wrap items-center gap-3 !font-medium">
+                        <div>Intership Offer</div>
+                        <div
+                            *ngIf="selectedInternship.type"
+                            type="button"
+                            class="badge badge-outline-primary rounded-3xl capitalize"
+                            [ngClass]="{'shadow-danger': selectedInternship.type === 'HYBRID',
+                                                    'shadow-primary': selectedInternship.type === 'ONSITE',
+                                                    'shadow-warning': selectedInternship.type === 'REMOTE'}"
+                        >
+                            {{ selectedInternship.type }}
+                    </div>
+                    <div
+                            *ngIf="selectedInternship.style"
+                            type="button"
+                            class="badge badge-outline-primary rounded-3xl capitalize"
+                            [ngClass]="{'shadow-primary': selectedInternship.style === 'immersionCourse',
+                                                    'shadow-black': selectedInternship.style === 'optionalInternship',
+                                                    'shadow-warning': selectedInternship.style === 'engineerInternship',
+                                                    'shadow-danger': selectedInternship.style === 'humanAndSocialTraining'}"
+                        >
+                            {{ selectedInternship.style }}
+                    </div>
+                    <button type="button" class="text-primary opacity-70 hover:opacity-100" (click)="editNote(selectedInternship)">
+                        <icon-folder-plus />
+                    </button>
+                        <button *ngIf="selectedInternship.isFav" type="button" class="text-warning">
+                            <icon-star class="fill-warning" />
+                        </button>
+                        <div *ngIf="selectedInternship.paid" class="text-primary opacity-70 hover:opacity-100"><icon-dollar-sign-circle/></div>
+                        
+                    </div>
+                </ng-template>
+                <ng-template #modalBody>
+                    <div class="flex gap-3 justify-between">
+                        <div>
+                            <div class="text-base max-w-[300px]"><p class="font-bold border-2 border-[#BAC5F6] rounded-lg p-2 text-info">Title </p><p class="p-2">{{ selectedInternship.title }}</p></div>
+                            <div class="text-base max-w-[300px] shadow-info"><p class="font-bold border-2 border-[#BAC5F6] rounded-lg p-2 text-info">Description </p><p class="p-2 text-justify">{{ selectedInternship.description }}</p></div>
+                            <div class="text-base max-w-[300px]"><p class="font-bold border-2 border-[#BAC5F6] rounded-lg p-2 text-info">Starting Date </p><p class="p-2">{{ selectedInternship.startingAt |date}}</p></div>
+                            <div class="text-base max-w-[300px]"><p class="font-bold border-2 border-[#BAC5F6] rounded-lg p-2 text-info">Duration </p><p class="p-2">{{ selectedInternship.duration }}</p></div>
+                        </div>
+                        <div class="flex flex-col justify-start items-center">
+                            <div *ngIf="selectedInternship.image" class="rounded-full bg-gray-300 p-0.5 dark:bg-gray-700">
+                                <img class="h-8 w-8 rounded-full object-cover" [src]="'/assets/images/' + selectedInternship.image" />
+                            </div>
+                            <div
+                                *ngIf="!selectedInternship.image && selectedInternship.title"
+                                class="grid h-8 w-8 place-content-center rounded-full bg-gray-300 text-sm font-semibold dark:bg-gray-700"
+                            >
+                                {{ selectedInternship.company.name.charAt(0) + selectedInternship.company.name.charAt(selectedInternship.title.indexOf(' ') + 1) }}
+                            </div>
+                            <div
+                                *ngIf="!selectedInternship.thumb && !selectedInternship.title"
+                                class="grid h-8 w-8 place-content-center rounded-full bg-gray-300 dark:bg-gray-700"
+                            >
+                                <icon-user class="h-4.5 w-4.5 " />
+                            </div>
+                            <div class="text-base">{{ selectedInternship.company.name }}</div>
+                            
+                        </div>
+                        <div *ngIf="isShowNoteMenu" class="absolute flex flex-col right-0 w-fit h-[105%] bg-black mt-[-25px] border-l-2 border-black justify-between max-w-42" >
+                            <div>
+                                <h1 class="z-20 mx-auto p-3 text-center text-white border-double border-2 border-white mb-3">Files related</h1>
+                                <label class="focus:outline-none text-white focus:ring-4 font-medium rounded-lg text-sm mx-auto max-h-[50px] w-fit cursor-pointer">
+                                    <div *ngIf="coverLetterUploaded" class="flex flex-col items-center text-center">
+                                        <input type="file" class="absolute mt-10 hidden" (change)="onChangeCoverLetter($event)"><icon-thumb-up class="z-20 mx-auto h-5 w-5 text-white"/>
+                                        <h4>Cover Letter Uploaded!</h4>
+                                    </div>
+                                    <div *ngIf="!coverLetterUploaded" class="flex flex-col items-center text-center">
+                                        <input type="file" class="absolute mt-10 hidden" (change)="onChangeCoverLetter($event)"><icon-folder-plus class="z-20 mx-auto h-5 w-5 text-white"/>Add Cover Letter
+                                    </div>
+                                </label>
+                                
+                                <label class="focus:outline-none text-white focus:ring-4 font-medium rounded-lg text-sm mx-auto max-h-[50px] w-fit cursor-pointer">
+                                    <div *ngIf="resumeUploaded" class="flex flex-col items-center text-center">
+                                        <input type="file" class="absolute mt-10 hidden" (change)="onChangeResume($event)"><icon-thumb-up class="z-20 mx-auto h-5 w-5 text-white"/>
+                                        <h4>Resume uploaded!</h4>
+                                        
+                                    </div>
+                                    
+                                    <div *ngIf="!resumeUploaded" class="flex flex-col items-center text-center">
+                                        <input type="file" class="absolute mt-10 hidden" (change)="onChangeResume($event)"><icon-folder-plus class="z-20 mx-auto h-5 w-5 text-white"/>Add Resume
+                                    </div>
+                                </label>
+                                <div *ngIf="resumeUploaded" class="flex flex-col z-20 mx-auto text-white text-center justify-center items-center w-[90%]">
+                                    <h1 class="z-20 mx-auto p-3 text-center text-white border-double border-2 border-white mb-3">Check compatibility</h1>
+                                    <div>
+                                        <!-- Here is the compatibility code -->
+                                        <div *ngIf="matchDescription.length>0" class="relative z-20 text-white text-justify w-[90%]">{{matchDescription[selectedInternship.id-1]}}</div>
+                                        <div *ngIf="matchDescription.length==0" class="flex z-20 mx-auto h-11 text-white text-center justify-center items-center w-[90%]"><icon-loader/></div>
+                                        <!-- <div *ngIf="matchDescription[selectedInternship.id]==null" class="flex z-20 mx-auto h-11 text-white text-center justify-center items-center w-[90%] mb-20">No match found.</div> -->
+                                    </div>
+                                </div>
+                                <div *ngIf="resumeUploaded && coverLetterUploaded">                               
+                                    <button class="flex z-20 h-11 text-white border-2 border-white rounded-lg text-center justify-center items-center w-[90%] mb-10" (click)="onSubmitApplication()">
+                                        Apply <icon-archive/>                                
+                                    </button>
+                                </div>
+                                <div *ngIf="!resumeUploaded || !coverLetterUploaded"> 
+                                    <button class="flex z-20 h-11 text-white border-2 border-white rounded-lg text-center justify-center items-center w-[90%] mb-10">
+                                        Apply <icon-loader/>                                
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            
+                        </div>
+                    </div>
+                        
+                    
+                    <div *ngIf="students.length!=0">People Interested:</div>
+                    <div class="flex">
+                    <ng-container *ngFor="let student of students" >
+                        
+                         <div class="mr-[-15px]">
+                          
+                        <div *ngIf="student.image" class="rounded-full bg-gray-300 p-0.5 dark:bg-gray-700">
+                            <img class="h-8 w-8 rounded-full object-cover" [src]="'/assets/images/' + selectedInternship.image" />
+                        </div>
+                        <div
+                            *ngIf="!student.image && student.firstName"
+                            class="grid h-8 w-8 place-content-center rounded-full bg-gray-300 text-sm font-semibold dark:bg-gray-700"
+                        >
+                            {{ student.firstName.charAt(0) + student.lastName.charAt(student.lastName.indexOf(' ') + 1) }}
+                        </div>
+                        <div
+                            *ngIf="!student.thumb && !student.firstName"
+                            class="grid h-8 w-8 place-content-center rounded-full bg-gray-300 dark:bg-gray-700"
+                        >
+                            <icon-user class="h-4.5 w-4.5" />
+                        </div>
+                           
+                      
+                    </div>
+                    </ng-container>
+                </div>
+                    <div class="flex mt-8 ltr:text-right rtl:text-left">
+                        <button type="button" class="btn btn-outline-danger" (click)="isViewNoteModal.close()">Close</button>
+                    </div>
+                </ng-template>
+            </modal>
+        </div>
+    </div>
+</div>

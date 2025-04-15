@@ -1,0 +1,164 @@
+<!-- breadcrumb-section -->
+<div class="breadcrumb-section breadcrumb-bg" [ngStyle]="{ 'background-image': 'url(http://localhost:8080/piEvent/uploads/' + event.image + ')' }">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-8 offset-lg-2 text-center">
+          <div class="breadcrumb-text">
+            <p>Discover our events</p>
+            <h1>{{ event.title }}</h1>
+          </div>
+        </div>
+      </div>
+    </div>
+</div>
+<!-- end breadcrumb section -->
+
+<div class="section-spacer" style="height: 30px;"></div>
+
+<div class="container">
+    <div class="row">
+        <!-- Section Détails de l'événement -->
+        <div class="col-lg-8">
+            <div class="featured-text">
+                <h2 class="pb-3">Event <span class="orange-text">Details</span></h2>
+                <div class="row">
+                    <!-- Description -->
+                    <div class="col-lg-6 col-md-6 mb-4 mb-md-5">
+                        <div class="list-box d-flex">
+                            <div class="list-icon">
+                                <i class="fas fa-file-alt"></i>
+                            </div>
+                            <div class="content">
+                                <h3>Description</h3>
+                                <p>{{ event.description }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Date -->
+                    <div class="col-lg-6 col-md-6 mb-5 mb-md-5">
+                        <div class="list-box d-flex">
+                            <div class="list-icon">
+                                <i class="fas fa-calendar-day"></i>
+                            </div>
+                            <div class="content">
+                                <h3>Date</h3>
+                                <p>{{ event.dateEvent | date }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Time -->
+                    <div class="col-lg-6 col-md-6 mb-5 mb-md-5">
+                        <div class="list-box d-flex">
+                            <div class="list-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="content">
+                                <h3>Time</h3>
+                                <p>{{ event.heureEvent }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Location -->
+                    <div class="col-lg-6 col-md-6 mb-5 mb-md-5">
+                        <div class="list-box d-flex">
+                            <div class="list-icon">
+                                <i class="fas fa-map-marker-alt"></i>
+                            </div>
+                            <div class="content">
+                                <h3>Location</h3>
+                                <p>{{ event.location }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                  
+
+                    <!-- Type d'événement -->
+                    <div class="col-lg-6 col-md-6 mb-5 mb-md-5">
+                        <div class="list-box d-flex">
+                            <div class="list-icon">
+                                <i class="fas fa-calendar-check"></i>
+                            </div>
+                            <div class="content">
+                                <h3>Event Type</h3>
+                                <p>{{ event.typeEvent }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                 
+                  
+
+                    <!-- PDF Document -->
+                    <div class="col-lg-6 col-md-6">
+                        <div class="list-box d-flex">
+                            <div class="list-icon">
+                                <i class="fas fa-file-pdf"></i>
+                            </div>
+                            <div class="content">
+                                <h3>Document</h3>
+                                <a [href]="'http://localhost:8080/piEvent/event/pdf/' + event.pdf" 
+                                   target="_blank" 
+                                   *ngIf="event.pdf">
+                                   Download PDF
+                                </a>
+                                <p *ngIf="!event.pdf">No document available</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section Réservation -->
+        <div class="col-lg-4">
+            <div class="reservation-card">
+                <div class="reservation-header">
+                    <h3><i class="fas fa-calendar-plus"></i> Make a Reservation</h3>
+                </div>
+                <div class="reservation-body">
+                    <p>Interested in this event? Secure your spot now!</p>
+                    <div class="price-display">
+                        <span class="price">{{ event.prix }} TND</span>
+                        <span class="per-person">per person</span>
+                    </div>
+
+
+
+                     <!-- BOUTON PRINCIPAL -->
+<button *ngIf="!showReservationForm" class="btn btn-primary btn-block reservation-btn" (click)="showReservationForm = true">
+    <i class="fas fa-ticket-alt"></i> Book Now
+</button>
+
+<!-- FORMULAIRE DE RÉSERVATION -->
+<div *ngIf="showReservationForm" class="mt-3">
+    <!-- Input: ID utilisateur -->
+    <mat-form-field appearance="outline" class="w-100 mb-2">
+        <mat-label>User ID</mat-label>
+        <input matInput type="number" [(ngModel)]="userId">
+    </mat-form-field>
+    
+    <!-- Input: Nombre de pass -->
+    <mat-form-field appearance="outline" class="w-100 mb-3">
+        <mat-label>Number of Passes</mat-label>
+        <input matInput type="number" [(ngModel)]="numberOfPass">
+    </mat-form-field>
+
+    <!-- Bouton pour confirmer la réservation -->
+    <button class="btn btn-success btn-block" (click)="makeReservation()">
+        <i class="fas fa-check"></i> Confirm Reservation
+    </button>
+</div>
+
+                    <div class="availability-info">
+                        <i class="fas fa-info-circle"></i> 
+                        Only {{ event.nombrePlaces }} spots left
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

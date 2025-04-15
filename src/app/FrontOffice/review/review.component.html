@@ -1,0 +1,68 @@
+
+<div class="breadcrumb-section breadcrumb-bg">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 offset-lg-2 text-center">
+                <div class="breadcrumb-text">
+                    <p>Rate Your Experience</p>
+                    <h1>Review</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Solution minimaliste -->
+<div style="height: 40px;" aria-hidden="true"></div>
+
+<div class="review-card">
+    <h2 class="review-title">Rate the event</h2>
+    
+    <form (ngSubmit)="submitReview()" class="review-form">
+      <!-- Rating Section -->
+      <div class="form-group rating-group">
+        <label class="form-label">Your Rating</label>
+        <div class="stars-container">
+          <div class="stars">
+            <span *ngFor="let star of stars; let i = index"
+                  (click)="setRating(i + 1)"
+                  (mouseover)="hoverRating(i + 1)"
+                  (mouseleave)="hoverRating(0)"
+                  class="star-wrapper">
+              <i class="fa star-icon"
+                 [class.fa-star]="(i + 1) <= (hoveredRating || review.rating)"
+                 [class.fa-star-o]="(i + 1) > (hoveredRating || review.rating)">
+              </i>
+            </span>
+          </div>
+          <div class="rating-hint">
+            {{hoveredRating || review.rating || '0'}}/5
+          </div>
+        </div>
+      </div>
+  
+      <!-- Comment Section -->
+      <div class="form-group comment-group">
+        <label class="form-label">Your Comment</label>
+        <div class="textarea-wrapper">
+          <textarea [(ngModel)]="review.comment" 
+                    name="comment" 
+                    rows="5" 
+                    maxlength="500"
+                    placeholder="Share your experience..."
+                    class="comment-textarea"></textarea>
+          <div class="textarea-footer">
+            <span class="char-count">{{review.comment?.length || 0}}/500 caractères</span>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Submit Button -->
+      <div class="form-actions">
+        <button type="submit" class="submit-btn" [class.disabled]="!review.rating">
+          
+          <i class="fa fa-send icon"></i>
+          <span class="btn-text" >Submit Review</span>
+        </button>
+      </div>
+    </form>
+  </div>
