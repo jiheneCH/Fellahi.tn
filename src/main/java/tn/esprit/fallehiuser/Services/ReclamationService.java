@@ -1,9 +1,11 @@
 package tn.esprit.fallehiuser.Services;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import tn.esprit.fallehiuser.DTO.ReclamationResponseDTO;
 import tn.esprit.fallehiuser.Repository.ReclamationRepository;
 import tn.esprit.fallehiuser.Repository.UserRepository;
 import tn.esprit.fallehiuser.model.Reclamation;
@@ -21,12 +23,13 @@ public class ReclamationService {
     private final ReclamationRepository reclamationRepository;
     private final UserRepository userRepository;
 
-    // Add a new reclamation (based on role, user can choose predefined subject)
-    public void addReclamation(String username, String description, ReclamationSubject subject) {
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    // === Client / User Operations ===
 
-        // Validate the complaint subject based on the user's role
+    /**
+     * User adds a new reclamation based on their allowed subjects by role.
+     */
+    public void addReclamation(String username, String description, ReclamationSubject subject) {
+        User user = getUserByUsername(username);
         validateComplaintSubject(user, subject);
 
         Reclamation reclamation = new Reclamation();
@@ -34,112 +37,24 @@ public class ReclamationService {
         reclamation.setCreatedAt(LocalDateTime.now());
         reclamation.setUser(user);
         reclamation.setSubject(subject.name());
-        reclamation.setStatus(ReclamationStatus.PENDING);  // Set initial status to "PENDING"
+        reclamation.setStatus(ReclamationStatus.PENDING);
 
         reclamationRepository.save(reclamation);
     }
 
-    private void validateComplaintSubject(User user, ReclamationSubject subject) {
-        if ("FARMER".equals(user.getRoleName()) && !isFarmerComplaint(subject)) {
-            throw new IllegalArgumentException("Invalid complaint subject for farmer");
-        }
-        if ("TRANSPORTER".equals(user.getRoleName()) && !isTransporterComplaint(subject)) {
-            throw new IllegalArgumentException("Invalid complaint subject for transporter");
-        }
-        if ("CLIENT".equals(user.getRoleName()) && !isClientComplaint(subject)) {
-            throw new IllegalArgumentException("Invalid complaint subject for client");
-        }
-    }
-
-    private boolean isFarmerComplaint(ReclamationSubject subject) {
-        return subject == ReclamationSubject.DELIVERY_DELAY_BY_TRANSPORTER ||
-                subject == ReclamationSubject.ORDER_CANCELLATION_BY_CLIENT ||
-                subject == ReclamationSubject.INCORRECT_PRICE_OR_QUANTITY ||
-                subject == ReclamationSubject.UNAVAILABILITY_OF_GOODS;
-    }
-
-    private boolean isTransporterComplaint(ReclamationSubject subject) {
-        return subject == ReclamationSubject.DELIVERY_DELAY_BY_CLIENT ||
-                subject == ReclamationSubject.CLIENT_REFUSES_TO_ACCEPT_GOODS ||
-                subject == ReclamationSubject.WRONG_PRODUCT_INFORMATION ||
-                subject == ReclamationSubject.UNAVAILABILITY_OF_CLIENT;
-    }
-
-    private boolean isClientComplaint(ReclamationSubject subject) {
-        return subject == ReclamationSubject.POOR_QUALITY_OF_GOODS ||
-                subject == ReclamationSubject.DELAYED_DELIVERY ||
-                subject == ReclamationSubject.WRONG_PRODUCT_DELIVERED ||
-                subject == ReclamationSubject.GOODS_NOT_AS_DESCRIBED ||
-                subject == ReclamationSubject.PRICE_DISCREPANCY;
-    }
-
-    // Get all pending reclamations (for admin)
-    @PreAuthorize("hasRole('ADMIN')")
-    public List<Reclamation> getAllPendingReclamations() {
-        return reclamationRepository.findByStatus(ReclamationStatus.PENDING);
-    }
-
-    // Admin can update the status of a reclamation
-    @PreAuthorize("hasRole('ADMIN')")
-    public void treatReclamation(Long reclamationId, ReclamationStatus status) {
-        Reclamation reclamation = reclamationRepository.findById(reclamationId)
-                .orElseThrow(() -> new IllegalStateException("Reclamation not found"));
-
-        // If the complaint is PENDING, it can be changed to IN_PROGRESS
-        if (reclamation.getStatus() == ReclamationStatus.PENDING && status == ReclamationStatus.IN_PROGRESS) {
-            reclamation.setStatus(ReclamationStatus.IN_PROGRESS);
-        }
-
-        // If the complaint is IN_PROGRESS, it can be resolved (status becomes RESOLVED)
-        else if (reclamation.getStatus() == ReclamationStatus.IN_PROGRESS && status == ReclamationStatus.RESOLVED) {
-            reclamation.setStatus(ReclamationStatus.RESOLVED);
-        } else {
-            // Handle invalid status transitions
-            throw new IllegalArgumentException("Invalid status transition.");
-        }
-
-        reclamationRepository.save(reclamation);
-    }
-
-    // Get reclamations for a specific user
+    /**
+     * Get all reclamations submitted by a specific user.
+     */
     public List<Reclamation> getReclamationsByUser(String username) {
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-
+        User user = getUserByUsername(username);
         return reclamationRepository.findByUser(user);
     }
 
-    // Find reclamation by ID
-    public Reclamation findReclamationById(Long id) {
-        return reclamationRepository.findById(id)
-                .orElseThrow(() -> new IllegalStateException("Reclamation not found"));
-    }
+    // === Admin Operations ===
 
-    // Update the reclamation status
-    public void updateReclamationStatus(Long reclamationId, ReclamationStatus status) {
-        Reclamation reclamation = findReclamationById(reclamationId);
-        reclamation.setStatus(status);
-        reclamationRepository.save(reclamation);
-    }
-
-    // Get reclamations by subject (for filtering)
-    public List<Reclamation> getReclamationsBySubject(String subject) {
-        return reclamationRepository.findBySubject(subject);
-    }
-
-    // New method to filter reclamations by date
-    public List<Reclamation> getReclamationsByDate(boolean latest) {
-        if (latest) {
-            // Get the latest complaints (order by date descending)
-            return reclamationRepository.findAllByOrderByCreatedAtDesc();
-        } else {
-            // Get the oldest complaints (order by date ascending)
-            return reclamationRepository.findAllByOrderByCreatedAtAsc();
-        }
-    }
     @PreAuthorize("hasRole('ADMIN')")
-    public List<Reclamation> getReclamationsByStatus(ReclamationStatus status) {
-        return reclamationRepository.findByStatus(status);
+    public List<Reclamation> getAllPendingReclamations() {
+        return reclamationRepository.findByStatus(ReclamationStatus.PENDING);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -147,5 +62,138 @@ public class ReclamationService {
         return reclamationRepository.findAll();
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
+    public List<Reclamation> getReclamationsByStatus(ReclamationStatus status) {
+        return reclamationRepository.findByStatus(status);
+    }
 
+    /**
+     * Admin treats a reclamation by updating its status from PENDING to IN_PROGRESS or
+     * from IN_PROGRESS to RESOLVED.
+     */
+    @Transactional
+    @PreAuthorize("hasRole('ADMIN')")
+    public void treatReclamation(Long reclamationId, ReclamationStatus status) {
+        Reclamation reclamation = findReclamationById(reclamationId);
+        validateStatusTransition(reclamation.getStatus(), status);
+
+        reclamation.setStatus(status);
+        reclamationRepository.save(reclamation);
+    }
+
+    /**
+     * Admin responds to a reclamation and marks it as resolved.
+     */
+    @PreAuthorize("hasRole('ADMIN')")
+    @Transactional
+    public void respondToReclamation(Long reclamationId, String adminUsername, String responseMessage, ReclamationStatus updatedStatus) {
+        Reclamation reclamation = findReclamationById(reclamationId);
+        if (reclamation == null) {
+            throw new IllegalArgumentException("Reclamation not found with ID: " + reclamationId);
+        }
+
+        ReclamationStatus currentStatus = reclamation.getStatus();
+        boolean validTransition = (currentStatus == ReclamationStatus.PENDING && updatedStatus == ReclamationStatus.IN_PROGRESS)
+                || (currentStatus == ReclamationStatus.IN_PROGRESS && updatedStatus == ReclamationStatus.RESOLVED);
+
+        if (!validTransition) {
+            throw new IllegalArgumentException("Invalid status transition.");
+        }
+
+        // Fetch admin User entity by username
+        User adminUser = userRepository.findByUsername(adminUsername)
+                .orElseThrow(() -> new IllegalArgumentException("Admin user not found"));
+
+        // Set treatment data
+        reclamation.setStatus(updatedStatus);
+        reclamation.setResponseMessage(responseMessage);
+        reclamation.setTreatedByAdminId(adminUser.getId());
+        reclamation.setTreatedByAdminName(adminUser.getUsername());
+
+        reclamationRepository.save(reclamation);
+    }
+
+    // === General Query Utilities ===
+    @PreAuthorize("hasRole('ADMIN')")
+    public Reclamation findReclamationById(Long id) {
+        return reclamationRepository.findById(id)
+                .orElseThrow(() -> new IllegalStateException("Reclamation not found with ID: " + id));
+    }
+    @PreAuthorize("hasRole('ADMIN')")
+    public List<Reclamation> getReclamationsBySubject(String subject) {
+        return reclamationRepository.findBySubject(subject);
+    }
+    @PreAuthorize("hasRole('ADMIN')")
+    public List<Reclamation> getReclamationsByDate(boolean latest) {
+        return latest
+                ? reclamationRepository.findAllByOrderByCreatedAtDesc()
+                : reclamationRepository.findAllByOrderByCreatedAtAsc();
+    }
+
+    public void updateReclamationStatus(Long reclamationId, ReclamationStatus status) {
+        Reclamation reclamation = findReclamationById(reclamationId);
+        reclamation.setStatus(status);
+        reclamationRepository.save(reclamation);
+    }
+
+    // === Private Utility Methods ===
+
+    private User getUserByUsername(String username) {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
+    }
+
+    private void validateComplaintSubject(User user, ReclamationSubject subject) {
+        switch (user.getRoleName()) {
+            case "FARMER" -> {
+                if (!isFarmerComplaint(subject)) {
+                    throw new IllegalArgumentException("Invalid subject for FARMER");
+                }
+            }
+            case "TRANSPORTER" -> {
+                if (!isTransporterComplaint(subject)) {
+                    throw new IllegalArgumentException("Invalid subject for TRANSPORTER");
+                }
+            }
+            case "CLIENT" -> {
+                if (!isClientComplaint(subject)) {
+                    throw new IllegalArgumentException("Invalid subject for CLIENT");
+                }
+            }
+            default -> throw new IllegalArgumentException("Unsupported role: " + user.getRoleName());
+        }
+    }
+
+    private boolean isFarmerComplaint(ReclamationSubject subject) {
+        return switch (subject) {
+            case DELIVERY_DELAY_BY_TRANSPORTER, ORDER_CANCELLATION_BY_CLIENT,
+                 INCORRECT_PRICE_OR_QUANTITY, UNAVAILABILITY_OF_GOODS -> true;
+            default -> false;
+        };
+    }
+
+    private boolean isTransporterComplaint(ReclamationSubject subject) {
+        return switch (subject) {
+            case DELIVERY_DELAY_BY_CLIENT, CLIENT_REFUSES_TO_ACCEPT_GOODS,
+                 WRONG_PRODUCT_INFORMATION, UNAVAILABILITY_OF_CLIENT -> true;
+            default -> false;
+        };
+    }
+
+    private boolean isClientComplaint(ReclamationSubject subject) {
+        return switch (subject) {
+            case POOR_QUALITY_OF_GOODS, DELAYED_DELIVERY, WRONG_PRODUCT_DELIVERED,
+                 GOODS_NOT_AS_DESCRIBED, PRICE_DISCREPANCY -> true;
+            default -> false;
+        };
+    }
+
+    private void validateStatusTransition(ReclamationStatus current, ReclamationStatus newStatus) {
+        if (current == ReclamationStatus.PENDING && newStatus == ReclamationStatus.IN_PROGRESS) return;
+        if (current == ReclamationStatus.IN_PROGRESS && newStatus == ReclamationStatus.RESOLVED) return;
+
+        throw new IllegalArgumentException(
+                String.format("Invalid transition from %s to %s", current, newStatus)
+        );
+    }
 }

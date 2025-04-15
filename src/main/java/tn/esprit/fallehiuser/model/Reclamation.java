@@ -1,9 +1,6 @@
 package tn.esprit.fallehiuser.model;
 
 import jakarta.persistence.*;
-import tn.esprit.fallehiuser.model.ReclamationStatus;
-import tn.esprit.fallehiuser.model.User;
-
 import java.time.LocalDateTime;
 
 @Entity
@@ -13,17 +10,22 @@ public class Reclamation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String description;  // The complaint's description
+    private String description;
 
-    private String subject;  // The subject of the complaint (for filtering)
+    private String subject;
 
-    private LocalDateTime createdAt;  // The time when the complaint was added
+    private LocalDateTime createdAt;
 
     @ManyToOne
-    private User user;  // The user who submitted the complaint
+    private User user; // User who submitted the complaint
 
     @Enumerated(EnumType.STRING)
-    private ReclamationStatus status = ReclamationStatus.PENDING;  // The status of the complaint
+    private ReclamationStatus status = ReclamationStatus.PENDING;
+
+    // NEW FIELDS
+    private Long treatedByAdminId = null;               // ID of the admin who treated it
+    private String treatedByAdminName = "Not treated";  // Name of the admin who treated it
+    private String responseMessage = "Not treated";     // Admin's response message
 
     // Getters and Setters
 
@@ -73,5 +75,29 @@ public class Reclamation {
 
     public void setStatus(ReclamationStatus status) {
         this.status = status;
+    }
+
+    public Long getTreatedByAdminId() {
+        return treatedByAdminId;
+    }
+
+    public void setTreatedByAdminId(Long treatedByAdminId) {
+        this.treatedByAdminId = treatedByAdminId;
+    }
+
+    public String getTreatedByAdminName() {
+        return treatedByAdminName;
+    }
+
+    public void setTreatedByAdminName(String treatedByAdminName) {
+        this.treatedByAdminName = treatedByAdminName;
+    }
+
+    public String getResponseMessage() {
+        return responseMessage;
+    }
+
+    public void setResponseMessage(String responseMessage) {
+        this.responseMessage = responseMessage;
     }
 }
