@@ -211,7 +211,7 @@ public class AuthServiceImpl {
                 .orElseThrow(() -> new UsernameNotFoundException("No user found with email: " + email));
 
         if (user.getResetTokenExpiry() != null &&
-                user.getResetTokenExpiry().isAfter(LocalDateTime.now().minusDays(30))) {
+                user.getResetTokenExpiry().isAfter(LocalDateTime.now().minusMinutes(10))) {
             throw new PasswordResetLimitExceededException("You can only reset your password once every 30 days.");
         }
 
