@@ -106,9 +106,13 @@ export class RegisterComponent implements OnInit {
   
         this.authService.registerWithGoogle(username, email).subscribe(
           (response: any) => {
-            localStorage.setItem('token', response.token); // if token is returned
+            localStorage.setItem('token', response.token); // optional: save token if needed
             localStorage.setItem('userData', JSON.stringify({ username, email }));
-            this.router.navigate(['']); // or navigate to step 2
+  
+            // ✅ Redirect to google-additional with username in query param
+            this.router.navigate(['/google-additional'], {
+              queryParams: { username }
+            });
           },
           (error) => {
             this.msgerror = error.error?.error || 'Google signup failed.';

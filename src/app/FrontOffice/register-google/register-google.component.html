@@ -93,6 +93,83 @@
   </div>
 </div>
 
+ <!-- Password -->
+ <div class="mb-2">
+    <label for="password" class="text-black">Password:</label>
+    <div class="position-relative">
+      <input formControlName="password"
+             [type]="showPassword ? 'text' : 'password'"
+             id="password"
+             class="form-control pe-5"
+             placeholder="Enter your password"
+             style="font-size: 14px; padding: 10px; color: black; background-color: rgba(255, 255, 255, 0.5);">
+      <i class="fas"
+         [class.fa-eye]="!showPassword"
+         [class.fa-eye-slash]="showPassword"
+         (click)="togglePasswordVisibility()"
+         style="position: absolute; top: 50%; right: 15px; transform: translateY(-50%); cursor: pointer;"></i>
+    </div>
+    <div class="alert alert-danger" *ngIf="stepTwoForm.get('password')?.touched && stepTwoForm.get('password')?.errors">
+      <p *ngIf="stepTwoForm.get('password')?.getError('required')">Password is required</p>
+      <div *ngIf="stepTwoForm.get('password')?.hasError('pattern')">
+        Password must contain:
+        <ul>
+          <li>At least one uppercase letter (A–Z)</li>
+          <li>At least one lowercase letter (a–z)</li>
+          <li>At least one number (0–9)</li>
+          <li>At least one special character (e.g., $!%*?&)</li>
+          <li>Between 8 and 20 characters</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  
+
+  <!-- Repassword -->
+<div class="mb-2">
+<label for="repassword" class="text-black">Repassword:</label>
+<div class="position-relative">
+<input formControlName="rePassword"
+   [type]="showRePassword ? 'text' : 'password'"
+   id="repassword"
+   class="form-control pe-5"
+   placeholder="Confirm your password"
+   style="font-size: 14px; padding: 10px; color: black; background-color: rgba(255, 255, 255, 0.5);">
+<i class="fas"
+[class.fa-eye]="!showRePassword"
+[class.fa-eye-slash]="showRePassword"
+(click)="toggleRePasswordVisibility()"
+style="position: absolute; top: 50%; right: 15px; transform: translateY(-50%); cursor: pointer;"></i>
+</div>
+
+<div class="alert alert-danger" *ngIf="stepTwoForm.get('rePassword')?.touched && stepTwoForm.get('rePassword')?.errors?.['required']">
+Repassword is required
+</div>
+
+<!-- Show mismatch error on the form group level -->
+<div class="alert alert-danger" *ngIf="stepTwoForm.errors?.['mismatch'] && stepTwoForm.get('rePassword')?.touched">
+Passwords do not match
+</div>
+</div>
+
+
+
+  <!-- Role -->
+  <div class="mb-2">
+    <label for="role" class="text-black">Role:</label>
+    <select formControlName="role" id="role" class="form-control"
+            style="font-size: 14px; padding: 7px; color: black; background-color: rgba(255, 255, 255, 0.5);">
+      <option value="" disabled selected>Select a role</option>
+      <option value="FARMER">👨‍🌾 Farmer</option>
+      <option value="TRANSPORTER">🚚 Transporter</option>
+      <option value="CLIENT">🛒 Client</option>
+      <option value="ADMIN">🛠️ Admin</option>
+    </select>
+    <div class="alert alert-danger" *ngIf="stepTwoForm.get('role')?.touched && stepTwoForm.get('role')?.errors">
+      <p *ngIf="stepTwoForm.get('role')?.getError('required')">Role is required</p>
+    </div>
+  </div>
+
 
    <!-- Error Message -->
    <div *ngIf="errorMessage" class="alert alert-danger">

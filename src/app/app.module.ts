@@ -134,6 +134,7 @@ import { ClientLayoutComponent } from './FrontOffice/client-layout/client-layout
 import { ReclamationClientComponent } from './FrontOffice/reclamation-client/reclamation-client.component';
 import { ReclamationAddComponent } from './FrontOffice/reclamation-add/reclamation-add.component';
 import { RegisterAdditionalComponent } from './FrontOffice/register-additional/register-additional.component';
+import { RegisterGoogleComponent } from './FrontOffice/register-google/register-google.component';
 
 
 
@@ -231,6 +232,7 @@ import { RegisterAdditionalComponent } from './FrontOffice/register-additional/r
         ReclamationClientComponent,
         ReclamationAddComponent,
         RegisterAdditionalComponent,
+        RegisterGoogleComponent,
         
     
        
