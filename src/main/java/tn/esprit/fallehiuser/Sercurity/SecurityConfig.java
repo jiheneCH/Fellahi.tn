@@ -42,7 +42,8 @@ public class SecurityConfig {
                                 "/auth/reset-password",
                                 "/reclamations/add",
                                 "/auth/google-signup",
-                                "/auth/register-complete"
+                                "/auth/register-complete",
+                                "/auth/google-complete"
                         ).permitAll()
                         .requestMatchers("/users/**", "/reclamations/pending", "/reclamations/filter", "/reclamations/filterByDate", "/reclamations/treat/**")
                         .hasRole("ADMIN")

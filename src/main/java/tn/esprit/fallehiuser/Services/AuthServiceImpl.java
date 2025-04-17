@@ -314,17 +314,36 @@ public class AuthServiceImpl {
 
 
 
-    public User completeGoogleUserProfile(Long userId, GoogleUserAdditionalInfoDTO request) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    public void completeGoogleUserProfile(String username, GoogleUserAdditionalInfoDTO info) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
-        user.setAddress(request.getAddress());
-        user.setPhoneNumber(request.getPhoneNumber());
-        user.setGovernorate(request.getGovernorate());
-        user.setRole(request.getRole()); // ✅ already an enum
+        user.setPhoneNumber(info.getPhoneNumber());
+        user.setAddress(info.getAddress());
+        user.setGovernorate(info.getGovernorate());
+        user.setPassword(passwordEncoder.encode(info.getPassword()));
+        Role role = roleRepository.findByRoleName(info.getRole())
+                .orElseThrow(() -> new RuntimeException("Role not found"));
 
-        return userRepository.save(user);
+        user.setRole(role);
+
+
+
+        MultipartFile profilePicture = info.getProfilePicture();
+
+        if (profilePicture != null && !profilePicture.isEmpty()) {
+            try {
+                byte[] imageBytes = profilePicture.getBytes();
+                user.setProfilePicture(imageBytes); // or store path if using filesystem
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to process profile picture", e);
+            }
+        }
+
+        userRepository.save(user);
     }
+
+
 
     public void completeUserProfile(String username, String phone, String address, String governorate, MultipartFile profilePicture) {
         logger.info("Starting profile completion for user: {}", username);

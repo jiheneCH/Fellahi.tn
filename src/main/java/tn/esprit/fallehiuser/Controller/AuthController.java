@@ -134,18 +134,20 @@ public class AuthController {
 
 
 
-    @PutMapping("/google-complete")
+    @PutMapping(value = "/google-complete", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> completeGoogleRegistration(
-            @RequestParam Long userId,
-            @RequestBody GoogleUserAdditionalInfoDTO request
-    ) {
+            @RequestParam String username,
+            @ModelAttribute GoogleUserAdditionalInfoDTO info) {
+
         try {
-            service.completeGoogleUserProfile(userId, request);
+            service.completeGoogleUserProfile(username, info);
             return ResponseEntity.ok(Map.of("message", "✅ Google user registration completed successfully."));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", e.getMessage()));
         }
     }
+
+
 
 
 

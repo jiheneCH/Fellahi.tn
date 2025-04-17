@@ -5,5 +5,5 @@ public enum RoleName {
     ADMIN,
     TRANSPORTER,
     CLIENT,
-    USER
+    GUEST
 }
