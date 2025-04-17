@@ -1,13 +1,12 @@
 package tn.esprit.fallehiuser.DTO;
 
 import jakarta.validation.constraints.NotBlank;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @Setter
-@Builder
 public class StandardUserAdditionalInfoDTO {
 
     @NotBlank(message = "Address cannot be empty")
@@ -18,6 +17,7 @@ public class StandardUserAdditionalInfoDTO {
 
     @NotBlank(message = "Governorate cannot be empty")
     private String governorate;
-    @NotBlank(message = "Profile Image  cannot be empty")
-    private String profileImageUrl;
+
+    // This will be handled in multipart/form-data
+    private MultipartFile profileImage;
 }

@@ -2,11 +2,15 @@ package tn.esprit.fallehiuser.Controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import tn.esprit.fallehiuser.DTO.*;
+import java.io.IOException;
 import tn.esprit.fallehiuser.Execption.EmailAlreadyRegisteredException;
 import tn.esprit.fallehiuser.Execption.InvalidRoleException;
+import tn.esprit.fallehiuser.Execption.UserAlreadyExistsException;
 import tn.esprit.fallehiuser.Execption.UsernameAlreadyTakenException;
 import tn.esprit.fallehiuser.Services.AuthServiceImpl;
 import tn.esprit.fallehiuser.Services.EmailService;
@@ -20,6 +24,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -37,6 +42,7 @@ public class AuthController {
     private final RecaptchaService recaptchaService;
 
     private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
+    private final AuthServiceImpl authServiceImpl;
 
     @PostMapping("/register")
     public ResponseEntity<Map<String, String>> register(@RequestBody @Valid SignUpRequest request) {
@@ -82,15 +88,50 @@ public class AuthController {
                     .body(Map.of("error", "An unexpected error occurred. Please try again."));
         }
     }
-    @PostMapping("/google-signup")
-    public ResponseEntity<?> googleSignUp(@RequestBody GoogleSignUpRequest request) {
+
+
+    @PostMapping("/register-complete")
+    public ResponseEntity<Map<String, String>> completeUserProfile(
+            @RequestParam String username,
+            @ModelAttribute StandardUserAdditionalInfoDTO additionalInfo
+    ) {
+        Map<String, String> response = new HashMap<>();
         try {
-            AuthenticationResponse response = service.registerWithGoogle(request.getEmail(), request.getUsername());
+            authServiceImpl.completeUserProfile(
+                    username,
+                    additionalInfo.getPhoneNumber(),
+                    additionalInfo.getAddress(),
+                    additionalInfo.getGovernorate(),
+                    additionalInfo.getProfileImage()
+            );
+            response.put("message", "Profile completed successfully");
             return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", e.getMessage()));
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+            response.put("message", "Failed to complete profile: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
+
+
+
+    @PostMapping(value = "/google-signup", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> googleSignUp(@RequestBody GoogleSignUpRequest request) {
+        try {
+            GoogleRegistrationResponse response = service.registerWithGoogle(request.getEmail(), request.getUsername());
+            return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(response);
+        } catch (UserAlreadyExistsException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(Map.of("error", e.getMessage()));
+        }
+    }
+
+
 
 
     @PutMapping("/google-complete")

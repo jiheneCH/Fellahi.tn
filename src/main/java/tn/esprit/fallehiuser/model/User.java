@@ -71,7 +71,8 @@ public class User implements UserDetails, Principal {
 
     private String governorate;
 
-    private String profileImageUrl; // URL or path to profile image
+    @Lob // Large Object annotation for binary data
+    private byte[] profilePicture;
 
     @PrePersist
     @PreUpdate
@@ -191,10 +192,13 @@ public class User implements UserDetails, Principal {
 
     public void setGovernorate(String governorate) { this.governorate = governorate; }
 
-    public String getProfileImageUrl() { return profileImageUrl; }
+    public byte[] getProfilePicture() {
+        return profilePicture;
+    }
 
-    public void setProfileImageUrl(String profileImageUrl) { this.profileImageUrl = profileImageUrl; }
-
+    public void setProfilePicture(byte[] profilePicture) {
+        this.profilePicture = profilePicture;
+    }
     public boolean isGoogle() {
         return isGoogle;
     }

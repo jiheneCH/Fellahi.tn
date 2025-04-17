@@ -8,10 +8,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import tn.esprit.fallehiuser.DTO.AuthenticationResponse;
-import tn.esprit.fallehiuser.DTO.GoogleUserAdditionalInfoDTO;
-import tn.esprit.fallehiuser.DTO.SignInRequest;
-import tn.esprit.fallehiuser.DTO.SignUpRequest;
+import org.springframework.web.multipart.MultipartFile;
+import tn.esprit.fallehiuser.DTO.*;
 import tn.esprit.fallehiuser.Email.EmailTemplateName;
 import tn.esprit.fallehiuser.Execption.*;
 import tn.esprit.fallehiuser.model.*;
@@ -19,6 +17,9 @@ import tn.esprit.fallehiuser.Repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+
+import java.io.IOException;
 import java.util.HashMap;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
@@ -247,7 +248,7 @@ public class AuthServiceImpl {
         claims.put("phoneNumber", user.getPhoneNumber() != null ? user.getPhoneNumber() : "");
         claims.put("address", user.getAddress() != null ? user.getAddress() : "");
         claims.put("governorate", user.getGovernorate() != null ? user.getGovernorate() : "");
-        claims.put("profilePicture", user.getProfileImageUrl() != null ? user.getProfileImageUrl() : "");
+
 
         return claims;
     }
@@ -273,52 +274,44 @@ public class AuthServiceImpl {
     }
 
 
-    public AuthenticationResponse registerWithGoogle(String email, String username) {
+    public GoogleRegistrationResponse registerWithGoogle(String email, String username) {
         Optional<User> existingUser = userRepository.findByEmail(email);
         if (existingUser.isPresent()) {
-            logger.info("User already exists with email: {}. Logging in...", email);
-
             User user = existingUser.get();
+
             if (!user.isEnabled()) {
                 throw new AccountNotActivatedException("Google account not activated.");
             }
 
-            String jwtToken = jwtService.generateToken(buildClaims(user), user);
-            return AuthenticationResponse.builder()
-                    .token(jwtToken)
-                    .claims(jwtService.extractClaims(jwtToken))
-                    .build();
+            throw new UserAlreadyExistsException("User already exists. Please log in.");
         }
 
-        // Assign default role
         RoleName defaultRole = RoleName.CLIENT;
         var role = roleRepository.findByRoleName(defaultRole)
                 .orElseThrow(() -> new IllegalStateException("Default role not found"));
 
-        // Generate a random secure password and encode it
-        String rawRandomPassword = RandomStringUtils.randomAlphanumeric(12); // 16-character password
-        String encodedPassword = passwordEncoder.encode(rawRandomPassword);
+        String rawPassword = RandomStringUtils.randomAlphanumeric(12);
+        String encodedPassword = passwordEncoder.encode(rawPassword);
 
-        // Create new user
         User user = User.builder()
                 .email(email)
                 .username(username)
                 .enabled(true)
                 .accountLocked(false)
                 .role(role)
-                .password(encodedPassword)
+                .password(encodedPassword).isGoogle(true)
                 .build();
 
         userRepository.save(user);
-
-        String jwtToken = jwtService.generateToken(buildClaims(user), user);
         logger.info("Registered new user via Google: {}", username);
 
-        return AuthenticationResponse.builder()
-                .token(jwtToken)
-                .claims(jwtService.extractClaims(jwtToken))
-                .build();
+        return new GoogleRegistrationResponse(
+                "Google registration step 1 complete. Please complete your profile.",
+                email,
+                username
+        );
     }
+
 
 
     public User completeGoogleUserProfile(Long userId, GoogleUserAdditionalInfoDTO request) {
@@ -333,8 +326,33 @@ public class AuthServiceImpl {
         return userRepository.save(user);
     }
 
+    public void completeUserProfile(String username, String phone, String address, String governorate, MultipartFile profilePicture) {
+        logger.info("Starting profile completion for user: {}", username);
 
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> {
+                    logger.error("User not found with username: {}", username);
+                    return new RuntimeException("User not found");
+                });
 
+        user.setPhoneNumber(phone);
+        user.setAddress(address);
+        user.setGovernorate(governorate);
+        logger.debug("Updated phone, address, and governorate for user: {}", username);
+
+        if (profilePicture != null && !profilePicture.isEmpty()) {
+            try {
+                user.setProfilePicture(profilePicture.getBytes());
+                logger.debug("Profile picture uploaded for user: {}", username);
+            } catch (IOException e) {
+                logger.error("Failed to read profile picture for user: {}", username, e);
+                throw new RuntimeException("Failed to read profile picture", e);
+            }
+        }
+
+        userRepository.save(user);
+        logger.info("Successfully completed profile for user: {}", username);
+    }
 
 }
 
