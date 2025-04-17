@@ -43,9 +43,12 @@ public class SecurityConfig {
                                 "/reclamations/add",
                                 "/auth/google-signup",
                                 "/auth/register-complete",
-                                "/auth/google-complete"
+                                "/auth/google-complete",
+                                "/users/admin-faces"
+
                         ).permitAll()
-                        .requestMatchers("/users/**", "/reclamations/pending", "/reclamations/filter", "/reclamations/filterByDate", "/reclamations/treat/**")
+                        .requestMatchers("/users/**", "/reclamations/pending", "/reclamations/filter", "/reclamations/filterByDate", "/reclamations/treat/**",
+                                "/users/all-faces")
                         .hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )

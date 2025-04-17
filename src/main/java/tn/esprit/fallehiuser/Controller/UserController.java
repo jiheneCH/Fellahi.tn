@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import tn.esprit.fallehiuser.DTO.UserFaceDTO;
 import tn.esprit.fallehiuser.Repository.UserRepository;
 import tn.esprit.fallehiuser.Sercurity.JWTUtil;
 import tn.esprit.fallehiuser.Services.UserServiceImpl;
@@ -15,7 +16,11 @@ import tn.esprit.fallehiuser.DTO.UserDTO;
 import org.springframework.security.access.prepost.PreAuthorize;
 import tn.esprit.fallehiuser.model.User;
 
+import java.util.Base64;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 @CrossOrigin(origins = "http://localhost:4200")
 @RestController
 @RequestMapping("/users")
@@ -68,6 +73,42 @@ public class UserController {
 
         return ResponseEntity.ok(users);
     }
+
+    @GetMapping("/all-faces")
+    public ResponseEntity<List<UserFaceDTO>> getAllFaceImages() {
+        List<User> users = userRepository.findAll();
+
+        List<UserFaceDTO> result = users.stream()
+                .filter(u -> u.getProfilePicture() != null)
+                .map(u -> new UserFaceDTO(
+                        u.getId(),
+                        Base64.getEncoder().encodeToString(u.getProfilePicture())
+                ))
+                .toList();
+
+        return ResponseEntity.ok(result);
+    }
+
+
+    @GetMapping("/admin-faces")
+    public ResponseEntity<List<UserFaceDTO>> getAdminFaceImages() {
+        List<User> admins = userRepository.findByRole_RoleName(RoleName.ADMIN);
+
+        List<UserFaceDTO> result = admins.stream()
+                .filter(u -> u.getProfilePicture() != null)
+                .map(u -> new UserFaceDTO(
+                        u.getId(),
+                        Base64.getEncoder().encodeToString(u.getProfilePicture())
+                ))
+                .toList();
+
+        return ResponseEntity.ok(result);
+    }
+
+
+
+
+
 
     @GetMapping("/{userId}/profile-picture")
     public ResponseEntity<byte[]> getUserProfilePicture(@PathVariable Long userId) {
