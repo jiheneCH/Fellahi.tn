@@ -65,7 +65,7 @@ export class AuthenticationService {
   // Registration
  // auth.service.ts
 register(userData: any): Observable<any> {
-  return this.http.post<any>(`${this.baseUrl}/auth/register`, userData).pipe(
+  return this.http.post<any>(`${this.baseUrl}/register`, userData).pipe(
     catchError((error: HttpErrorResponse) => {
       return throwError(() => error);
     })
