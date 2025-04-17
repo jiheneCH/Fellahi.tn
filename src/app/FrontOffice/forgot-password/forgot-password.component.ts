@@ -37,6 +37,7 @@ export class ForgotPasswordComponent {
       next: () => {
         this.successMessage = 'Password reset instructions sent to your email';
         this.isLoading = false;
+        this.router.navigate(['/login'])
       },
       error: (err) => {
         this.errorMessage = err.error?.message || 'Error sending reset instructions';

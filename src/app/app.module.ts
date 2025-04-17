@@ -111,6 +111,9 @@ import { LoginComponent } from './FrontOffice/login/login.component';
 import { RecaptchaV3Module, RECAPTCHA_V3_SITE_KEY } from 'ng-recaptcha';
 import { AuthInterceptor } from './service/auth/auth-interceptor';
 import { OverlayModule } from '@angular/cdk/overlay';
+import { SocialLoginModule, SocialAuthServiceConfig } from '@abacritt/angularx-social-login';
+import { GoogleLoginProvider } from '@abacritt/angularx-social-login';
+
 
 
 
@@ -159,6 +162,7 @@ import { ReclamationAddComponent } from './FrontOffice/reclamation-add/reclamati
         MatTableModule,
         MatCardModule,
         OverlayModule,
+        SocialLoginModule,
       
         
       
@@ -245,6 +249,17 @@ import { ReclamationAddComponent } from './FrontOffice/reclamation-add/reclamati
             useClass: AuthInterceptor,
             multi: true
           },
+          {
+            provide: 'SocialAuthServiceConfig',
+            useValue: {
+              autoLogin: false,
+              providers: [
+                {
+                  id: GoogleLoginProvider.PROVIDER_ID,
+                  provider: new GoogleLoginProvider('YOUR_GOOGLE_CLIENT_ID') // <-- Replace this!
+                }
+              ],
+            } as SocialAuthServiceConfig,},
         {
             provide: HIGHLIGHT_OPTIONS,
             useValue: {

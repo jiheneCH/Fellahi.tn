@@ -63,12 +63,15 @@ export class AuthenticationService {
   }
 
   // Registration
-  register(user: SignUpRequest): Observable<void> {
-    return this.http.post<void>(`${this.baseUrl}/register`, user).pipe(
-      retry(2),
-      catchError(this.handleError)
-    );
-  }
+ // auth.service.ts
+register(userData: any): Observable<any> {
+  return this.http.post<any>(`${this.baseUrl}/auth/register`, userData).pipe(
+    catchError((error: HttpErrorResponse) => {
+      return throwError(() => error);
+    })
+  );
+}
+
 
   // Authentication
   login(credentials: SignInRequest): Observable<AuthResponse> {
@@ -107,7 +110,13 @@ export class AuthenticationService {
     localStorage.setItem('token', response.token);
     localStorage.setItem('userClaims', JSON.stringify(response.claims));
     this.authState.next(true);
+    
   }
+// Google registration first step 
+registerWithGoogle(username: string, email: string): Observable<any> {
+  return this.http.post(`${this.baseUrl}/google-signup`, { username, email });
+}
+
 
   clearAuthData(): void {
     localStorage.removeItem('token');

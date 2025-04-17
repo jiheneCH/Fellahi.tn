@@ -6,6 +6,8 @@ import { catchError, switchMap } from 'rxjs/operators';
 import { GoogleAuthService } from 'src/app/service/auth/google-auth.service';
 import { ReCaptchaV3Service } from 'ng-recaptcha';
 import { of } from 'rxjs';
+import { HttpClient } from '@angular/common/http'; // make sure this is at the top of your file
+
 
 @Component({
   selector: 'app-register',
@@ -13,14 +15,14 @@ import { of } from 'rxjs';
   styleUrls: ['./register.component.css']
 })
 export class RegisterComponent implements OnInit {
-  registerform: FormGroup = this.fb.group({});
+  registerform!: FormGroup;
   isloading = false;
-  msgerror: string = '';
-  showPassword: boolean = false;
-  showRePassword: boolean = false;
-  userData: any;
+  msgerror = '';
+  showPassword = false;
+  showRePassword = false;
 
   constructor(
+    private http: HttpClient,
     private fb: FormBuilder,
     private authService: AuthenticationService,
     private googleAuthService: GoogleAuthService,
@@ -32,8 +34,11 @@ export class RegisterComponent implements OnInit {
     this.registerform = this.fb.group({
       username: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(20)]],
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.pattern(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[$!%*?&])[A-Za-z\d$!%*?&]{8,20}$/)]],
-      rePassword: ['', [Validators.required]],
+      password: ['', [
+        Validators.required,
+        Validators.pattern(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[$!%*?&])[A-Za-z\d$!%*?&]{8,20}$/)
+      ]],
+      rePassword: ['', Validators.required],
       role: ['', Validators.required]
     }, { validators: this.passwordMatchValidator });
   }
@@ -50,7 +55,6 @@ export class RegisterComponent implements OnInit {
     this.isloading = true;
     const user = this.registerform.value;
 
-    // Execute reCAPTCHA
     this.recaptchaV3Service.execute('register')
       .pipe(
         switchMap((token: string) => {
@@ -59,12 +63,27 @@ export class RegisterComponent implements OnInit {
         }),
         catchError(error => {
           this.isloading = false;
-          this.msgerror = error.message || 'Something went wrong. Please try again.';
-          return of(); // return empty observable to complete stream
+
+          if (error.error?.recaptchaVerified === false) {
+            this.msgerror = 'reCAPTCHA verification failed. Please try again.';
+          } else if (error.error?.message) {
+            this.msgerror = error.error.message;
+          } else {
+            this.msgerror = 'Something went wrong. Please try again.';
+          }
+
+          return of(null);
         })
       )
-      .subscribe(() => {
+      .subscribe((res: any) => {
         this.isloading = false;
+
+        if (!res || res.recaptchaResult === false) {
+          this.msgerror = 'reCAPTCHA verification failed. Please try again.';
+          return;
+        }
+
+        // On success, redirect
         this.router.navigate(['/activate-account']);
       });
   }
@@ -80,9 +99,19 @@ export class RegisterComponent implements OnInit {
   onGoogleLogin(): void {
     this.googleAuthService.signInWithGoogle().subscribe(
       (googleUser) => {
-        const { username, email, password } = googleUser;
-        localStorage.setItem('userData', JSON.stringify({ username, email, password }));
-        this.router.navigate(['/role']);
+        const { username, email } = googleUser;
+  
+        this.authService.registerWithGoogle(username, email).subscribe(
+          (response: any) => {
+            localStorage.setItem('token', response.token); // if token is returned
+            localStorage.setItem('userData', JSON.stringify({ username, email }));
+            this.router.navigate(['']); // or navigate to step 2
+          },
+          (error) => {
+            this.msgerror = error.error?.error || 'Google signup failed.';
+            console.error('Backend error:', error);
+          }
+        );
       },
       (error) => {
         if (error === 'popup_closed_by_user') {
@@ -96,4 +125,6 @@ export class RegisterComponent implements OnInit {
       }
     );
   }
+  
+  
 }

@@ -3,7 +3,7 @@ import { Observable } from 'rxjs';
 
 declare global {
   interface Window {
-    gapi: any;
+    google: any;
   }
 }
 
@@ -12,49 +12,68 @@ declare global {
 })
 export class GoogleAuthService {
   private clientId = '1006284615244-t3shp8037r267tqacp3g78c2h9kg08hg.apps.googleusercontent.com';
+  private tokenClient: any;
 
   constructor() {
-    this.loadGapiScript();
+    this.initializeGoogleSignIn();
   }
 
-  private loadGapiScript(): void {
-    if (typeof window.gapi !== 'undefined') {
-      window.gapi.load('client:auth2', () => {
-        window.gapi.auth2.init({
-          client_id: this.clientId,
-        });
+  private initializeGoogleSignIn(): void {
+    const script = document.createElement('script');
+    script.src = 'https://accounts.google.com/gsi/client';
+    script.async = true;
+    script.defer = true;
+    script.onload = () => {
+      this.tokenClient = window.google.accounts.oauth2.initTokenClient({
+        client_id: this.clientId,
+        scope: 'email profile openid',
+        callback: () => {},
       });
-    } else {
-      console.error('gapi is not loaded');
-    }
+    };
+    document.head.appendChild(script);
   }
 
   signInWithGoogle(): Observable<any> {
     return new Observable((observer) => {
-      if (typeof window.gapi !== 'undefined') {
-        const GoogleAuth = window.gapi.auth2.getAuthInstance();
-
-        GoogleAuth.signIn().then(
-          (googleUser: any) => {
-            const profile = googleUser.getBasicProfile();
-            const authResponse = googleUser.getAuthResponse();
-
-            // Extract username, email, and token
-            const username = profile.getName();
-            const email = profile.getEmail();
-            const password = authResponse.id_token; // This is your password (ID Token) to send to your backend
-
-            // Return user data
-            observer.next({ username, email, password });
-            observer.complete();
-          },
-          (error: any) => {
-            observer.error(error);
-          }
-        );
-      } else {
-        observer.error('gapi is not loaded');
+      if (!this.tokenClient) {
+        observer.error('Google Identity Services not initialized.');
+        return;
       }
+
+      this.tokenClient.callback = async (response: any) => {
+        if (response.error) {
+          observer.error(response.error);
+          return;
+        }
+
+        try {
+          const userInfo = await this.fetchUserInfo(response.access_token);
+          observer.next({
+            username: userInfo.name,
+            email: userInfo.email,
+            password: response.access_token, // Send token to backend
+          });
+          observer.complete();
+        } catch (err) {
+          observer.error(err);
+        }
+      };
+
+      this.tokenClient.requestAccessToken();
     });
+  }
+
+  private async fetchUserInfo(accessToken: string): Promise<any> {
+    const response = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch user info');
+    }
+
+    return await response.json();
   }
 }
