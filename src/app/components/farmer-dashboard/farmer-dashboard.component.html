@@ -1,93 +1,86 @@
-<div class="farmer-dashboard">
-  <header class="dashboard-header">
-    <h1>Gestion des Articles</h1>
-  </header>
-
-  <div class="filters-container">
-    <div class="filters-header">
-      <h2>Filtrer les articles</h2>
-      <span class="results-count">{{ getFilteredNormalArticles().length }} articles trouvés</span>
+<div class="articles-management-wrapper">
+  <div class="management-card">
+    <!-- Header with title -->
+    <div class="card-header">
+      <h2>Articles Management</h2>
+      <span class="results-count">{{ getFilteredNormalArticles().length }} articles found</span>
+      <button class="refresh-btn" (click)="refreshArticles()">
+        <i class="material-icons">refresh</i>
+        Refresh
+      </button>
     </div>
-    
+   
+
+    <!-- Filters -->
     <div class="filters-section">
-      <div class="filter-group search-group">
-        <label for="search">Rechercher</label>
+      <!-- Search -->
+      <div class="search-group">
         <div class="input-with-icon">
           <i class="material-icons">search</i>
           <input 
-            id="search"
             type="text" 
             [(ngModel)]="searchNom" 
             (input)="getFilteredNormalArticles()" 
-            placeholder="Nom du produit..."
+            placeholder="Search a product..."
             class="search-input" />
         </div>
       </div>
     
+      <!-- Status filter -->
       <div class="filter-group">
-        <label for="status">Statut</label>
-        <div class="select-wrapper">
-          <select 
-            id="status"
-            [(ngModel)]="selectedStatus" 
-            (change)="getFilteredNormalArticles()" 
-            class="filter-select">
-            <option [value]="null">Tous les statuts</option>
-            <option value="InStock">En stock</option>
-            <option value="LowStock">Stock faible</option>
-            <option value="OutOfStock">Épuisé</option>
-          </select>
-        </div>
+        <select 
+          [(ngModel)]="selectedStatus" 
+          (change)="getFilteredNormalArticles()" 
+          class="filter-select">
+          <option value="InStock">InStock</option>
+          <option value="LowStock">LowStock</option>
+          <option value="OutOfStock">OutOfStock</option>
+        </select>
       </div>
     
+      <!-- Category filter -->
       <div class="filter-group">
-        <label for="category">Catégorie</label>
-        <div class="select-wrapper">
-          <select 
-            id="category"
-            [(ngModel)]="selectedTypeProduit" 
-            (change)="getFilteredNormalArticles()" 
-            class="filter-select">
-            <option [value]="null">Toutes les catégories</option>
-            <option value="legume">Légume</option>
-            <option value="fruit">Fruit</option>
-            <option value="cereale">Céréale</option>
-            <option value="produitLaitier">Produit Laitier</option>
-            <option value="viande">Viande</option>
-            <option value="equipements">Équipements</option>
-            <option value="insec">Insecticides</option>
-          </select>
-        </div>
+        <select 
+          [(ngModel)]="selectedTypeProduit" 
+          (change)="getFilteredNormalArticles()" 
+          class="filter-select">
+          <option value="fruits">Fruits</option>
+          <option value="legume">Vegetables</option>
+          <option value="cereale">Cereals</option>
+          <option value="produitLaitier">Dairy Products</option>
+          <option value="equipements">Equipment</option>
+          <option value="viande">Meat</option>
+          <option value="insec">Insecticides</option>
+        </select>
       </div>
     </div>
-  </div>
-  
-  <div class="table-container">
+
+    <!-- Action buttons -->
     <div class="table-actions">
       <button class="primary-btn add-btn" (click)="onAddNew()">
         <i class="material-icons">add</i>
-        Ajouter un produit
+        Add product
       </button>
-      <button class="secondary-btn pack-btn" (click)="genererPack()">
+      <button class="secondary-btn pack-btn" (click)="genererPackPourUtilisateur()">
         <i class="material-icons">inventory_2</i>
-        Créer un lot
+        Create pack
       </button>
     </div>
 
-    <!-- Tableau des articles normaux -->
-    <h2>Articles</h2>
+    <!-- Articles table -->
+    <h3>Articles</h3>
     <table class="products-table">
       <thead>
         <tr>
-          <th>Produit</th>
-          <th>Référence</th>
-          <th>Prix (DT)</th>
-          <th>Statut</th>
-          <th>Catégorie</th> 
-          <th>Date d'ajout</th>
+          <th>Product</th>
+          <th>Reference</th>
+          <th>Price (DT)</th>
+          <th>Status</th>
+          <th>Category</th> 
+          <th>Added date</th>
           <th>Stock</th>
-          <th>Disponible</th>
-          <th>Vendu</th>
+          <th>Available</th>
+          <th>Sold</th>
           <th>Points</th>
           <th>Actions</th>
         </tr>
@@ -98,30 +91,38 @@
           <td class="article-ref">{{ article.reference }}</td>
           <td class="article-price">{{ article.prix | number:'1.2-2' }} DT</td>
           <td>
-            <span class="status-badge" [ngClass]="getStatusClass(article.status)">
-              {{ article.status === 'InStock' ? 'En stock' : 
-                 article.status === 'LowStock' ? 'Stock faible' : 'Épuisé' }}
+            <span class="status-badge" [ngClass]="'status-' + article.statusAgri">
+              {{ article.statusAgri === 'InStock' ? 'In Stock' : 
+                 article.statusAgri === 'LowStock' ? 'Low Stock' : 'Out of Stock' }}
             </span>
           </td>
           <td>
             <span class="type-badge" [ngClass]="'type-' + article.typeProduit">
-              {{ article.typeProduit }}
+              {{ article.typeProduit === 'fruits' ? 'Fruits' :
+                 article.typeProduit === 'legume' ? 'Vegetables' :
+                 article.typeProduit === 'cereale' ? 'Cereals' :
+                 article.typeProduit === 'produitLaitier' ? 'Dairy Products' :
+                 article.typeProduit === 'equipements' ? 'Equipment' :
+                 article.typeProduit === 'viande' ? 'Meat' : 'Insecticides' }}
             </span>
           </td>
           <td class="article-date">{{ article.dateAjout | date:'dd/MM/yyyy' }}</td>
           <td class="article-quantity">{{ article.quantiteInitiale }}</td>
           <td class="article-quantity">{{ article.quantiteDisponible }}</td>
           <td class="article-quantity">{{ article.quantiteVendue }}</td>
-          <td class="article-points">{{ article.pointsFidelite }}</td>
+          <td class="article-points">
+            <span class="points-badge">{{ article.pointsFidelite }}</span>
+          </td>
           <td class="actions-cell">
             <div class="action-buttons">
-              <button class="icon-btn view-btn" title="Voir détails" (click)="onViewDetails(article.idArticle)">
+              <button class="icon-btn view-btn" title="View details" (click)="onViewDetails(article.idArticle)">
                 <i class="material-icons">visibility</i>
               </button>
-              <button class="icon-btn edit-btn" title="Modifier" (click)="onEdit(article.idArticle)">
+              <button class="icon-btn edit-btn" title="Edit" (click)="onEdit(article.idArticle)">
                 <i class="material-icons">edit</i>
               </button>
-              <button class="icon-btn archive-btn" title="Archiver" (click)="onArchive(article.idArticle)">
+              
+              <button class="icon-btn archive-btn" title="Archive" (click)="onArchive(article.idArticle)">
                 <i class="material-icons">archive</i>
               </button>
             </div>
@@ -130,27 +131,27 @@
       </tbody>
     </table>
 
-    <!-- Message si aucun article -->
+    <!-- Empty state message -->
     <div *ngIf="getFilteredNormalArticles().length === 0" class="empty-state">
       <i class="material-icons large-icon">inventory</i>
-      <p>Aucun article trouvé</p>
-      <button class="primary-btn" (click)="onAddNew()">Ajouter un produit</button>
+      <p>No articles found</p>
+      <button class="primary-btn" (click)="onAddNew()">Add product</button>
     </div>
 
-    <!-- Tableau des packs -->
-    <h2>Packs</h2>
+    <!-- Packs table -->
+    <h3>Packs</h3>
     <table class="products-table">
       <thead>
         <tr>
           <th>Pack</th>
-          <th>Référence</th>
-          <th>Prix (DT)</th>
-          <th>Statut</th>
-          <th>Catégorie</th> 
-          <th>Date d'ajout</th>
+          <th>Reference</th>
+          <th>Price (DT)</th>
+          <th>Status</th>
+          <th>Category</th> 
+          <th>Added date</th>
           <th>Stock</th>
-          <th>Disponible</th>
-          <th>Vendu</th>
+          <th>Available</th>
+          <th>Sold</th>
           <th>Points</th>
           <th>Actions</th>
         </tr>
@@ -161,30 +162,37 @@
           <td class="article-ref">{{ article.reference }}</td>
           <td class="article-price">{{ article.prix | number:'1.2-2' }} DT</td>
           <td>
-            <span class="status-badge" [ngClass]="getStatusClass(article.status)">
-              {{ article.status === 'InStock' ? 'En stock' : 
-                 article.status === 'LowStock' ? 'Stock faible' : 'Épuisé' }}
+            <span class="status-badge" [ngClass]="'status-' + article.statusAgri">
+              {{ article.statusAgri === 'InStock' ? 'In Stock' : 
+                 article.statusAgri === 'LowStock' ? 'Low Stock' : 'Out of Stock' }}
             </span>
           </td>
           <td>
             <span class="type-badge" [ngClass]="'type-' + article.typeProduit">
-              {{ article.typeProduit }}
+              {{ article.typeProduit === 'fruits' ? 'Fruits' :
+                 article.typeProduit === 'legume' ? 'Vegetables' :
+                 article.typeProduit === 'cereale' ? 'Cereals' :
+                 article.typeProduit === 'produitLaitier' ? 'Dairy Products' :
+                 article.typeProduit === 'equipements' ? 'Equipment' :
+                 article.typeProduit === 'viande' ? 'Meat' : 'Insecticides' }}
             </span>
           </td>
           <td class="article-date">{{ article.dateAjout | date:'dd/MM/yyyy' }}</td>
           <td class="article-quantity">{{ article.quantiteInitiale }}</td>
           <td class="article-quantity">{{ article.quantiteDisponible }}</td>
           <td class="article-quantity">{{ article.quantiteVendue }}</td>
-          <td class="article-points">{{ article.pointsFidelite }}</td>
+          <td class="article-points">
+            <span class="points-badge">{{ article.pointsFidelite }}</span>
+          </td>
           <td class="actions-cell">
             <div class="action-buttons">
-              <button class="icon-btn view-btn" title="Voir détails" (click)="onViewDetails(article.idArticle)">
+              <button class="icon-btn view-btn" title="View details" (click)="onViewDetails(article.idArticle)">
                 <i class="material-icons">visibility</i>
               </button>
-              <button class="icon-btn edit-btn" title="Modifier" (click)="onEdit(article.idArticle)">
+              <button class="icon-btn edit-btn" title="Edit" (click)="onEdit(article.idArticle)">
                 <i class="material-icons">edit</i>
               </button>
-              <button class="icon-btn archive-btn" title="Archiver" (click)="onArchive(article.idArticle)">
+              <button class="icon-btn archive-btn" title="Archive" (click)="onArchive(article.idArticle)">
                 <i class="material-icons">archive</i>
               </button>
             </div>
@@ -193,10 +201,10 @@
       </tbody>
     </table>
 
-    <!-- Message si aucun pack -->
+    <!-- Empty state message for packs -->
     <div *ngIf="getFilteredPackArticles().length === 0" class="empty-state">
       <i class="material-icons large-icon">inventory_2</i>
-      <p>Aucun pack trouvé</p>
+      <p>No packs found</p>
     </div>
   </div>
 </div>

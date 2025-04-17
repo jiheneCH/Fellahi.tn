@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient ,HttpHeaders  } from '@angular/common/http';
+import { HttpClient ,HttpHeaders, HttpParams  } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
@@ -64,8 +64,11 @@ export class ArticleService {
   }
   
  // Méthode pour générer le pack en fonction du nom de l'agriculteur
- genererPackParNomAgriculteur(nomUtilisateur: string): Observable<any> {
+ genererPackParNomAgriculteurrr(nomUtilisateur: string): Observable<any> {
   return this.http.post(`${this.apiUrl}/generer-pack/${nomUtilisateur}`, {});
+}
+genererPackk(idUtilisateur: number): Observable<Article> {
+  return this.http.post<Article>(`${this.apiUrl}/generer-pack/${idUtilisateur}`, {});
 }
   
   
@@ -125,5 +128,21 @@ getChiffreAffairesParCategorie() {
 
 getAjoutsParMois() {
   return this.http.get<any[]>(`${this.apiUrl}/ajouts-par-mois`);
+}
+
+
+
+
+getArticlesStockFaible(): Observable<Article[]> {
+  return this.http.get<Article[]>(`${this.apiUrl}/3-lowstock`);
+}
+
+ // Méthode pour récupérer les articles paginés
+ getArticles(page: number, size: number): Observable<any> {
+  const params = new HttpParams()
+    .set('page', page.toString())
+    .set('size', size.toString());
+
+  return this.http.get<any>(`${this.apiUrl}/articles`, { params });
 }
 }

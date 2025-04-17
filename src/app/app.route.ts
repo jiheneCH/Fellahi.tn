@@ -92,9 +92,26 @@ export const routes: Routes = [
         ]
     },
     {
-        path: 'admin',
+        path: 'farmer',
         component: AppLayout,
         children: [
+            { path: 'articles', component: ArticleListComponent },
+            //{ path: 'articles/create', component: ArticleFormComponent },
+            { path: 'edit-article/:id', component: ArticleEditComponent }, // Modifier un article
+            {
+                path: 'article-list',
+                component: ArticleListComponent
+              },
+              { path: 'tendance', component: TendanceArticleComponent },
+              { path: 'article-details/:id', component: ArticleDetailsComponent },
+        
+        
+              { path: 'stat', component: StatistiquesAdminFarmerComponent },
+              { path: 'ajouter-article/:id', component: ArticleFormComponent },
+        
+        
+                { path: 'articles/:id', component: FarmerDashboardComponent } , // Route pour les articles d'un agriculteur
+        
             // dashboard
             { path: 'template', component: IndexComponent, title: 'Admin | VRISTO - Tableau de bord multipurpose Tailwind' },
             { path: 'analytics', component: AnalyticsComponent, title: 'Analytique Admin | VRISTO - Tableau de bord multipurpose Tailwind' },
@@ -169,22 +186,6 @@ export const routes: Routes = [
             { path: '', loadChildren: () => import('./components/auth/auth.module').then((d) => d.AuthModule) },
         ],
     },
-    { path: 'articles', component: ArticleListComponent },
-    //{ path: 'articles/create', component: ArticleFormComponent },
-    { path: 'edit-article/:id', component: ArticleEditComponent }, // Modifier un article
-    {
-        path: 'article-list',
-        component: ArticleListComponent
-      },
-      { path: 'tendance', component: TendanceArticleComponent },
-      { path: 'article-details/:id', component: ArticleDetailsComponent },
-
-
-      { path: 'stat', component: StatistiquesAdminFarmerComponent },
-      { path: 'ajouter-article/:id', component: ArticleFormComponent },
-
-
-        { path: 'articles/:id', component: FarmerDashboardComponent }  // Route pour les articles d'un agriculteur
-
+   
 
 ];

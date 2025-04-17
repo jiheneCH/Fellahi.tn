@@ -14,9 +14,10 @@ import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation
 })
 export class ArticleEditComponent implements OnInit {
   articleForm!: FormGroup;
-  typeProduit: string[] = ['legume', 'fruits','cereale','produitLaitier','viande','equipements', 'insec']; // Tableau des types de produits
+  typeProduit: string[] = ['legume', 'fruits', 'cereale', 'produitLaitier', 'viande', 'equipements', 'insec'];
   articleId!: number;
   isSubmitting = false;
+  idAgriculteur: string | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -31,7 +32,17 @@ export class ArticleEditComponent implements OnInit {
     this.articleId = Number(this.activatedRoute.snapshot.paramMap.get('id'));
     this.initializeForm();
     this.getArticleById(this.articleId);
+  
+    this.articleId = Number(this.activatedRoute.snapshot.paramMap.get('id'));
+  
+    // Récupérer l'ID de l'agriculteur passé via 'state'
+    const navigation = window.history.state;
+    this.idAgriculteur = navigation ? navigation.idAgriculteur : null; // Si l'ID est dans 'state', l'extraire
+  
+    this.initializeForm();
+    this.getArticleById(this.articleId);
   }
+  
 
   initializeForm(): void {
     this.articleForm = this.fb.group({
@@ -56,7 +67,6 @@ export class ArticleEditComponent implements OnInit {
     );
   }
 
-  // Getters pour les contrôles du formulaire
   get nom() { return this.articleForm.get('nom'); }
   get prix() { return this.articleForm.get('prix'); }
   get quantiteInitiale() { return this.articleForm.get('quantiteInitiale'); }
@@ -64,7 +74,6 @@ export class ArticleEditComponent implements OnInit {
   get quantiteVendue() { return this.articleForm.get('quantiteVendue'); }
   get typeProduitControl() { return this.articleForm.get('typeProduit'); }
 
-  // Méthode pour afficher la confirmation
   confirmBeforeSubmit(): void {
     if (this.articleForm.invalid || this.isSubmitting) {
       return;
@@ -86,7 +95,6 @@ export class ArticleEditComponent implements OnInit {
     });
   }
 
-  // Préparer les détails du produit pour la confirmation
   private getProductDetailsForConfirmation(): string {
     const formValue = this.articleForm.value;
     return `
@@ -97,24 +105,29 @@ export class ArticleEditComponent implements OnInit {
     `;
   }
 
-  // Soumission du formulaire
   onSubmit(): void {
     if (this.articleForm.invalid || this.isSubmitting) {
       return;
     }
-
+  
     this.isSubmitting = true;
-
+  
     const articleData = {
       idArticle: this.articleId,
       ...this.articleForm.value
     };
-
+  
     this.articleService.updateArticle(articleData).subscribe(
       (response) => {
         this.isSubmitting = false;
-        this.router.navigate(['/articles']);
-        this.showSnackbar('L\'article a été modifié avec succès!', 'success');
+  
+        if (this.idAgriculteur) {
+          this.router.navigate(['/farmer/articles', this.idAgriculteur]);
+          this.showSnackbar('L\'article a été modifié avec succès!', 'success');
+        } else {
+          console.error("idAgriculteur est null, impossible de rediriger.");
+          this.showSnackbar('Modification réussie, mais idAgriculteur est manquant.', 'error');
+        }
       },
       (error) => {
         this.isSubmitting = false;
@@ -123,12 +136,19 @@ export class ArticleEditComponent implements OnInit {
       }
     );
   }
+  
 
-  // Méthode utilitaire pour afficher les snackbars
   private showSnackbar(message: string, type: 'success' | 'error'): void {
     this.snackBar.open(message, 'Fermer', {
       duration: 3000,
       panelClass: [`${type}-snackbar`]
     });
+  }
+
+  retourListe() {
+    console.log('Redirection vers : /farmer/articles/' + this.idAgriculteur);
+    if (this.idAgriculteur) {
+      this.router.navigate(['/farmer/articles', this.idAgriculteur]);
+    }
   }
 }

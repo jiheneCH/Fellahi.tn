@@ -11,6 +11,7 @@ export class ArticleDetailsComponent {
   article: any;
   image: string | null = null;
 
+
   constructor(
     private route: ActivatedRoute,
     private articleService: ArticleService,

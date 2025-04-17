@@ -120,8 +120,10 @@ export class ArticleFormComponent {
   
 
   retourListe() {
-    this.router.navigate(['/articles']); // adapte ce chemin selon ta route réelle
-  }
+    console.log('Redirection vers : /farmer/articles/' + this.idAgriculteur);
+    if (this.idAgriculteur) {
+      this.router.navigate(['/farmer/articles', this.idAgriculteur]);
+    } }
   onImageSelected(event: any): void {
     const file = event.target.files[0];
     if (file) {

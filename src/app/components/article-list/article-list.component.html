@@ -41,21 +41,22 @@
         [(ngModel)]="selectedStatus" 
         (change)="onSearchChange()"
         class="filter-select">
-        <option [value]="null">Tous les statuts de stock</option>
+        <option value="all">Tous les statuts</option>
         <option value="InStock">InStock</option>
         <option value="LowStock">LowStock</option>
         <option value="OutOfStock">OutOfStock</option>
       </select>
     </div>
+
     
     <div class="filter-group">
       <select 
         [(ngModel)]="selectedTypeProduit" 
         (change)="onSearchChange()"
         class="filter-select">
-        <option [value]="null">Toutes les catégories</option>
+        <option value="all">Toutes les catégories</option>
         <option value="legume">legume</option>
-        <option value="fruit">fruit</option>
+        <option value="fruits">fruits</option>
         <option value="cereale">cereale</option>
         <option value="produitLaitier">produitLaitier</option>
         <option value="viande">viande</option>
@@ -64,6 +65,8 @@
 
       </select>
     </div>
+    
+    
   </div>
 
   <!-- Section Packs (Lots) -->
@@ -92,8 +95,8 @@
             <td class="article-ref">{{ article.reference }}</td>
             <td class="article-price">{{ article.prix | number:'1.2-2' }} DT</td>
             <td>
-              <span class="status-badge" [ngClass]="getStatusClass(article.status)">
-                {{ article.status }}
+              <span class="status-badge" [ngClass]="getStatusClass(article.statusAgri)">
+                {{ article.statusAgri }}
               </span>
             </td>
             <td>
@@ -113,13 +116,13 @@
                   <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
                 </svg>
                 Modifier
-              </button>
+              </button>-->
               <button class="action-btn archive-btn" (click)="onArchive(article.idArticle)">
                 <svg viewBox="0 0 24 24">
                   <path d="M20.54 5.23l-1.39-1.68C18.88 3.21 18.47 3 18 3H6c-.47 0-.88.21-1.16.55L3.46 5.23C3.17 5.57 3 6.02 3 6.5V19c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6.5c0-.48-.17-.93-.46-1.27zM12 17.5L6.5 12H10v-2h4v2h3.5L12 17.5zM5.12 5l.81-1h12l.94 1H5.12z"/>
                 </svg>
                 Archiver
-              </button>-->
+              </button>
               <button class="action-btn details-btn" (click)="onViewDetails(article.idArticle)">
                 <svg viewBox="0 0 24 24">
                   <path d="M21 3H3c-1.1 0-1.99.9-1.99 2L1 19c0 1.1.89 2 1.99 2h18c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM19 17H5V7h14v10z"/>
@@ -162,10 +165,11 @@
             <td class="article-ref">{{ article.reference }}</td>
             <td class="article-price">{{ article.prix | number:'1.2-2' }} DT</td>
             <td>
-              <span class="status-badge" [ngClass]="getStatusClass(article.status)">
-                {{ article.status }}
+              <span class="status-badge" [ngClass]="getStatusClass(article.statusAgri)">
+                {{ article.statusAgri }}
               </span>
             </td>
+            
             <td>
               <span class="type-badge" [ngClass]="'type-' + article.typeProduit">
                 {{ (article.typeProduit) }}
@@ -183,14 +187,14 @@
                   <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
                 </svg>
                 Modifier
-              </button>
+              </button>  -->
               <button class="action-btn archive-btn" (click)="onArchive(article.idArticle)">
                 <svg viewBox="0 0 24 24">
                   <path d="M20.54 5.23l-1.39-1.68C18.88 3.21 18.47 3 18 3H6c-.47 0-.88.21-1.16.55L3.46 5.23C3.17 5.57 3 6.02 3 6.5V19c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6.5c0-.48-.17-.93-.46-1.27zM12 17.5L6.5 12H10v-2h4v2h3.5L12 17.5zM5.12 5l.81-1h12l.94 1H5.12z"/>
                 </svg>
                 Archiver
               </button>
-              -->
+            
               <button class="action-btn details-btn" (click)="onViewDetails(article.idArticle)">
                 <svg viewBox="0 0 24 24">
                   <path d="M21 3H3c-1.1 0-1.99.9-1.99 2L1 19c0 1.1.89 2 1.99 2h18c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM19 17H5V7h14v10z"/>
@@ -206,4 +210,40 @@
       Aucun produit ne correspond aux critères de recherche
     </div>
   </div>
+ <!-- ✅ Sidebar d’alertes sur toute la hauteur -->
+<div class="alert-sidebar-full">
+  <h4>🔔 Alertes Stock Faible</h4>
+
+  <div 
+    class="alert-scroll-container"
+    (mouseenter)="pauseScroll()"
+    (mouseleave)="resumeScroll()"
+  >
+    <div 
+      class="alert-list" 
+      [ngStyle]="{ 'animation-play-state': scrollPaused ? 'paused' : 'running' }"
+    >
+      <div *ngFor="let article of articlesStockFaible" class="alert-item">
+        <strong>{{ article.nom }}</strong><br />
+        Stock : {{ article.quantiteDisponible }}<br />
+        <span 
+          class="status-badge" 
+          [ngClass]="{
+            'low-stock': article.statusAgri === 'LowStock',
+            'out-of-stock': article.statusAgri === 'OutOfStock'
+          }"
+        >
+          {{ article.statusAgri === 'LowStock' ? 'Stock Faible' : 'Rupture de Stock' }}
+        </span>
+      </div>
+    </div>
+  </div>
+
 </div>
+
+
+
+
+
+</div>
+

@@ -19,7 +19,7 @@ origine: any;
       quantiteDisponible: number;
       quantiteVendue: number;
       typeProduit: TypeProduit;
-      status: Status;
+      statusAgri: StatusAgri;
       dateAjout: Date;
       image?: string;
       isPack?: boolean; 
@@ -30,7 +30,7 @@ origine: any;
       ALIMENTAIRE = 'legumes_et_fruits',
       equipements = 'equipements',
       AUTRE = 'insec',
-      fruit = 'fruit',
+      fruits = 'fruits',
       legume = 'legume',
       cereale = 'cereale',
       produitLaitier = 'produitLaitier',
@@ -38,7 +38,7 @@ origine: any;
       insec = 'insec'
     }
     
-    export enum Status {
+    export enum StatusAgri {
       InStock = 'InStock',
       OutOfStock = 'OutOfStock',
       LowStock = 'LowStock'

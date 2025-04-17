@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
 import { ArticleService } from 'src/app/service/article.service';
-import { Article, Status, TypeProduit } from '../../models/article.model';
+import { Article,  StatusAgri,  TypeProduit } from 'src/app/models/article.model';
 import { Router } from '@angular/router';
+
 
 @Component({
   selector: 'app-article-list',
@@ -11,20 +12,26 @@ import { Router } from '@angular/router';
 export class ArticleListComponent {
   articles: Article[] = [];
   filteredArticles: Article[] = [];
-  statusEnum = Status;
+  statusEnum = StatusAgri; // Utilisation de StatusAgri
   packs: Article[] = [];
   nonPacks: Article[] = [];
   searchNom: string = '';
-  selectedStatus: Status | null = null;
-  selectedTypeProduit: TypeProduit | null = null;
+  selectedStatus: StatusAgri | 'all' | null = null; // Ajout de 'all' pour gérer le filtre "Tous les statuts"
+selectedTypeProduit: TypeProduit | 'all' | null = null; // Ajout de 'all' pour gérer le filtre "Toutes les catégories"
+selectedDate: Date | null = null; // Ou bien une plage de dates, si nécessaire
+
   
-  statusList: Status[] = Object.values(Status);
+  statusList: StatusAgri[] = Object.values(StatusAgri); // Utilisation de StatusAgri
   typeProduitList: TypeProduit[] = Object.values(TypeProduit);
 
   constructor(private articleService: ArticleService, private router: Router) {}
   
   ngOnInit(): void {
     this.loadData();
+    this.verifierArticlesCritiques();
+  setInterval(() => {
+    this.verifierArticlesCritiques();
+  }, 60000);
   }
 
   // Méthode principale de chargement des données
@@ -69,15 +76,17 @@ export class ArticleListComponent {
       const matchesSearch = !this.searchNom || 
         article.nom.toLowerCase().includes(this.searchNom.toLowerCase());
       
-      // Filtre par statut (prend en compte 'Tous les statuts')
-      const matchesStatus = this.selectedStatus === null || 
-        article.status === this.selectedStatus;
+        const matchesStatus = this.selectedStatus === null || this.selectedStatus === 'all' || 
+        article.statusAgri === this.selectedStatus;
+  
       
-      // Filtre par type (prend en compte 'Tous les types')
-      const matchesType = this.selectedTypeProduit === null || 
-        article.typeProduit === this.selectedTypeProduit;
+    // Filtre par type (prend en compte 'Toutes les catégories')
+    const matchesType = this.selectedTypeProduit === null || this.selectedTypeProduit === 'all' || 
+      article.typeProduit === this.selectedTypeProduit;
+      const matchesDate = this.selectedDate === null || new Date(article.dateAjout).toDateString() === this.selectedDate?.toDateString();
+
       
-      return matchesSearch && matchesStatus && matchesType;
+      return matchesSearch && matchesStatus && matchesType && matchesDate;
     });
   
     // Mise à jour des packs et non-packs après filtrage
@@ -95,15 +104,15 @@ export class ArticleListComponent {
 
   // Navigation
   onEdit(articleId: number): void {
-    this.router.navigate([`/edit-article/${articleId}`]);
+    this.router.navigate([`/farmer/edit-article/${articleId}`]);
   }
 
   onAddNew(): void {
-    this.router.navigate(['/articles/create']);
+    this.router.navigate(['/farmer/articles/create']);
   }
 
   onViewDetails(articleId: number): void {
-    this.router.navigate([`/article-details/${articleId}`]);
+    this.router.navigate([`/farmer/article-details/${articleId}`]);
   }
 
   // Gestion des articles
@@ -132,9 +141,9 @@ export class ArticleListComponent {
   // Utilitaires d'affichage
   getStatusClass(status: string): string {
     switch (status) {
-      case 'InStock': return 'status-instock';
-      case 'LowStock': return 'status-lowstock';
-      case 'OutOfStock': return 'status-outofstock';
+      case 'InStock': return 'InStock';
+      case 'LowStock': return 'LowStock';
+      case 'OutOfStock': return 'OutOfStock';
       default: return '';
     }
   }
@@ -142,7 +151,7 @@ export class ArticleListComponent {
   getTypeDisplay(type: TypeProduit): string {
     switch(type) {
       case TypeProduit.legume: return 'legume';
-      case TypeProduit.fruit: return 'fruit';
+      case TypeProduit.fruits: return 'fruits';
       case TypeProduit.cereale: return 'cereale';
       case TypeProduit.produitLaitier: return 'produitLaitier';
       case TypeProduit.equipements: return 'equipements';
@@ -167,5 +176,46 @@ export class ArticleListComponent {
     this.applyFilter();
   }
 
-  
+
+
+  articlesStockFaible: Article[] = [];
+  verifierArticlesCritiques(): void {
+    this.articleService.getArticlesStockFaible().subscribe(
+      (data) => {
+        this.articlesStockFaible = data;
+      },
+      (error) => {
+        console.error("Erreur lors de la récupération des articles à stock faible :", error);
+      }
+    );
+  }
+
+
+  // Pour la sidebar
+showSidebar = false;
+scrollPaused = false;
+
+// Ouvre/Ferme la sidebar
+toggleSidebar(): void {
+  this.showSidebar = !this.showSidebar;
+}
+
+// Met en pause l'animation quand souris dessus
+pauseScroll(): void {
+  this.scrollPaused = true;
+}
+
+resumeScroll(): void {
+  this.scrollPaused = false;
+}
+
+// Redirige vers la page complète des alertes
+onViewAllAlerts(): void {
+  this.router.navigate(['/farmer/articles/alerts']);
+}
+
+
+
+
+
 }
