@@ -51,10 +51,10 @@ export class RegisterComponent implements OnInit {
 
   onSubmit(): void {
     if (this.registerform.invalid) return;
-
+  
     this.isloading = true;
     const user = this.registerform.value;
-
+  
     this.recaptchaV3Service.execute('register')
       .pipe(
         switchMap((token: string) => {
@@ -63,7 +63,7 @@ export class RegisterComponent implements OnInit {
         }),
         catchError(error => {
           this.isloading = false;
-
+  
           if (error.error?.recaptchaVerified === false) {
             this.msgerror = 'reCAPTCHA verification failed. Please try again.';
           } else if (error.error?.message) {
@@ -71,22 +71,25 @@ export class RegisterComponent implements OnInit {
           } else {
             this.msgerror = 'Something went wrong. Please try again.';
           }
-
+  
           return of(null);
         })
       )
       .subscribe((res: any) => {
         this.isloading = false;
-
+  
         if (!res || res.recaptchaResult === false) {
           this.msgerror = 'reCAPTCHA verification failed. Please try again.';
           return;
         }
-
-        // On success, redirect
-        this.router.navigate(['/activate-account']);
+  
+        // Redirect with username as query param
+        this.router.navigate(['/register-additional'], {
+          queryParams: { username: user.username }
+        });
       });
   }
+  
 
   togglePasswordVisibility(): void {
     this.showPassword = !this.showPassword;

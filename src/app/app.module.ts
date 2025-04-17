@@ -133,6 +133,7 @@ import { HeaderClientComponent } from './FrontOffice/header-client/header-client
 import { ClientLayoutComponent } from './FrontOffice/client-layout/client-layout.component';
 import { ReclamationClientComponent } from './FrontOffice/reclamation-client/reclamation-client.component';
 import { ReclamationAddComponent } from './FrontOffice/reclamation-add/reclamation-add.component';
+import { RegisterAdditionalComponent } from './FrontOffice/register-additional/register-additional.component';
 
 
 
@@ -229,6 +230,7 @@ import { ReclamationAddComponent } from './FrontOffice/reclamation-add/reclamati
         ClientLayoutComponent,
         ReclamationClientComponent,
         ReclamationAddComponent,
+        RegisterAdditionalComponent,
         
     
        

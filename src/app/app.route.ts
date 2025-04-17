@@ -58,6 +58,7 @@ import { ReclamationClientComponent } from './FrontOffice/reclamation-client/rec
 import { ReclamationAddComponent } from './FrontOffice/reclamation-add/reclamation-add.component';
 import { ReclamationAdminComponent } from './components/reclamation-admin/reclamation-admin.component';
 import { ReclamationAdminTreatComponent } from './components/reclamation-admin-treat/reclamation-admin-treat.component';
+import { RegisterAdditionalComponent } from './FrontOffice/register-additional/register-additional.component';
 
 
 
@@ -80,6 +81,9 @@ export const routes: Routes = [
         {
           path:'about',
           component:AboutComponent},
+          {
+            path:'register-additional',
+            component:RegisterAdditionalComponent},
           {
             path:'team',
             component:TeamComponent},
