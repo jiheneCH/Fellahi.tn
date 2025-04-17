@@ -40,7 +40,8 @@ public class SecurityConfig {
                                 "/auth/activate-account",
                                 "/auth/forgot-password",
                                 "/auth/reset-password",
-                                "/reclamations/add"
+                                "/reclamations/add",
+                                "/auth/google-signup"
                         ).permitAll()
                         .requestMatchers("/users/**", "/reclamations/pending", "/reclamations/filter", "/reclamations/filterByDate", "/reclamations/treat/**")
                         .hasRole("ADMIN")

@@ -4,10 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import tn.esprit.fallehiuser.DTO.AuthenticationResponse;
-import tn.esprit.fallehiuser.DTO.PasswordResetRequest;
-import tn.esprit.fallehiuser.DTO.SignInRequest;
-import tn.esprit.fallehiuser.DTO.SignUpRequest;
+import tn.esprit.fallehiuser.DTO.*;
+import tn.esprit.fallehiuser.Execption.EmailAlreadyRegisteredException;
+import tn.esprit.fallehiuser.Execption.InvalidRoleException;
+import tn.esprit.fallehiuser.Execption.UsernameAlreadyTakenException;
 import tn.esprit.fallehiuser.Services.AuthServiceImpl;
 import tn.esprit.fallehiuser.Services.EmailService;
 import tn.esprit.fallehiuser.Services.UserServiceImpl;
@@ -50,26 +50,63 @@ public class AuthController {
                         .body(Map.of("error", "reCAPTCHA verification failed. Please try again."));
             }
 
-            // Handle user registration
+            // Attempt user registration
             service.register(request);
 
             return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(Map.of("message", "User registered. Please check your email to activate your account."));
+                    .body(Map.of("message", "✅ User registered successfully. Please check your email to activate your account."));
 
-        } catch (IllegalStateException e) {
-            logger.error("Error during registration: {}", e.getMessage());
+        } catch (EmailAlreadyRegisteredException e) {
+            logger.warn("Registration failed: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(Map.of("error", "This email is already registered."));
+        } catch (UsernameAlreadyTakenException e) {
+            logger.warn("Registration failed: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(Map.of("error", "This username is already taken."));
+        } catch (InvalidRoleException e) {
+            logger.warn("Registration failed: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(Map.of("error", "Email is already registered."));
-        } catch (MessagingException e) {
-            logger.error("Error sending email: {}", e.getMessage());
+                    .body(Map.of("error", "Invalid role selected."));
+        } catch (IllegalStateException e) {
+            logger.error("Role not found: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error", "Error sending activation email."));
+                    .body(Map.of("error", "Server configuration error. Please contact support."));
+        } catch (MessagingException e) {
+            logger.error("Failed to send email: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "We couldn't send the activation email. Please try again later."));
         } catch (Exception e) {
             logger.error("Unexpected error: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error", "An error occurred."));
+                    .body(Map.of("error", "An unexpected error occurred. Please try again."));
         }
     }
+    @PostMapping("/google-signup")
+    public ResponseEntity<?> googleSignUp(@RequestBody GoogleSignUpRequest request) {
+        try {
+            AuthenticationResponse response = service.registerWithGoogle(request.getEmail(), request.getUsername());
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", e.getMessage()));
+        }
+    }
+
+
+    @PutMapping("/google-complete")
+    public ResponseEntity<?> completeGoogleRegistration(
+            @RequestParam Long userId,
+            @RequestBody GoogleUserAdditionalInfoDTO request
+    ) {
+        try {
+            service.completeGoogleUserProfile(userId, request);
+            return ResponseEntity.ok(Map.of("message", "✅ Google user registration completed successfully."));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", e.getMessage()));
+        }
+    }
+
+
 
     @PostMapping("/authenticate")
     @Operation(summary = "User authentication", description = "Authenticates a user and returns a JWT token")
@@ -98,15 +135,17 @@ public class AuthController {
     }
 
     @PostMapping("/forgot-password")
-    public ResponseEntity<String> forgotPassword(@RequestBody Map<String, String> requestBody) {
+    public ResponseEntity<Map<String, String>> forgotPassword(@RequestBody Map<String, String> requestBody) {
         try {
             String email = requestBody.get("email");
             service.initiatePasswordReset(email);
-            return ResponseEntity.ok("Password reset link sent.");
+            return ResponseEntity.ok(Map.of("message", "Password reset instructions sent to your email."));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
         }
     }
+
+
 
     @PostMapping("/reset-password")
     public ResponseEntity<Map<String, String>> resetPassword(@RequestBody PasswordResetRequest request) {

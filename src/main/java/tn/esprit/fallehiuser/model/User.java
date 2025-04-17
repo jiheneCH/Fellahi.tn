@@ -9,7 +9,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -43,11 +42,15 @@ public class User implements UserDetails, Principal {
     @JoinColumn(name = "ID_ROLE", referencedColumnName = "id")
     private Role role;
 
+    @Column(nullable = false)
+    private boolean isGoogle = false; // Default is standard registration
+
+
     private boolean accountLocked;
     private boolean enabled;
 
     @Enumerated(EnumType.STRING)
-    private status status; // ✅ Add status field (as enum)
+    private status status;
 
     @CreatedDate
     @Column(nullable = false, updatable = false)
@@ -61,6 +64,15 @@ public class User implements UserDetails, Principal {
 
     private LocalDateTime resetTokenExpiry;
 
+    // ✅ New fields for the second registration step
+    private String address;
+
+    private String phoneNumber;
+
+    private String governorate;
+
+    private String profileImageUrl; // URL or path to profile image
+
     @PrePersist
     @PreUpdate
     protected void onCreate() {
@@ -71,7 +83,7 @@ public class User implements UserDetails, Principal {
             createdDate = LocalDateTime.now();
         }
         if (status == null) {
-            status = tn.esprit.fallehiuser.model.status.ACTIVE; // ✅ Set default status if not defined
+            status = tn.esprit.fallehiuser.model.status.ACTIVE;
         }
     }
 
@@ -166,4 +178,29 @@ public class User implements UserDetails, Principal {
     public status getStatus() { return status; }
 
     public void setStatus(status status) { this.status = status; }
+
+    public String getAddress() { return address; }
+
+    public void setAddress(String address) { this.address = address; }
+
+    public String getPhoneNumber() { return phoneNumber; }
+
+    public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
+
+    public String getGovernorate() { return governorate; }
+
+    public void setGovernorate(String governorate) { this.governorate = governorate; }
+
+    public String getProfileImageUrl() { return profileImageUrl; }
+
+    public void setProfileImageUrl(String profileImageUrl) { this.profileImageUrl = profileImageUrl; }
+
+    public boolean isGoogle() {
+        return isGoogle;
+    }
+
+    public void setGoogle(boolean google) {
+        isGoogle = google;
+    }
+
 }

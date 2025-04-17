@@ -1,13 +1,15 @@
 package tn.esprit.fallehiuser.Services;
-
 import jakarta.mail.MessagingException;
 import jakarta.transaction.Transactional;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import tn.esprit.fallehiuser.DTO.AuthenticationResponse;
+import tn.esprit.fallehiuser.DTO.GoogleUserAdditionalInfoDTO;
 import tn.esprit.fallehiuser.DTO.SignInRequest;
 import tn.esprit.fallehiuser.DTO.SignUpRequest;
 import tn.esprit.fallehiuser.Email.EmailTemplateName;
@@ -48,6 +50,11 @@ public class AuthServiceImpl {
         if (existingUser.isPresent()) {
             throw new EmailAlreadyRegisteredException("Email is already registered");
         }
+        Optional<User> existingUsername = userRepository.findByUsername(request.getUsername());
+        if (existingUsername.isPresent()) {
+            throw new UsernameAlreadyTakenException("Username is already taken");
+        }
+
 
         RoleName requestedRole;
         try {
@@ -189,22 +196,20 @@ public class AuthServiceImpl {
             throw new TokenExpiredException("Activation token has expired. A new token has been sent to your email.");
         }
 
-        if(savedToken.getValidatedAt() != null) {
-            throw new IllegalStateException("Account already activated");
+        if (savedToken.getValidatedAt() != null) {
+            throw new IllegalStateException("Token has already been used to activate the account.");
         }
 
         User user = savedToken.getUser();
-        if(user.isEnabled()) {
-            throw new IllegalStateException("Account already activated");
-        }
-
         user.setEnabled(true);
-        user.setAccountLocked(false);
-        userRepository.save(user);
-
         savedToken.setValidatedAt(LocalDateTime.now());
+
+        userRepository.save(user);
         tokenRepository.save(savedToken);
+
+        logger.info("User {} successfully activated their account.", user.getUsername());
     }
+
 
     public void initiatePasswordReset(String email) throws MessagingException {
         User user = userRepository.findByEmail(email)
@@ -212,7 +217,7 @@ public class AuthServiceImpl {
 
         if (user.getResetTokenExpiry() != null &&
                 user.getResetTokenExpiry().isAfter(LocalDateTime.now().minusMinutes(10))) {
-            throw new PasswordResetLimitExceededException("You can only reset your password once every 30 days.");
+            throw new PasswordResetLimitExceededException("You can only reset your password once every 10 minutes.");
         }
 
         String token = UUID.randomUUID().toString();
@@ -228,6 +233,25 @@ public class AuthServiceImpl {
                 emailService.buildEmail("Reset Your Password", resetLink)
         );
     }
+
+
+
+    private Map<String, Object> buildClaims(User user) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("id", user.getId());
+        claims.put("username", user.getUsername());
+        claims.put("email", user.getEmail());
+        claims.put("role", user.getRoleName());
+
+        // Optional fields (check for null to avoid issues)
+        claims.put("phoneNumber", user.getPhoneNumber() != null ? user.getPhoneNumber() : "");
+        claims.put("address", user.getAddress() != null ? user.getAddress() : "");
+        claims.put("governorate", user.getGovernorate() != null ? user.getGovernorate() : "");
+        claims.put("profilePicture", user.getProfileImageUrl() != null ? user.getProfileImageUrl() : "");
+
+        return claims;
+    }
+
 
     @Transactional
     public void resetPassword(String token, String newPassword) {
@@ -247,4 +271,70 @@ public class AuthServiceImpl {
         // Add this to prevent role updates
         userRepository.save(user);
     }
+
+
+    public AuthenticationResponse registerWithGoogle(String email, String username) {
+        Optional<User> existingUser = userRepository.findByEmail(email);
+        if (existingUser.isPresent()) {
+            logger.info("User already exists with email: {}. Logging in...", email);
+
+            User user = existingUser.get();
+            if (!user.isEnabled()) {
+                throw new AccountNotActivatedException("Google account not activated.");
+            }
+
+            String jwtToken = jwtService.generateToken(buildClaims(user), user);
+            return AuthenticationResponse.builder()
+                    .token(jwtToken)
+                    .claims(jwtService.extractClaims(jwtToken))
+                    .build();
+        }
+
+        // Assign default role
+        RoleName defaultRole = RoleName.CLIENT;
+        var role = roleRepository.findByRoleName(defaultRole)
+                .orElseThrow(() -> new IllegalStateException("Default role not found"));
+
+        // Generate a random secure password and encode it
+        String rawRandomPassword = RandomStringUtils.randomAlphanumeric(12); // 16-character password
+        String encodedPassword = passwordEncoder.encode(rawRandomPassword);
+
+        // Create new user
+        User user = User.builder()
+                .email(email)
+                .username(username)
+                .enabled(true)
+                .accountLocked(false)
+                .role(role)
+                .password(encodedPassword)
+                .build();
+
+        userRepository.save(user);
+
+        String jwtToken = jwtService.generateToken(buildClaims(user), user);
+        logger.info("Registered new user via Google: {}", username);
+
+        return AuthenticationResponse.builder()
+                .token(jwtToken)
+                .claims(jwtService.extractClaims(jwtToken))
+                .build();
+    }
+
+
+    public User completeGoogleUserProfile(Long userId, GoogleUserAdditionalInfoDTO request) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        user.setAddress(request.getAddress());
+        user.setPhoneNumber(request.getPhoneNumber());
+        user.setGovernorate(request.getGovernorate());
+        user.setRole(request.getRole()); // ✅ already an enum
+
+        return userRepository.save(user);
+    }
+
+
+
+
 }
+
