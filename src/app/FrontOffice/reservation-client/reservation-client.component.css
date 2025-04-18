@@ -230,3 +230,11 @@
     border-color: #dee2e6;
     color: #6c757d;
 }
+
+.review-btn.archived-btn {
+    border: 1px solid #9ca3af; /* gris */
+    color: #9ca3af;
+    background-color: #f3f4f6; /* fond gris clair */
+    cursor: not-allowed;
+}
+

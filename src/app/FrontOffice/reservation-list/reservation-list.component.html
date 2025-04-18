@@ -42,24 +42,34 @@
                         <td class="event-title">{{ booking.event?.title }}</td>
                         <td class="actions-cell">
                             <div class="action-buttons">
-                                <button class="cancel-btn" (click)="onCancelReservation(booking.idReservation)"
-                                [disabled]="booking.event?.archived">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
-                                    <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
-                                </svg>
-                                Cancel
-                            </button>
-                            
-                            
-                            <!-- Bouton Ajouter un avis -->
-                            <button class="review-btn" [routerLink]="['/review', booking.event?.idEvent, booking.user?.id]">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                                  <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
-                                  <path d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 4.995z"/>
-                                </svg>
-                                Review
-                            </button>
+                                                             <!-- Bouton Cancel -->
+<button class="btn btn-outline-danger p-2 rounded-md hover:bg-red-50 transition-colors flex items-center justify-center"
+[disabled]="booking.event?.archived || booking.event?.status === 'archive'"
+(click)="onCancelReservation(booking.idReservation)"
+title="{{ (booking.event?.archived || booking.event?.status === 'archive') ? 'Annulation impossible (événement archivé)' : 'Annuler la réservation' }}">
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16">
+<path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+<path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+</svg>
+<span class="ml-2 whitespace-nowrap">
+{{ (booking.event?.archived || booking.event?.status === 'archive') ? 'Archived' : 'Cancel' }}
+</span>
+</button>
+
+<!-- Bouton Review -->
+<button class="review-btn"
+[ngClass]="{ 'archived-btn': !booking.event?.archived }"
+[routerLink]="['/review', booking.event?.idEvent, booking.user?.id]"
+[disabled]="!booking.event?.archived"
+title="{{ booking.event?.archived ? 'Ajouter un avis' : 'Avis uniquement après l’événement' }}">
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+<path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+<path d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 4.995z"/>
+</svg>
+<span class="ml-2">
+{{ booking.event?.archived ? 'Review' : 'Review Archived' }}
+</span>
+</button>
                                   
                             </div>
                         </td>

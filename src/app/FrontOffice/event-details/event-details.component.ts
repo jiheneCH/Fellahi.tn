@@ -83,7 +83,8 @@ export class EventDetailsComponent implements OnInit {
           window.location.reload();
         },
         error: (err) => {
-          alert('❌ Reservation failed. ' + (err?.error?.message || 'Please try again.'));
+          alert('❌ Reservation failed. Not enough seats available. You have been added to the waiting list.');
+
         }
       });
     

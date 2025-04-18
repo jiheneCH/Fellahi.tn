@@ -37,7 +37,8 @@ export class EventFrontComponent implements OnInit {
   }
 
   get availableEvents(): Event[] {
-    return this.events.filter(e => e.status === 'disponible');
+    return this.events.filter(e => e.status === 'disponible' || e.status === 'complete');
   }
+  
 
 }
