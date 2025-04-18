@@ -1,99 +1,149 @@
-<!-- Clean Cart Design -->
-<div class="clean-cart-container">
-  <!-- Header -->
-  <div class="cart-brand">
-    <h1>Feilahi.6n</h1>
-    <p class="tagline">Local Freshness, Natural Flavor</p>
+<!-- Farm Fresh Cart Design -->
+<div class="farm-cart-container">
+  <!-- Farm Header -->
+  <div class="farm-header">
+    <div class="farm-logo">
+      <i class="fas fa-apple-alt logo-icon"></i>
+      <h1>FreshHarvest</h1>
+    </div>
+    <p class="farm-tagline">🍎 Farm Fresh, Naturally Delicious 🍅</p>
   </div>
 
-  <div class="cart-layout">
-    <!-- Products List -->
-    <div class="products-list">
-      <h2 class="section-title"><i class="fas fa-shopping-basket"></i> Your Cart</h2>
-      
-      <div class="product-item" *ngFor="let detail of commande?.detailsCommande">
-        <div class="product-image">
-          <img src="path_to_image/{{ detail.article.idArticle }}" alt="{{ detail.article.nom }}">
-          <button class="remove-item" (click)="deleteArticle(detail)">
-            <i class="fas fa-times"></i>
-          </button>
-        </div>
-        
-        <div class="product-details">
-          <h3>{{ detail.article.nom }}</h3>
-          <p class="product-reference">Ref: {{ detail.article.reference }}</p>
-          
-          <div class="product-meta">
-            <span class="price">{{ detail.article.prix | currency:'TND' }}</span>
-            <span class="points">{{ detail.article.pointsFidelite * detail.quantite }} pts</span>
-          </div>
-          
-          <div class="quantity-control">
-            <input type="number" 
-                   [(ngModel)]="detail.quantite" 
-                   name="quantity{{ detail.article.idArticle }}" 
-                   min="1" 
-                   step="1" 
-                   required>
-          </div>
-        </div>
-        
-        <div class="product-total">
-          {{ detail.prixTotalArticle | currency:'TND' }}
-        </div>
-      </div>
-      
-      <button class="update-cart-btn" (click)="updateCart()">
-        <i class="fas fa-sync-alt"></i> Update Cart
+  <!-- Cart Content -->
+  <div class="cart-content">
+    <!-- Action Buttons -->
+    <div class="cart-actions">
+      <button class="farm-btn refresh-btn" (click)="refreshOrders()">
+        <i class="fas fa-seedling sparkle-icon"></i> Refresh Cart
+      </button>
+      <button class="farm-btn back-btn" (click)="goBack()">
+        <i class="fas fa-arrow-left"></i> Continue Shopping
       </button>
     </div>
 
-    <!-- Order Summary -->
-    <div class="order-summary">
-      <div class="summary-card">
-        <h3><i class="fas fa-receipt"></i> Order Summary</h3>
-        
-        <div class="summary-row">
-          <span>Subtotal</span>
-          <span>{{ commande?.prixTotalCommande | currency:'TND' }}</span>
+    <!-- Main Cart Layout -->
+    <div class="cart-main">
+      <!-- Products Section -->
+      <div class="cart-items-section">
+        <div class="section-header">
+          <div class="section-title">
+            <i class="fas fa-shopping-basket basket-icon"></i>
+            <h2>Your Farm Basket</h2>
+          </div>
+          <span class="items-count">🌱 {{commande?.detailsCommande?.length || 0}} items</span>
         </div>
-        
-        <div class="summary-row">
-          <span>Shipping</span>
-          <span class="free">FREE</span>
+
+        <!-- Products List -->
+        <div class="items-list">
+          <div class="cart-item" *ngFor="let detail of commande?.detailsCommande">
+            <div class="item-image-container">
+              <img class="item-image" src="path_to_image/{{ detail.article.idArticle }}" alt="{{ detail.article.nom }}">
+              <button class="remove-item-btn" (click)="deleteArticle(detail)" title="Remove item">
+                <i class="fas fa-times-circle"></i>
+              </button>
+            </div>
+
+            <div class="item-details">
+              <h3 class="item-name">
+                <span *ngIf="detail.article.category === 'fruits'">🍓</span>
+                <span *ngIf="detail.article.category === 'vegetables'">🥕</span>
+                {{ detail.article.nom }}
+              </h3>
+              <p class="item-reference">📦 Lot: {{ detail.article.reference }}</p>
+              
+              <div class="item-meta">
+                <span class="item-price">💰 {{ detail.article.prix | currency:'USD':'symbol':'1.2-2' }}</span>
+                <span class="item-origin">🌍 {{ detail.article.origin || 'Local Farm' }}</span>
+              </div>
+
+              <div class="quantity-selector">
+                <button class="qty-btn minus" (click)="detail.quantite = detail.quantite - 1">−</button>
+                <input type="number" 
+                       [(ngModel)]="detail.quantite" 
+                       name="quantity{{ detail.article.idArticle }}" 
+                       min="1" 
+                       step="1" 
+                       class="quantity-input"
+                       required>
+                <button class="qty-btn plus" (click)="detail.quantite = detail.quantite + 1">+</button>
+                <span class="item-unit"> {{ detail.article.unit }}</span>
+              </div>
+            </div>
+
+            <div class="item-total">
+              📦 {{ detail.prixTotalArticle | currency:'USD':'symbol':'1.2-2' }}
+            </div>
+          </div>
         </div>
-        
-        <div class="summary-row total">
-          <span>Total</span>
-          <span>{{ commande?.prixTotalCommande | currency:'TND' }}</span>
-        </div>
-        
-        <a routerLink="/checkout" class="checkout-btn">
-          <i class="fas fa-lock"></i> Proceed to Checkout
-        </a>
+
+        <button class="update-cart-btn" (click)="updateCart()">
+          <i class="fas fa-tractor"></i> Update Basket
+        </button>
       </div>
 
-      <!-- Loyalty Points -->
-      <div class="loyalty-card">
-        <h3><i class="fas fa-star"></i> Loyalty Points</h3>
-        <p>Available: <strong>{{ clientPoints }} pts</strong></p>
-        
-        <form (ngSubmit)="applyLoyaltyPoints()">
-          <div class="points-input">
-            <input type="number" 
-                   [(ngModel)]="loyaltyPointsToApply" 
-                   name="loyaltyPoints" 
-                   placeholder="Enter points" 
-                   [min]="0" 
-                   [max]="clientPoints" 
-                   required>
-            <button type="submit">Apply</button>
+      <!-- Order Summary Section -->
+      <div class="order-summary-section">
+        <!-- Summary Card -->
+        <div class="summary-card">
+          <div class="summary-header">
+            <i class="fas fa-clipboard-list summary-icon"></i>
+            <h3>Farm Order Summary</h3>
           </div>
-          <small>100 points = 10 TND discount</small>
-        </form>
+
+          <div class="summary-details">
+            <div class="summary-row">
+              <span>🧺 Subtotal</span>
+              <span class="amount">{{ commande?.prixTotalCommande | currency:'USD':'symbol':'1.2-2' }}</span>
+            </div>
+
+            <div class="summary-row">
+              <span>🚜 Delivery</span>
+              <span class="free-shipping">FREE (Local Farms)</span>
+            </div>
+
+
+            <div class="summary-row total-row">
+              <span>💳 Total</span>
+              <span class="total-amount">{{ commande?.prixTotalCommande | currency:'USD':'symbol':'1.2-2' }}</span>
+            </div>
+          </div>
+
+          <button class="checkout-btn" routerLink="/checkout">
+            <i class="fas fa-shopping-bag"></i> Farm Fresh Checkout
+          </button>
+
+          <div class="farm-note">
+            <i class="fas fa-leaf"></i> Your order supports local farmers and sustainable agriculture
+          </div>
+        </div>
+
+        <!-- Farm Info Card -->
+        <div class="farm-info-card">
+          <div class="farm-info-header">
+            <i class="fas fa-tractor loyalty-icon"></i>
+            <h3>Farm Fresh Guarantee</h3>
+          </div>
+
+          <div class="farm-info-content">
+            <div class="farm-benefit">
+              <i class="fas fa-check-circle"></i>
+              <span>Picked within 24 hours</span>
+            </div>
+            <div class="farm-benefit">
+              <i class="fas fa-check-circle"></i>
+              <span>100% Organic Certified</span>
+            </div>
+            <div class="farm-benefit">
+              <i class="fas fa-check-circle"></i>
+              <span>Direct from local farms</span>
+            </div>
+            <div class="farm-benefit">
+              <i class="fas fa-check-circle"></i>
+              <span>Carbon-neutral delivery</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
-
-
 </div>

@@ -23,5 +23,16 @@ export class DetailsComponent implements OnInit {
       });
     }
   }
+  getStatusIcon(status: string): string {
+    switch(status.toLowerCase()) {
+      case 'confirmed': return 'fas fa-check-circle';
+      case 'cancelled': return 'fas fa-times-circle';
+      case 'processing': return 'fas fa-cog';
+      default: return 'fas fa-clock'; // pending
+    }
+  }
+  goBack(): void {
+    window.history.back();
+  }
 
 }

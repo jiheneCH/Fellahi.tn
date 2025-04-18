@@ -111,6 +111,7 @@ import { PaymentComponent } from './FrontOffice/payment/payment.component';
 import { DetailsComponent } from './components/details/details.component';
 import { OnlineComponent } from './FrontOffice/online/online.component';
 import { CommandeClientComponent } from './FrontOffice/commande-client/commande-client.component';
+import { CommandeStatistiquesComponent } from './components/commande-statistiques/commande-statistiques.component';
 
 
 
@@ -127,6 +128,7 @@ import { CommandeClientComponent } from './FrontOffice/commande-client/commande-
         DataTableModule,
         AngJson2excelBtnModule,
         CommonModule,
+        NgApexchartsModule,
         
         TranslateModule.forRoot({
             loader: {
@@ -187,7 +189,8 @@ import { CommandeClientComponent } from './FrontOffice/commande-client/commande-
         PaymentComponent,
         DetailsComponent,
         OnlineComponent,
-        CommandeClientComponent
+        CommandeClientComponent,
+        CommandeStatistiquesComponent
         
 
     ],

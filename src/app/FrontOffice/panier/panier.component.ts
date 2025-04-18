@@ -1,7 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { forkJoin, Observable } from 'rxjs';
+import { forkJoin } from 'rxjs';
 import { PanierService } from 'src/app/panier.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-panier',
@@ -9,15 +10,19 @@ import { PanierService } from 'src/app/panier.service';
   styleUrls: ['./panier.component.css']
 })
 export class PanierComponent implements OnInit {
- 
+
   commande: any;
   clientId: number | null = null;
   commandeId: number | undefined;
   loyaltyPointsToApply: number = 0;
   clientPoints: number = 100;
   errorMessage: any;
+  isLoading: boolean = false; // Ajout d'un état de chargement
 
-  constructor(private panierService: PanierService) {}
+  constructor(
+    private panierService: PanierService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     const storedId = localStorage.getItem('clientId');
@@ -32,20 +37,19 @@ export class PanierComponent implements OnInit {
   private loadCommandeEnCours(): void {
     if (this.clientId === null) return;
 
+    this.isLoading = true; // Début du chargement
     this.panierService.getCommandeEnCours(this.clientId).subscribe({
       next: (data) => {
         this.commande = data;
         this.commandeId = data.idCommande;
         console.log('Commande en cours:', this.commande);
+        this.isLoading = false; // Fin du chargement
       },
       error: (err) => {
         console.error('Erreur lors de la récupération de la commande', err);
+        this.isLoading = false; // Fin du chargement même en cas d'erreur
       }
     });
-  }
-
-  onSubmit() {
-    this.applyLoyaltyPoints();
   }
 
   applyLoyaltyPoints() {
@@ -71,11 +75,16 @@ export class PanierComponent implements OnInit {
     if (!this.commandeId) return;
 
     const nouvelleQuantite = detail.quantite;
+    this.isLoading = true; // Début du chargement
     this.panierService.updateQuantiteArticle(this.commandeId, detail.article.idArticle, nouvelleQuantite)
       .subscribe({
-        next: () => this.loadCommandeEnCours(),
+        next: () => {
+          this.loadCommandeEnCours(); // Rafraîchir après mise à jour
+          this.isLoading = false; // Fin du chargement
+        },
         error: (err) => {
           console.error('Erreur lors de la mise à jour de la quantité', err);
+          this.isLoading = false; // Fin du chargement même en cas d'erreur
           this.errorMessage = 'Erreur lors de la mise à jour de la quantité.';
         }
       });
@@ -84,14 +93,19 @@ export class PanierComponent implements OnInit {
   updateCart() {
     if (!this.commandeId || !this.commande?.detailsCommande) return;
 
+    this.isLoading = true; // Début du chargement
     const updateRequests = this.commande.detailsCommande.map((detail: any) =>
       this.panierService.updateQuantiteArticle(this.commandeId!, detail.article.idArticle, detail.quantite)
     );
 
     forkJoin(updateRequests).subscribe({
-      next: () => this.loadCommandeEnCours(),
+      next: () => {
+        this.loadCommandeEnCours(); // Rafraîchir après mise à jour
+        this.isLoading = false; // Fin du chargement
+      },
       error: (err) => {
         console.error('Erreur lors de la mise à jour des quantités', err);
+        this.isLoading = false; // Fin du chargement même en cas d'erreur
         this.errorMessage = 'Erreur lors de la mise à jour des quantités.';
       }
     });
@@ -103,12 +117,25 @@ export class PanierComponent implements OnInit {
 
     if (!commandeId || !articleId) return;
 
+    this.isLoading = true; // Début du chargement
     this.panierService.deleteArticleFromCommande(commandeId, articleId).subscribe(
-      () => this.loadCommandeEnCours(),
+      () => {
+        this.loadCommandeEnCours(); // Rafraîchir après suppression
+        this.isLoading = false; // Fin du chargement
+      },
       (error) => {
         console.error('Erreur lors de la suppression de l\'article:', error);
+        this.isLoading = false; // Fin du chargement même en cas d'erreur
       }
     );
   }
 
+  refreshOrders(): void {
+    this.loadCommandeEnCours(); // Rafraîchir la commande
+    console.log('Commande rafraîchie!');
+  }
+
+  goBack(): void {
+    window.history.back(); // Revenir à la page précédente
+  }
 }

@@ -9,6 +9,7 @@ import { CommandeClientService } from 'src/app/commande-client.service';
 export class CommandeClientComponent implements OnInit {
   commandes: any[] = [];
   clientId: number | null = null;
+  isLoading: boolean = false; // 🆕 Ajout de la propriété isLoading
 
   constructor(private commandeClientService: CommandeClientService) {}
 
@@ -16,7 +17,7 @@ export class CommandeClientComponent implements OnInit {
     const storedId = localStorage.getItem('clientId');
     if (storedId) {
       this.clientId = parseInt(storedId, 10);
-      this.loadCommandes(); // Charger les commandes au démarrage
+      this.loadCommandes();
     } else {
       console.warn("Aucun ID de client trouvé dans le localStorage");
     }
@@ -24,12 +25,16 @@ export class CommandeClientComponent implements OnInit {
 
   loadCommandes(): void {
     if (this.clientId !== null) {
+      this.isLoading = true; // ✅ Afficher le spinner
+
       this.commandeClientService.getCommandesByClientId(this.clientId).subscribe(
         (data: any[]) => {
           this.commandes = data;
+          this.isLoading = false; // ✅ Masquer le spinner
           console.log("Commandes récupérées :", this.commandes);
         },
         (error: any) => {
+          this.isLoading = false;
           console.error("Erreur lors du chargement des commandes :", error);
         }
       );
@@ -40,11 +45,20 @@ export class CommandeClientComponent implements OnInit {
     this.commandeClientService.changerStatutCommande(idCommande).subscribe(
       response => {
         console.log("Commande annulée avec succès :", response);
-        this.loadCommandes();  // Rafraîchir la liste des commandes après le changement de statut
+        this.loadCommandes();
       },
       error => {
         console.error("Erreur lors du changement de statut de la commande :", error);
       }
     );
+  }
+
+  refreshCommandes(): void {
+    this.loadCommandes();
+    console.log('Commandes rafraîchies !');
+  }
+
+  goBack(): void {
+    window.history.back();
   }
 }

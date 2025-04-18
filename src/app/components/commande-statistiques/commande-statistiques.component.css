@@ -1,0 +1,52 @@
+.statistiques-container {
+    max-width: 800px;
+    margin: auto;
+    padding: 20px;
+  }
+  
+  .global-stats {
+    margin-bottom: 20px;
+    font-size: 1.1em;
+  }
+  
+  .progress-section {
+    margin: 30px 0;
+  }
+  
+  .progress {
+    height: 25px;
+    margin-bottom: 10px;
+    background-color: #e9ecef;
+    border-radius: 5px;
+  }
+  
+  .progress-bar {
+    display: flex;
+    align-items: center;
+    padding-left: 10px;
+    color: white;
+    height: 100%;
+    font-weight: bold;
+    border-radius: 5px;
+    transition: width 0.4s ease;
+  }
+  
+  .recent-orders ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .recent-orders li {
+    padding: 8px 0;
+    border-bottom: 1px solid #ddd;
+  }
+  .container {
+    padding: 10px;
+  }
+  
+  p {
+    margin: 2px 0;
+    font-size: 12px;
+  }
+  
+  

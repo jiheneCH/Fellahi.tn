@@ -1,66 +1,90 @@
-<div class="orders-container">
+<div class="modern-orders-container">
   <div class="orders-header">
-    <h2><i class="fas fa-box-open"></i> My Orders</h2>
+    <div class="header-content">
+      <div class="icon-wrapper">
+        <i class="fas fa-box-open header-icon"></i>
+      </div>
+      <h2>My Orders History</h2>
+      <p class="subtitle">Track and manage your purchases</p>
+    </div>
+
+    <!-- Boutons Back et Refresh modernisés -->
+    <div class="actions-header">
+      <button class="action-btn back-btn" (click)="goBack()">
+        <i class="fas fa-chevron-left"></i> Back
+      </button>
+      <button class="action-btn refresh-btn" (click)="refreshCommandes()">
+        <i class="fas fa-sync"></i> Refresh
+      </button>
+    </div>
   </div>
-  
-  <div class="cards-wrapper">
-    <div class="order-card" *ngFor="let commande of commandes">
-      <div class="order-header">
-        <div class="order-icon">
+
+  <!-- Spinner pendant le chargement -->
+  <div *ngIf="isLoading" class="loading-spinner">
+    <i class="fas fa-spinner fa-spin"></i> Loading orders...
+  </div>
+
+  <div class="orders-grid">
+    <div class="order-card"
+         *ngFor="let commande of commandes"
+         [ngClass]="'status-' + commande.statusCommande?.toLowerCase()">
+      
+      <div class="card-header">
+        <div class="order-badge">
           <i class="fas fa-shopping-bag"></i>
         </div>
-        <h4>Order Summary</h4>
+        <div class="order-meta">
+          <span class="order-date">{{ commande.dateCommande | date:'mediumDate' }}</span>
+          <span class="order-ref">#{{ commande.referenceCommande || 'N/A' }}</span>
+        </div>
       </div>
 
-      <div class="order-body">
-        <div class="order-row">
-          <span class="label">Reference:</span>
-          <a [routerLink]="['/commande-details', commande.idCommande]" class="value link">
-            {{ commande.referenceCommande || 'N/A' }}
-          </a>
-        </div>
-
-        <div class="order-row">
-          <span class="label">Status:</span>
-          <span class="value status" [ngClass]="{
-            'processing': commande.statusCommande?.toLowerCase() === 'processing',
-            'confirmed': commande.statusCommande?.toLowerCase() === 'confirmed',
-            'cancelled': commande.statusCommande?.toLowerCase() === 'cancelled',
-            'pending': commande.statusCommande?.toLowerCase() === 'pending'
-          }">
+      <div class="card-body">
+        <div class="status-indicator">
+          <div class="status-bubble" [ngClass]="commande.statusCommande?.toLowerCase()">
             <i class="status-icon" [ngClass]="{
-              'fa-clock': commande.statusCommande?.toLowerCase() === 'pending',
-              'fa-check-circle': commande.statusCommande?.toLowerCase() === 'confirmed',
-              'fa-times-circle': commande.statusCommande?.toLowerCase() === 'cancelled',
-              'fa-cog': commande.statusCommande?.toLowerCase() === 'processing'
+              'far fa-clock': commande.statusCommande?.toLowerCase() === 'pending',
+              'fas fa-check-circle': commande.statusCommande?.toLowerCase() === 'confirmed',
+              'fas fa-times-circle': commande.statusCommande?.toLowerCase() === 'cancelled',
+              'fas fa-cog': commande.statusCommande?.toLowerCase() === 'processing'
             }"></i>
-            {{ commande.statusCommande | titlecase }}
-          </span>
-          
+          </div>
+          <span class="status-label">{{ commande.statusCommande | titlecase }}</span>
         </div>
 
-        <div class="order-row">
-          <span class="label">Date:</span>
-          <span class="value">{{ commande.dateCommande | date:'mediumDate' }}</span>
+        <div class="order-details">
+          <div class="detail-row">
+            <span class="label">Items</span>
+            <span class="value">{{ commande.detailsCommande?.length || 0 }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="label">Total</span>
+            <span class="value price">TND {{ commande.prixTotalCommande | number:'1.2-2' }}</span>
+          </div>
         </div>
 
-        <div class="divider"></div>
-
-        <div class="order-row total">
-          <span class="label">Total:</span>
-          <span class="value amount">TND{{ commande.prixTotalCommande | number:'1.2-2' }}</span>
+        <div class="loyalty-badge">
+          <div class="gem-icon">
+            <i class="fas fa-gem"></i>
+          </div>
+          <span>Earned <strong>{{ commande?.pointfidelityTotalCommande || 0 }} pts</strong></span>
         </div>
+      </div>
 
-        <div class="points-earned">
-          <i class="fas fa-gem"></i>
-          <span>You'll earn <strong>{{ commande?.pointfidelityTotalCommande || 0 }}</strong> points</span>
-        </div>
+      <div class="card-footer">
+        <a [routerLink]="['/commande-details', commande.idCommande]" class="details-btn">
+          <i class="fas fa-eye"></i> View Details
+        </a>
 
-        <button *ngIf="commande.status?.toLowerCase() === 'cancelled'" 
-                (click)="changerStatutCommande(commande.idCommande)" 
-                class="reload-btn">
-          <i class="fas fa-redo"></i> Reload Order
+        <button *ngIf="commande.statusCommande?.toLowerCase() === 'cancelled'"
+                (click)="changerStatutCommande(commande.idCommande)"
+                class="action-btn reload-btn">
+          <i class="fas fa-redo"></i> Reorder
         </button>
+      </div>
+
+      <div class="order-timeline">
+        <div class="timeline-progress" [ngClass]="'progress-' + commande.statusCommande?.toLowerCase()"></div>
       </div>
     </div>
   </div>

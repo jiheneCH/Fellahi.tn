@@ -55,6 +55,7 @@ import { CheckoutComponent } from './FrontOffice/checkout/checkout.component';
 import { DetailsComponent } from './components/details/details.component';
 import { OnlineComponent } from './FrontOffice/online/online.component';
 import { CommandeClientComponent } from './FrontOffice/commande-client/commande-client.component';
+import { CommandeStatistiquesComponent } from './components/commande-statistiques/commande-statistiques.component';
 
 export const routes: Routes = [
     {
@@ -176,7 +177,10 @@ export const routes: Routes = [
             component: CommandesListeComponent,
             title: 'Column Chooser Table | VRISTO - Multipurpose Tailwind Dashboard Template',
         },
-
+        {  path: 'CommandesStatisqtique',
+            component: CommandeStatistiquesComponent,
+            title: 'Column Chooser Table | VRISTO - Multipurpose Tailwind Dashboard Template',
+        },
             
 
 

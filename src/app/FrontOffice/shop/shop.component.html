@@ -1,53 +1,96 @@
-<div class="container my-5">
-  <h2 class="text-center mb-4">Our Fresh Products</h2>
-
-  <!-- Input pour le nom du client + bouton -->
-  <div class="mb-3 d-flex align-items-center">
-    <label for="clientName" class="form-label me-2">Nom du Client</label>
-    <input
-      type="text"
-      id="clientName"
-      [(ngModel)]="clientName"
-      class="form-control me-2"
-      style="width: 250px;"
-    />
-    <button class="btn btn-primary" (click)="fetchClientId()">Chercher ID</button>
+<div class="container">
+  <!-- Décorations -->
+  <div class="background-decor">
+    <div class="leaf leaf-1">🍃</div>
+    <div class="leaf leaf-2">🍃</div>
+    <div class="leaf leaf-3">🍃</div>
+    <div class="fruit-decor fruit-1">🍎</div>
+    <div class="fruit-decor fruit-2">🍐</div>
+    <div class="fruit-decor fruit-3">🍊</div>
   </div>
 
-  <!-- Affichage de l'ID du client -->
-  <div *ngIf="clientId !== null" class="mb-3">
-    <span class="text-success fw-bold">ID du client : {{ clientId }}</span>
+  <!-- En-tête -->
+  <div class="page-header">
+    <h1 class="page-title">Marché des Producteurs</h1>
+    <p class="page-subtitle">Des produits frais, de saison, cultivés avec passion par nos agriculteurs locaux</p>
+    <div class="deco-leaf">🍃</div>
   </div>
 
-  <!-- Liste des produits -->
-  <div class="row row-cols-1 row-cols-md-3 g-4">
-    <div class="col" *ngFor="let product of products">
-      <div class="card h-100 shadow-sm border-0">
-        <img [src]="product.image" class="card-img-top" alt="{{ product.name }}" style="object-fit: cover; height: 200px;">
-        <div class="card-body d-flex flex-column justify-content-between">
-          <div>
-            <h5 class="card-title">{{ product.name }}</h5>
-            <p class="card-text text-muted">{{ product.description }}</p>
-          </div>
+  <!-- Filtres -->
+  <div class="filter-controls reveal">
+    <button class="filter-btn active">Tous les produits</button>
+    <button class="filter-btn">Fruits</button>
+    <button class="filter-btn">Légumes</button>
+    <button class="filter-btn">Produits Bio</button>
+    <button class="filter-btn">Promotions</button>
+  </div>
 
-          <!-- Prix, quantité et bouton -->
-          <div class="d-flex justify-content-between align-items-center mt-3">
-            <span class="fw-bold text-success">{{ product.price | currency:'TND' }}</span>
+  <!-- Loader -->
+  <div *ngIf="loading" class="loading-indicator">
+    <div class="harvest-loader">
+      <div class="harvest-circle"></div>
+      <div class="harvest-circle"></div>
+      <div class="harvest-circle"></div>
+      <div class="harvest-icon">🌱</div>
+    </div>
+    <p class="loading-text">Récolte en cours</p>
+  </div>
 
-            <!-- Sélecteur de quantité -->
-            <div class="d-flex align-items-center">
-              <button class="btn btn-outline-secondary btn-sm" (click)="decreaseQuantity(product)">-</button>
-              <input type="number" [(ngModel)]="product.quantity" min="1" class="form-control mx-2" style="width: 60px;" />
-              <button class="btn btn-outline-secondary btn-sm" (click)="increaseQuantity(product)">+</button>
-            </div>
+  <!-- Produits -->
+  <div *ngIf="!loading" class="articles-container">
+    <div *ngFor="let article of articles; let i = index" class="article-card reveal" [style.animation-delay]="i * 0.1 + 's'">
 
-            <!-- Bouton Ajouter au panier -->
-            <button class="btn btn-outline-primary btn-sm" (click)="addToCart(product)">
-              <i class="bi bi-cart-plus"></i> Add to Cart
-            </button>
-          </div>
+      <!-- Bouton favori -->
+      <button class="favorite-btn" (click)="toggleFavorite(article.idArticle!)" [class.favorited]="favoriteStatus[article.idArticle!]">
+        ♥
+      </button>
+
+      <!-- Badge BIO -->
+      <div *ngIf="article.bio" class="organic-badge">
+        <span class="organic-icon">🌱</span> BIO
+      </div>
+
+      <!-- Image -->
+      <div class="image-section">
+        <div class="background-shape"></div>
+        <img *ngIf="article.image" [src]="article.image" [alt]="article.nom" class="article-image">
+        <img *ngIf="!article.image" src="assets/images/placeholder-product.png" alt="Image non disponible" class="article-image">
+      </div>
+
+      <!-- Infos -->
+      <div class="info-section">
+        <div class="product-category">{{article.categorie || 'Produit frais'}}</div>
+        <h3>{{ article.nom }}</h3>
+        <p class="product-description">{{ article.description || 'Produit frais de saison.' }}</p>
+
+        <div class="price-row">
+          <span class="price"><span class="price-currency">€</span>{{ article.prix }}</span>
+          <span class="price-unit">/ {{article.unite || 'kg'}}</span>
+        </div>
+
+        <!-- Contrôle quantité -->
+        <div class="quantity-control">
+          <button class="quantity-btn minus" (click)="decreaseQuantity(article)">−</button>
+          <input type="number" class="quantity-input" [(ngModel)]="article.quantity" (ngModelChange)="updateQuantity(article.idArticle!, article.quantity ?? 1)">
+          <button class="quantity-btn plus" (click)="increaseQuantity(article)">+</button>
         </div>
       </div>
+
+      <!-- QR Code -->
+      <div class="qr-section">
+        <div *ngIf="articleQRCodes[article.idArticle!]" class="qr-container hover-trigger">
+          <img [src]="articleQRCodes[article.idArticle!]" alt="QR Code" class="qr-image">
+          <div class="tooltip">Scannez pour plus d'informations</div>
+          <p class="qr-text">scan me</p>
+        </div>
+        <div *ngIf="!articleQRCodes[article.idArticle!]" class="qr-loading">Génération...</div>
+      </div>
+
+      <!-- Bouton panier -->
+      <button class="add-to-cart-btn" (click)="addToCart(article)">
+        <span class="cart-icon">🛒</span>
+        Ajouter au panier
+      </button>
     </div>
   </div>
 </div>

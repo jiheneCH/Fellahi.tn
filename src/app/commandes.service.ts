@@ -31,4 +31,7 @@ export class CommandesService {
   annulerCommande(idCommande: number): Observable<any> {
     return this.http.put(`${this.annulerUrl}/${idCommande}`, null);
   }
+  getCommandeStats(): Observable<any> {
+    return this.http.get<any>(`http://localhost:8080/panier/commande/commande-stats`);
+  }
 }
