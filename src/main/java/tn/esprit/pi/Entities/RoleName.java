@@ -1,4 +1,4 @@
-package tn.esprit.fallehiuser.model;
+package tn.esprit.pi.Entities;
 
 public enum RoleName {
     FARMER,

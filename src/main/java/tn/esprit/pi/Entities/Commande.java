@@ -1,6 +1,7 @@
 package tn.esprit.pi.Entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -21,33 +22,26 @@ public class Commande {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "client_id")
-    @JsonBackReference
-    private Client client;
+    @JoinColumn(name = "client_id", referencedColumnName = "id")
+    @JsonIgnore
+    private User client;
 
     @OneToOne
     @JoinColumn(name = "livraison_id")
+    @JsonIgnore
     private Livraison livraison;
+
     @ElementCollection
     private Map<Long, Integer> produits;
-    // Getter pour obtenir l'ID du client
-    public Long getIdClient() {
-        return this.client != null ? this.client.getId() : null;
-    }
 
-    public Livraison getLivraison() {
-        return livraison;
-    }
 
-    public void setLivraison(Livraison livraison) {
-        this.livraison = livraison;
-    }
 
-    public Client getClient() {
+
+    public User getClient() {
         return client;
     }
 
-    public void setClient(Client client) {
+    public void setClient(User client) {
         this.client = client;
     }
 

@@ -1,8 +1,9 @@
-package tn.esprit.fallehiuser.Repository;
+package tn.esprit.pi.Repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import tn.esprit.fallehiuser.model.Role;
-import tn.esprit.fallehiuser.model.RoleName;
+import tn.esprit.pi.Entities.Role;
+import tn.esprit.pi.Entities.RoleName;
+
 
 import java.util.Optional;
 

@@ -1,5 +1,6 @@
 package tn.esprit.pi.Services;
-
+import org.springframework.web.client.RestTemplate;
+import org.springframework.http.ResponseEntity;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,32 +21,47 @@ public class LivraisonServiceImpl implements ILivraisonServices {
     @Autowired
     private LivraisonRepository livraisonRepository;
 
-    @Autowired
-    private TransporteurRepository transporteurRepository;
+
 
     @Autowired
     private ProduitRepository produitRepository;
     @Autowired
     private CommandeRepository commandeRepository;
 
+
     @Autowired
-    private ClientRepository clientRepository;
+    private UserRepository userRepository;
 
     @Override
-    public Transporteur findLivreurAvecMoinsDeLivraisons(String delegation) {
-        // Récupérer tous les transporteurs dans la même délégation
-        List<Transporteur> transporteurs = transporteurRepository.findAll();
-
-        // Filtrer les transporteurs dans la même délégation
-        transporteurs = transporteurs.stream()
-                .filter(t -> t.getDelegation().equals(delegation))
-                .collect(Collectors.toList());
-
-        // Trouver le transporteur avec le nombre minimal de livraisons
-        return transporteurs.stream()
-                .min(Comparator.comparingInt(Transporteur::getNbLivraisons))
+    public User findTransporteurAvecMoinsDeLivraisons(String delegation) {
+        List<User> users = userRepository.findUserByDelegation(delegation);
+        if (users.isEmpty()) {
+            throw new RuntimeException("Aucun utilisateur trouvé dans cette délégation");
+        }
+        return users.stream()
+                .filter(user -> user.getRole() != null &&
+                        user.getRole().getRoleName() == RoleName.TRANSPORTER)
+                .min(Comparator.comparingInt(User::getNbLivraisons))
                 .orElseThrow(() -> new RuntimeException("Aucun transporteur disponible dans cette délégation"));
     }
+
+
+    @Override
+    public User findTransporteurAvecMoinsDeLivraisonsReaffectation(String delegation, Long idLivreurAExclure) {
+        List<User> users = userRepository.findUserByDelegation(delegation);
+        if (users.isEmpty()) {
+            throw new RuntimeException("Aucun utilisateur trouvé dans cette délégation");
+        }
+
+        return users.stream()
+                .filter(user -> user.getRole() != null
+                        && user.getRole().getRoleName() == RoleName.TRANSPORTER
+                        && !user.getId().equals(idLivreurAExclure))
+                .min(Comparator.comparingInt(User::getNbLivraisons))
+                .orElseThrow(() -> new RuntimeException("Aucun transporteur disponible dans cette délégation autre que l'actuel"));
+    }
+
+
 
     @Transactional
     @Override
@@ -55,13 +71,13 @@ public class LivraisonServiceImpl implements ILivraisonServices {
                 .orElseThrow(() -> new RuntimeException("Commande non trouvée"));
 
         // 2. Récupérer le client associé
-        Client client = clientRepository.findById(commande.getIdClient())
+        User client = userRepository.findById(commande.getClient().getId())
                 .orElseThrow(() -> new RuntimeException("Client non trouvé"));
 
         String delegationClient = client.getDelegation();
 
-        // 3. Trouver le transporteur disponible dans la même délégation
-        Transporteur transporteur = findLivreurAvecMoinsDeLivraisons(delegationClient);
+        // 3. Trouver le transporteur (utilisateur) disponible dans la même délégation
+        User transporteur = findTransporteurAvecMoinsDeLivraisons(delegationClient);
 
         // 4. Calculer la date de livraison (3 jours après la date de commande)
         LocalDate dateLivraison = estimerDateLivraison(delegationClient);
@@ -71,23 +87,25 @@ public class LivraisonServiceImpl implements ILivraisonServices {
 
         // 6. Créer la livraison
         Livraison livraison = new Livraison();
-        livraison.setClientId(client.getId());
+        livraison.setClient(client);
         livraison.setCommandeId(commande.getId());
-        livraison.setTransporteurId(transporteur.getId());
+        livraison.setTransporteur(transporteur);
         livraison.setDateLivraison(dateLivraison);
         livraison.setStatut(StatutLivraison.EN_ATTENTE);
         livraison.setPrixTotal(prixTotalLivraison);
 
         // 7. Sauvegarder la livraison
         livraisonRepository.save(livraison);
-        transporteur.setNbLivraisons(transporteur.getNbLivraisons() + 1);
-        transporteurRepository.save(transporteur);
 
-        // 8. Construire la réponse
+        // 8. Mettre à jour le nombre de livraisons du transporteur
+        transporteur.setNbLivraisons(transporteur.getNbLivraisons() + 1);
+        userRepository.save(transporteur);
+
+        // 9. Construire la réponse
         Map<String, Object> response = new HashMap<>();
         response.put("transporteur", Map.of(
                 "id", transporteur.getId(),
-                "nom", transporteur.getNom(),
+                "nom", transporteur.getUsername(),
                 "delegation", transporteur.getDelegation(),
                 "nbLivraisons", transporteur.getNbLivraisons()
         ));
@@ -113,7 +131,23 @@ public class LivraisonServiceImpl implements ILivraisonServices {
 
         return response;
     }
+    public void signalerIncidentLivraison(Long idLivraison, String type, String description) {
+        Livraison livraison = livraisonRepository.findById(idLivraison)
+                .orElseThrow(() -> new RuntimeException("Livraison non trouvée"));
 
+        if (livraison.getStatut() == StatutLivraison.LIVRE ||
+                livraison.getStatut() == StatutLivraison.ARCHIVE ||
+                livraison.getStatut() == StatutLivraison.ANNULE) {
+            throw new RuntimeException("Impossible de signaler un incident pour une livraison terminée.");
+        }
+
+        livraison.setTypeIncident(type);
+        livraison.setDescriptionIncident(description);
+        livraison.setDateIncident(LocalDateTime.now());
+        livraison.setStatutIncident(StatutIncident.NOUVEAU);
+
+        livraisonRepository.save(livraison);
+    }
 
     @Override
     public List<Livraison> getAllLivraisons() {
@@ -141,10 +175,10 @@ public class LivraisonServiceImpl implements ILivraisonServices {
         livraison.setStatut(StatutLivraison.ARCHIVE);
 
         // Vérifier si un transporteur est associé
-        Transporteur transporteur = livraison.getTransporteur();
+        User transporteur = livraison.getTransporteur();
         if (transporteur != null && transporteur.getNbLivraisons() > 0) {
             transporteur.setNbLivraisons(transporteur.getNbLivraisons() - 1);
-            transporteurRepository.save(transporteur);
+            userRepository.save(transporteur);
         }
 
         livraisonRepository.save(livraison);
@@ -157,13 +191,28 @@ public class LivraisonServiceImpl implements ILivraisonServices {
 
         livraison.setStatut(StatutLivraison.ANNULE);
         // Vérifier si un transporteur est associé
-        Transporteur transporteur = livraison.getTransporteur();
+        User transporteur = livraison.getTransporteur();
         if (transporteur != null && transporteur.getNbLivraisons() > 0) {
             transporteur.setNbLivraisons(transporteur.getNbLivraisons() - 1);
-            transporteurRepository.save(transporteur);
+            userRepository.save(transporteur);
         }
         return livraisonRepository.save(livraison);
     }
+    @Override
+    public Livraison changerStatut(Long livraisonId) {
+        // Récupérer la livraison existante par son ID
+        Livraison livraison = livraisonRepository.findById(livraisonId).get();
+
+        livraison.setStatut(StatutLivraison.LIVRE);
+        // Vérifier si un transporteur est associé
+        User transporteur = livraison.getTransporteur();
+        if (transporteur != null && transporteur.getNbLivraisons() > 0) {
+            transporteur.setNbLivraisons(transporteur.getNbLivraisons() - 1);
+            userRepository.save(transporteur);
+        }
+        return livraisonRepository.save(livraison);
+    }
+
 
     private static final Map<String, Integer> REGION_TARIFS = new HashMap<>();
 
@@ -241,7 +290,6 @@ public class LivraisonServiceImpl implements ILivraisonServices {
 
         return LocalDate.now().plusDays(delai);
     }
-
     @Override
     public Map<String, Long> calculerLivraisonsParStatut() {
         // Récupérer le nombre de livraisons avec différents statuts
@@ -261,7 +309,6 @@ public class LivraisonServiceImpl implements ILivraisonServices {
 
         return result;
     }
-
     @Override
     public List<Livraison> getLivraisonsByStatut(StatutLivraison statut) {
         if (statut != null) {
@@ -274,12 +321,18 @@ public class LivraisonServiceImpl implements ILivraisonServices {
     public List<Livraison> getLivraisonsByDelegation(String delegation) {
         return livraisonRepository.findByClient_Delegation(delegation);
     }
-
+    @Override
+    public List<Livraison> getLivraisonsByClientId(Long clientId) {
+        return livraisonRepository.findByClient_Id(clientId);
+    }
+    @Override
+    public List<Livraison> getLivraisonsByTelephone(String telephone) {
+        return livraisonRepository.findByClient_Telephone(telephone);
+    }
     @Override
     public List<Livraison> findByTransporteurId(Long transporteurId) {
         return livraisonRepository.findByTransporteur_Id(transporteurId);
     }
-
     @Override
     public List<Livraison> getLivraisonsBetweenDates(LocalDate startDate, LocalDate endDate) {
         // Appel de la méthode du repository pour récupérer les livraisons entre les deux dates
@@ -291,12 +344,6 @@ public class LivraisonServiceImpl implements ILivraisonServices {
         // Appel de la méthode du repository pour récupérer les livraisons d'une date spécifique
         return livraisonRepository.findByDateLivraison(dateLivraison);
     }
-
-    @Override
-    public List<Livraison> getLivraisonsByClientId(Long clientId) {
-        return livraisonRepository.findByClient_Id(clientId);
-    }
-
     @Override
     public String modifierLivraison(Long id, StatutLivraison statut, LocalDate dateLivraisonSaisie) {
         // Vérifier si la livraison existe
@@ -344,42 +391,74 @@ public class LivraisonServiceImpl implements ILivraisonServices {
     }
     @Override
     public Livraison reaffecterLivraison(Long livraisonId) {
-        // Récupérer la livraison par ID
         Livraison livraison = livraisonRepository.findById(livraisonId)
                 .orElseThrow(() -> new RuntimeException("Livraison non trouvée"));
 
-        // Vérifier si la livraison a déjà un livreur affecté
         if (livraison.getTransporteur() == null) {
             throw new RuntimeException("Aucun livreur actuel n'est affecté à cette livraison");
         }
 
-        // Récupérer le livreur actuel
-        Transporteur livreurActuel = livraison.getTransporteur();
-
-        // Récupérer la délégation du client
+        User livreurActuel = livraison.getTransporteur();
         String delegationClient = livraison.getCommande().getClient().getDelegation();
 
-        // Trouver un nouveau livreur dans la même délégation, excluant le livreur actuel
-        Transporteur nouveauLivreur = findLivreurAvecMoinsDeLivraisons(delegationClient);
+        // Exclure le livreur actuel
+        User nouveauLivreur = findTransporteurAvecMoinsDeLivraisonsReaffectation(delegationClient, livreurActuel.getId());
 
         if (nouveauLivreur == null) {
             throw new RuntimeException("Aucun autre livreur disponible dans cette délégation");
         }
 
-        // Décrémenter le nombre de livraisons de l'ancien livreur
         livreurActuel.setNbLivraisons(livreurActuel.getNbLivraisons() - 1);
-        transporteurRepository.save(livreurActuel);
+        userRepository.save(livreurActuel);
 
-        // Incrémenter le nombre de livraisons du nouveau livreur
         nouveauLivreur.setNbLivraisons(nouveauLivreur.getNbLivraisons() + 1);
-        transporteurRepository.save(nouveauLivreur);
+        userRepository.save(nouveauLivreur);
 
-        // Affecter le nouveau livreur à la livraison
         livraison.setTransporteur(nouveauLivreur);
         livraisonRepository.save(livraison);
 
         return livraison;
     }
+
+
+    public String getAdresseFromCommande(Long commandeId) {
+        Commande commande = commandeRepository.findById(commandeId)
+                .orElseThrow(() -> new RuntimeException("Commande non trouvée"));
+        // Retourne l'adresse du client associée à la commande
+        return commande.getClient().getAdresse();
+    }
+    public List<Livraison> getLivraisonsByTransporteurAndStatut(Long transporteurId, StatutLivraison  statut) {
+        return livraisonRepository.findByTransporteur_IdAndStatut(transporteurId, statut);
+    }
+@Override
+public List<Livraison> getLivraisonsByTUsername(String username)
+{
+    return livraisonRepository.findByTransporteur_Username(username);
+}
+@Override
+public List<Livraison> getLivraisonsByCUsername(String username)
+    {
+        return livraisonRepository.findByClient_Username(username);
+    }
+@Override
+    public Map<String, Long> calculerStatusParLivreur( long idLivreur)
+{
+    long livraisonsLivrees = livraisonRepository.countByStatutAndTransporteur_Id(StatutLivraison.LIVRE, idLivreur);
+    long livraisonsAnnulees = livraisonRepository.countByStatutAndTransporteur_Id(StatutLivraison.ANNULE, idLivreur);
+    long livraisonsEnAttente = livraisonRepository.countByStatutAndTransporteur_Id(StatutLivraison.EN_ATTENTE, idLivreur);
+    long livraisonsEnCours = livraisonRepository.countByStatutAndTransporteur_Id(StatutLivraison.EN_COURS, idLivreur);
+    long livraisonsRetarde = livraisonRepository.countByStatutAndTransporteur_Id(StatutLivraison.RETARDE, idLivreur);
+
+    // Créer une map de résultats à retourner
+    Map<String, Long> result = new HashMap<>();
+    result.put("Livraisons Livrées", livraisonsLivrees);
+    result.put("Livraisons Annulées", livraisonsAnnulees);
+    result.put("Livraisons En Attente", livraisonsEnAttente);
+    result.put("Livraisons En Cours", livraisonsEnCours);
+    result.put("Livraisons Retardé", livraisonsRetarde);
+
+    return result;
+}
 }
 
 

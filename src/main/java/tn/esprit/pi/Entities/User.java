@@ -1,17 +1,21 @@
-package tn.esprit.fallehiuser.model;
+package tn.esprit.pi.Entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
+
+
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 @Builder
 @AllArgsConstructor
@@ -19,14 +23,80 @@ import java.util.Collections;
 @Entity
 @Table(name = "user")
 @EntityListeners(AuditingEntityListener.class)
-public class User implements UserDetails, Principal {
+public class User  {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private String nom;
+    private String prenom;
+    private String telephone;
+    private String adresse;
+
+    public String getNom() {
+        return nom;
+    }
+
+    public void setNom(String nom) {
+        this.nom = nom;
+    }
+
+    public String getPrenom() {
+        return prenom;
+    }
+
+    public void setPrenom(String prenom) {
+        this.prenom = prenom;
+    }
+
+    public String getTelephone() {
+        return telephone;
+    }
+
+    public void setTelephone(String telephone) {
+        this.telephone = telephone;
+    }
+
+    public String getAdresse() {
+        return adresse;
+    }
+
+    public void setAdresse(String adresse) {
+        this.adresse = adresse;
+    }
+    @OneToMany(mappedBy = "client")
+    @JsonIgnore
+    private List<Commande> commandes;
+
+    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<Livraison> livraisonsClient;
+
+    @OneToMany(mappedBy = "transporteur")  // "transporteur" correspond au nom de la propriété dans Livraison
+    @JsonIgnore
+    private List<Livraison> livraisonsTransporteur;
+
 
     @Column(unique = true, nullable = false)
     private String username;
+    private String delegation;
+    private int nbLivraisons = 0;
+
+    public String getDelegation() {
+        return delegation;
+    }
+
+    public void setDelegation(String delegation) {
+        this.delegation = delegation;
+    }
+
+    public int getNbLivraisons() {
+        return nbLivraisons;
+    }
+
+    public void setNbLivraisons(int nbLivraisons) {
+        this.nbLivraisons = nbLivraisons;
+    }
 
     @Column(unique = true, nullable = false)
     private String email;
@@ -41,6 +111,7 @@ public class User implements UserDetails, Principal {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "ID_ROLE", referencedColumnName = "id")
+    @JsonManagedReference
     private Role role;
 
 
@@ -82,48 +153,44 @@ public class User implements UserDetails, Principal {
 
 
     /* Principal interface implementation */
-    @Override
+
     public String getName() {
         return username;  // Using username as the principal name for login
     }
 
-    @Override
+
     public boolean implies(javax.security.auth.Subject subject) {
         return false;
     }
 
-    /* UserDetails interface implementation */
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singletonList(new SimpleGrantedAuthority(role.getRoleName().name()));
-    }
 
-    @Override
+
     public String getPassword() {
         return password;  // Return actual password
     }
 
-    @Override
+
     public String getUsername() {
         return username;  // Use username for login
     }
 
-    @Override
+
     public boolean isAccountNonExpired() {
         return true;
     }
 
-    @Override
+
     public boolean isAccountNonLocked() {
         return !accountLocked;
     }
 
-    @Override
+
+
     public boolean isCredentialsNonExpired() {
         return true;
     }
 
-    @Override
+
     public boolean isEnabled() {
         return enabled;
     }

@@ -1,5 +1,8 @@
 package tn.esprit.pi.Entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -32,30 +35,78 @@ public class Livraison {
     }
     @ManyToOne
     @JoinColumn(name = "client_id",  referencedColumnName = "id")
-    private Client client;
-    public void setClientId(Long clientId) {
-        this.client = new Client();
-        this.client.setId(clientId);
-    }
-    @ManyToOne
-    @JoinColumn(name = "transporteur_id", nullable = false)
-    private Transporteur transporteur;
-    public Long getTransporteurId() {
-        return transporteur != null ? transporteur.getId() : null;
+    private User client;
+
+    public User getClient() {
+        return client;
     }
 
-    public void setTransporteurId(Long transporteurId) {
-        // Si tu veux juste garder l'ID du transporteur, tu affectes ici l'ID du transporteur à la relation
-        this.transporteur = new Transporteur();
-        this.transporteur.setId(transporteurId);
+    public void setClient(User client) {
+        this.client = client;
     }
+
+    // Nouvelle association vers User (transporteur)
+    @ManyToOne
+    @JoinColumn(name = "transporteur_id", referencedColumnName = "id")
+
+    private User transporteur;
+
+    public User getTransporteur() {
+        return transporteur;
+    }
+
+    public void setTransporteur(User transporteur) {
+        this.transporteur = transporteur;
+    }
+
+
+
+
+
     private LocalDate dateLivraison;
 
     @Enumerated(EnumType.STRING)
     private StatutLivraison statut;
     @Column(name = "archived")
     private boolean archived;
+    private String typeIncident;         // Ex: "Client injoignable", "Route bloquée"
+    private String descriptionIncident;  // Description du problème
+    private LocalDateTime dateIncident;
 
+    public String getTypeIncident() {
+        return typeIncident;
+    }
+
+    public void setTypeIncident(String typeIncident) {
+        this.typeIncident = typeIncident;
+    }
+
+    public String getDescriptionIncident() {
+        return descriptionIncident;
+    }
+
+    public void setDescriptionIncident(String descriptionIncident) {
+        this.descriptionIncident = descriptionIncident;
+    }
+
+    public LocalDateTime getDateIncident() {
+        return dateIncident;
+    }
+
+    public void setDateIncident(LocalDateTime dateIncident) {
+        this.dateIncident = dateIncident;
+    }
+
+    public StatutIncident getStatutIncident() {
+        return statutIncident;
+    }
+
+    public void setStatutIncident(StatutIncident statutIncident) {
+        this.statutIncident = statutIncident;
+    }
+
+    @Enumerated(EnumType.STRING)
+    private StatutIncident statutIncident; // NOUVEAU, EN_COURS, RESOLU
     // Getters and setters
     public boolean isArchived() {
         return archived;
@@ -84,13 +135,6 @@ public class Livraison {
         this.commande = commande;
     }
 
-    public Transporteur getTransporteur() {
-        return transporteur;
-    }
-
-    public void setTransporteur(Transporteur transporteur) {
-        this.transporteur = transporteur;
-    }
 
     public LocalDate  getDateLivraison() {
         return dateLivraison;
@@ -116,11 +160,6 @@ public class Livraison {
         this.prixTotal = prixTotal;
     }
 
-    public Client getClient() {
-        return client;
-    }
 
-    public void setClient(Client client) {
-        this.client = client;
-    }
+
 }
