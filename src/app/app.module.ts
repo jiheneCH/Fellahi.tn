@@ -4,7 +4,6 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HTTP_INTERCEPTORS, HttpClient, HttpClientModule } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
-
 //Routes
 import { routes } from './app.route';
 
@@ -125,7 +124,6 @@ import { FooterClientComponent } from './FrontOffice/clientLayout/footer-client/
         RouterModule.forRoot(routes, { scrollPositionRestoration: 'enabled' }),
         BrowserModule,
         BrowserAnimationsModule,
-        FormsModule,
         NgxPaginationModule,
         ReactiveFormsModule,
         HttpClientModule,
@@ -134,6 +132,7 @@ import { FooterClientComponent } from './FrontOffice/clientLayout/footer-client/
         DataTableModule,
         AngJson2excelBtnModule,
         CommonModule,
+       
         
         TranslateModule.forRoot({
             loader: {

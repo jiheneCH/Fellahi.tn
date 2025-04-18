@@ -79,34 +79,12 @@ rafraichirDonnees(): void {
   this.ngOnInit(); // ou une méthode spécifique comme this.chargerLivraisons();
 }
 
-rechercherParTelephone(): void {
-  if (!this.telephone || !this.telephone.trim()) {
-    console.warn('Numéro de téléphone requis');
-    return;
-  }
 
-  this.livraisonsService.searchByTelephone(this.telephone.trim()).subscribe(
-    (data) => {
-      this.livraisons = data.map(livraison => ({
-        id: livraison.id,
-        nomClient: livraison.client.nom,
-        prenomClient: livraison.client.prenom,
-        adresseClient: livraison.client.adresse,
-        delClient: livraison.client.delegation,
-        dateLivraison: livraison.dateLivraison,
-        prixTotal: livraison.prixTotal,
-        statut: livraison.statut
-      })).reverse(); // Inverser l'ordre
-      
-    },
-    (error) => {
-      console.error('Erreur de recherche :', error);
-      this.livraisons = []; // Vide si aucune livraison
-    }
-  );
-}
    statuts: string[] = ['TOUS', 'EN_ATTENTE', 'EN_COURS', 'RETARDE', 'LIVRE', 'ANNULE'];
     selectedStatut: string = 'TOUS'; // Valeur par défaut
+    delegation: string[] = ['TOUS', 'Ariana', 'Tunis', 'Mahdia'];
+    selectedDel: string = 'TOUS';
+
     chargerLivraisons(): void {
       this.livraisonsService.getLivraisonsByStatut(this.selectedStatut).subscribe({
         next: (data) => this.livraisons = data,
@@ -206,7 +184,7 @@ rechercherParTelephone(): void {
       });
     }
   }
-  
+  searchTerm: string = '';
   page: number = 1;
   pageSize: number = 5;
   
@@ -218,4 +196,65 @@ rechercherParTelephone(): void {
   get totalPages(): number {
     return Math.ceil(this.livraisons.length / this.pageSize);
   }  
+  searchLivraison() {
+    const searchValue = this.searchTerm.trim();
+  
+    if (!searchValue) return;
+  
+    const searchNumber = String(searchValue); // Convertir en number
+  
+  
+  
+    const isPhone = /^[0-9]{8}$/.test(searchValue); // 8 chiffres, typique pour un numéro de téléphone
+  
+    if (isPhone) {
+      this.livraisonsService.searchByTelephone(searchNumber).subscribe(
+        (data: any[]) => {
+          if (data && data.length > 0) {
+            this.livraisons = data.map(liv => ({
+              id: liv.id,
+              nomClient: liv.client.nom,
+              prenomClient: liv.client.prenom,
+              adresseClient: liv.client.adresse,
+              delClient: liv.client.delegation,
+              dateLivraison: liv.dateLivraison,
+              prixTotal: liv.prixTotal,
+              statut: liv.statut
+            }));
+          } else {
+            this.livraisons = [];
+          }
+        },
+        (error) => {
+          console.error('Erreur lors de la recherche par téléphone :', error);
+          this.livraisons = [];
+        }
+      );
+    } else {
+      // Recherche par ID
+      this.livraisonsService.getLivraisonByRef(searchNumber).subscribe(
+        (data: any) => {
+          if (data) {
+            this.livraisons = [{
+              id: data.id,
+              nomClient: data.client.nom,
+              prenomClient: data.client.prenom,
+              adresseClient: data.client.adresse,
+              delClient: data.client.delegation,
+              dateLivraison: data.dateLivraison,
+              prixTotal: data.prixTotal,
+              statut: data.statut
+            }];
+          } else {
+            this.livraisons = [];
+          }
+        },
+        (error) => {
+          console.error('Erreur lors de la recherche par ID :', error);
+          this.livraisons = [];
+        }
+      );
+    }
+  }
+  
 }

@@ -1,43 +1,104 @@
 <div class="dashboard-container">
-  <h2>Tableau de Bord des Livraisons</h2>
+    
+  <h2>
+    <i class="dashboard-icon">📊</i>
+    Tableau de Bord des Livraisons
+  </h2>
   
-  <div *ngIf="isLoading" class="loading-spinner">
+
+  <!-- Carte Totale -->
+  <div class="total-and-selector">
+    <!-- Carte du total des livraisons -->
+    <div class="total-card" *ngIf="!isLoading">
+      <div class="total-content">
+        <i class="total-icon">🚚</i>
+        <div>
+          <div class="total-value">{{ getTotal() }}</div>
+          <div class="total-label">Total des Livraisons</div>
+        </div>
+      </div>
    
-  </div>
-
-  <div *ngIf="!isLoading" class="stats-grid">
-    <!-- Carte Statistique -->
-    <div class="stat-card total">
-      <div class="stat-value">{{ getTotalDeliveries() }}</div>
-      <div class="stat-label">Total Livraisons</div>
     </div>
-
+   <!-- Liste déroulante des gouvernorats -->
+   <div class="governorate-selector">
+    <label for="governorateSelect" class="select-label">Choisir un Gouvernorat:</label>
+    <select id="governorateSelect" [(ngModel)]="selectedGovernorate" (change)="onGovernorateChange(selectedGovernorate)" class="select-dropdown">
+      <option *ngFor="let governorate of gouvernorats" [value]="governorate">{{ governorate }}</option>
+    </select>
+  </div>
+</div>
+  
+  <!-- Grille de Statistiques -->
+  <div class="stats-grid" *ngIf="!isLoading">
+    <!-- Carte Livrées -->
     <div class="stat-card delivered">
-      <div class="stat-value">{{ stats['Livraisons Livrées'] || 0 }}</div>
+      <div class="stat-value">{{ stats['Livraisons Livrées'] }}</div>
       <div class="stat-label">Livrées</div>
       <div class="stat-percentage">
-        {{ (stats['Livraisons Livrées'] / getTotalDeliveries() * 100 || 0) | number:'1.0-0' }}%
+        {{ getPercentage(stats['Livraisons Livrées']) }}%
+      </div>
+      <div class="progress-container">
+        <div class="progress-bar" [style.width.%]="getPercentage(stats['Livraisons Livrées'])"></div>
       </div>
     </div>
 
+    <!-- Carte En Cours -->
     <div class="stat-card in-progress">
-      <div class="stat-value">{{ stats['Livraisons En Cours'] || 0 }}</div>
+      <div class="stat-value">{{ stats['Livraisons En Cours'] }}</div>
       <div class="stat-label">En Cours</div>
+      <div class="stat-percentage">
+        {{ getPercentage(stats['Livraisons En Cours']) }}%
+      </div>
+      <div class="progress-container">
+        <div class="progress-bar" [style.width.%]="getPercentage(stats['Livraisons En Cours'])"></div>
+      </div>
+      <i class="status-icon">🔄</i>
+      
     </div>
 
+    <!-- Carte En Attente -->
     <div class="stat-card pending">
-      <div class="stat-value">{{ stats['Livraisons En Attente'] || 0 }}</div>
+      <div class="stat-value">{{ stats['Livraisons En Attente'] }}</div>
       <div class="stat-label">En Attente</div>
+      <div class="stat-percentage">
+        {{ getPercentage(stats['Livraisons En Attente']) }}%
+      </div>
+      <div class="progress-container">
+        <div class="progress-bar" [style.width.%]="getPercentage(stats['Livraisons En Attente'])"></div>
+      </div>
+      <i class="status-icon">⏳</i>
     </div>
 
+    <!-- Carte Retardées -->
     <div class="stat-card delayed">
-      <div class="stat-value">{{ stats['Livraisons Retardé'] || 0 }}</div>
+      <div class="stat-value">{{ stats['Livraisons Retardé'] }}</div>
       <div class="stat-label">Retardées</div>
+      <div class="stat-percentage">
+        {{ getPercentage(stats['Livraisons Retardé']) }}%
+      </div>
+      <div class="progress-container">
+        <div class="progress-bar" [style.width.%]="getPercentage(stats['Livraisons Retardé'])"></div>
+      </div>
+      <i class="status-icon">⚠️</i>
     </div>
 
+    <!-- Carte Annulées -->
     <div class="stat-card canceled">
-      <div class="stat-value">{{ stats['Livraisons Annulées'] || 0 }}</div>
+      <div class="stat-value">{{ stats['Livraisons Annulées'] }}</div>
       <div class="stat-label">Annulées</div>
+      <div class="stat-percentage">
+        {{ getPercentage(stats['Livraisons Annulées']) }}%
+      </div>
+      <div class="progress-container">
+        <div class="progress-bar" [style.width.%]="getPercentage(stats['Livraisons Annulées'])"></div>
+      </div>
+      <i class="status-icon">❌</i>
     </div>
+  </div>
+
+  <!-- Spinner de chargement -->
+  <div *ngIf="isLoading" class="loading-container">
+    <div class="custom-spinner"></div>
+    <p>Chargement des statistiques...</p>
   </div>
 </div>

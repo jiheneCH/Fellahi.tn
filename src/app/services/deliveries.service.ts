@@ -16,6 +16,10 @@ export class DeliveriesService {
   getLivraisonById(id: number): Observable<any> {
     return this.http.get(`http://localhost:8080/PIDistribution/livraisons/${id}`);
   }
+
+  getLivraisonByRef(ref: String): Observable<any> {
+    return this.http.get(`http://localhost:8080/PIDistribution/livraisons/ref/${ref}`);
+  }
   openInGoogleMaps(adresse: string): void {
     const query = encodeURIComponent(adresse); // encodage pour les espaces, accents...
     window.open(`https://www.google.com/maps/search/?api=1&query=${query}`, '_blank');
@@ -34,7 +38,7 @@ export class DeliveriesService {
   changerLivraison(id: number): Observable<any> {
     return this.http.put(`${this.apiUrl}/changer/${id}`, {});
   }
-  searchByTelephone(telephone: string): Observable<any[]> {
+  searchByTelephone(telephone: String): Observable<any[]> {
     return this.http.post<any[]>(`${this.apiUrl}/search-by-telephone`, telephone, {
       headers: { 'Content-Type': 'application/json' }
     });
@@ -46,11 +50,19 @@ export class DeliveriesService {
     }
     return this.http.get<any[]>(`${this.apiUrl}/byStatut?statut=${statut}`);
   }
+
+  getLivraisonsByDelegation(delegation: string): Observable<any[]> {
+    if (delegation === 'TOUS') {
+      return this.getLivraisons();
+    }
+    return this.http.get<any[]>(`${this.apiUrl}/byDelegation?delegation=${delegation}`);
+  }
   getLivraisonsParDate(startDate: string, endDate: string): Observable<any[]> {
     return this.http.get<any[]>(
       `${this.apiUrl}/livraisonEntreDate?startDate=${startDate}&endDate=${endDate}`
     );
   }
+ 
   getLivraisonsByTransporteur(transporteurId: number): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/transporteur/${transporteurId}`);
   }
@@ -64,10 +76,17 @@ export class DeliveriesService {
   }
   private baseUrl = 'http://localhost:8080/PIDistribution/livraisons/statut';
 
+  getLivraisonsByTransporteurEtStatut(id: number): Observable<any> {
+    const url = `http://localhost:8080/PIDistribution/livraisons/statutTransporteur/${id}`;
+    return this.http.get(url);
+  }
   
 
   getDeliveryStats(): Observable<any> {
     return this.http.get(this.baseUrl);
+  }
+  getStatsByDelegation(delegation: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/delegation?delegation=${delegation}`);
   }
   signalerIncident(id: number, typeIncident: string, descriptionIncident: string) {
     const body = {

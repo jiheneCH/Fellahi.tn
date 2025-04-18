@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { formatDate } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 
+
 @Component({
   selector: 'app-deliveries',
   templateUrl: './deliveries.component.html',
@@ -14,6 +15,7 @@ export class DeliveriesComponent  {
   livraisons: any[] = [];
   statutFiltre: string = 'EN_COURS';
   transporteurId: number | undefined;
+  idLivraison: number | undefined;
   delivery: any;
   constructor(
     private livraisonsService: DeliveriesService,
@@ -65,7 +67,8 @@ export class DeliveriesComponent  {
     }
   }
   statuts: string[] = ['TOUS', 'EN_ATTENTE', 'EN_COURS', 'RETARDE', 'LIVRE', 'ANNULE'];
-  selectedStatut: string = 'TOUS'; // Valeur par défaut
+  selectedStatut: string = 'TOUS';
+  selecteddelegation: string = 'TOUS'; // Valeur par défaut
   chargerLivraisons(): void {
     this.livraisonsService.getLivraisonsByStatut(this.selectedStatut).subscribe({
       next: (data) => this.livraisons = data,
@@ -137,7 +140,10 @@ appliquerFiltres(): void {
           if (this.selectedStatut && this.selectedStatut !== 'TOUS') {
             this.livraisons = this.livraisons.filter(livraison => livraison.statut === this.selectedStatut);
           }
-
+              // Appliquer le filtre par statut
+          if (this.selecteddelegation && this.selecteddelegation !== 'TOUS') {
+            this.livraisons = this.livraisons.filter(livraison => livraison.statut === this.selecteddelegation);
+          }
           // Appliquer le filtre par date si un intervalle de dates est défini
           if (this.dateRange.start && this.dateRange.end) {
             const start = new Date(this.dateRange.start).getTime();
@@ -148,7 +154,7 @@ appliquerFiltres(): void {
               return livraisonDate >= start && livraisonDate <= end;
             });
           }
-
+          
           // Inverser l'ordre des livraisons
           this.livraisons = this.livraisons.reverse();
         },
@@ -166,31 +172,7 @@ rafraichirDonnees(): void {
   this.ngOnInit(); // ou une méthode spécifique comme this.chargerLivraisons();
 }
 
-rechercherParTelephone(): void {
-  if (!this.telephone || !this.telephone.trim()) {
-    console.warn('Numéro de téléphone requis');
-    return;
-  }
 
-  this.livraisonsService.searchByTelephone(this.telephone.trim()).subscribe(
-    (data) => {
-      this.livraisons = data.map(livraison => ({
-        id: livraison.id,
-        nomClient: livraison.client.nom,
-        prenomClient: livraison.client.prenom,
-        adresseClient: livraison.client.adresse,
-        delClient: livraison.client.delegation,
-        dateLivraison: livraison.dateLivraison,
-        prixTotal: livraison.prixTotal,
-        statut: livraison.statut
-      })).reverse(); // Inverser l'ordre
-    },
-    (error) => {
-      console.error('Erreur de recherche :', error);
-      this.livraisons = []; // Vide si aucune livraison
-    }
-  );
-}
 searchText: string = '';         // toutes les livraisons
 livraisonsFiltres: any[] = [];
 filtrerLivraisons(): void {
@@ -229,6 +211,104 @@ get paginatedLivraisons() {
 get totalPages(): number {
   return Math.ceil(this.livraisons.length / this.pageSize);
 }
+/*
+rrechercherParIdLivraison(): void {
+  // Vérifie si l'ID de livraison est fourni et est un nombre valide
+  if (!this.idLivraison || isNaN(this.idLivraison)) {
+    console.warn('ID de livraison valide requis');
+    return;
+  }
 
+  this.livraisonsService.getLivraisonById(this.idLivraison).subscribe(
+    (data: any) => {
+      console.log('Réponse du backend:', data); // Vérifie la structure de la réponse
+  
+      // Assigner directement à 'livraisons' sans utiliser map
+      if (data) {
+        this.livraisons = [{
+          id: data.id,
+          nomClient: data.client.nom,
+          prenomClient: data.client.prenom,
+          adresseClient: data.client.adresse,
+          delClient: data.client.delegation,
+          dateLivraison: data.dateLivraison,
+          prixTotal: data.prixTotal,
+          statut: data.statut
+        }];
+      } else {
+        console.error('Aucune donnée reçue');
+        this.livraisons = [];
+      }
+    },
+    (error) => {
+      console.error('Erreur de recherche :', error);
+      this.livraisons = []; // Vide si aucune livraison
+    }
+  );
+  
+}
+
+
+*/
+searchLivraison() {
+  const searchValue = this.searchTerm.trim();
+
+  if (!searchValue) return;
+
+  const searchNumber = String(searchValue); // Convertir en number
+
+ 
+
+  const isPhone = /^[0-9]{8}$/.test(searchValue); // 8 chiffres, typique pour un numéro de téléphone
+
+  if (isPhone) {
+    this.livraisonsService.searchByTelephone(searchNumber).subscribe(
+      (data: any[]) => {
+        if (data && data.length > 0) {
+          this.livraisons = data.map(liv => ({
+            id: liv.id,
+            nomClient: liv.client.nom,
+            prenomClient: liv.client.prenom,
+            adresseClient: liv.client.adresse,
+            delClient: liv.client.delegation,
+            dateLivraison: liv.dateLivraison,
+            prixTotal: liv.prixTotal,
+            statut: liv.statut
+          }));
+        } else {
+          this.livraisons = [];
+        }
+      },
+      (error) => {
+        console.error('Erreur lors de la recherche par téléphone :', error);
+        this.livraisons = [];
+      }
+    );
+  } else {
+    // Recherche par ID
+    this.livraisonsService.getLivraisonByRef(searchNumber).subscribe(
+      (data: any) => {
+        if (data) {
+          this.livraisons = [{
+            id: data.id,
+            nomClient: data.client.nom,
+            prenomClient: data.client.prenom,
+            adresseClient: data.client.adresse,
+            delClient: data.client.delegation,
+            dateLivraison: data.dateLivraison,
+            prixTotal: data.prixTotal,
+            statut: data.statut
+          }];
+        } else {
+          this.livraisons = [];
+        }
+      },
+      (error) => {
+        console.error('Erreur lors de la recherche par ID :', error);
+        this.livraisons = [];
+      }
+    );
+  }
+}
 
 }

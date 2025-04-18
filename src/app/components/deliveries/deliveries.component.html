@@ -31,11 +31,11 @@
   </div>
   <div class="flex items-center gap-2 min-w-[300px]">
     <input type="text" placeholder="Rechercher par nom ou téléphone"
-    [(ngModel)]="searchText"
+    [(ngModel)]="searchTerm"
     class="form-control my-2" />
 
 <button
-(click)="rechercherParNomOuTelephone()"
+(click)="searchLivraison()"
 class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
 >
 Search
@@ -55,7 +55,7 @@ Search
 <table>
   <thead>
     <tr>
-      <th>id</th>
+      <th>#</th>
       <th>Client Name</th>
       <th>Client Adress</th>
       <th>Delivery Date</th>
@@ -64,9 +64,9 @@ Search
     </tr>
   </thead>
   <tbody>
-    <tr *ngFor="let livraison of paginatedLivraisons">
+    <tr *ngFor="let livraison of paginatedLivraisons let i = index">
       
-      <td>{{ livraison.id }}</td>
+      <td>{{ (page - 1) * pageSize + i + 1 }}</td>
       <td>{{ livraison.prenomClient }}</td>
       <td>{{ livraison.adresseClient }}</td>
       <td>{{ livraison.dateLivraison | date: 'dd/MM/yyyy' }}</td>

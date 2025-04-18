@@ -9,20 +9,21 @@ export interface Client {
 }
 
 export interface Transporteur {
-  prenom: string;
   nom: string;
+  fname: string;
   delegation: string;
   adresse: string;
-  numero: string;
+  num: string;
  
 }
 
 export interface Delivery {
   id: number;
+  refLivraison: String;
   client: Client;
   transporteur: Transporteur;
   prixTotal: number;
-  dateLivraison: Date; // ou Date si tu veux utiliser un objet Date
+  dateLivraison: Date;
   statut: string;
   dateIncident: Date,
   description: String,

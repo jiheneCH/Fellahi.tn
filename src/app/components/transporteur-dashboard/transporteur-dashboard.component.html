@@ -1,1 +1,66 @@
-<p>transporteur-dashboard works!</p>
+<div class="dashboard-container">
+    <h2>
+      <i class="dashboard-icon">🚚</i>
+      Tableau de Bord Transporteur
+    </h2>
+  
+    <!-- Carte Totale -->
+    <div class="total-card" *ngIf="!isLoading">
+      <div class="total-content">
+        <i class="total-icon">📦</i>
+        <div>
+          <div class="total-value">{{ getTotal() }}</div>
+          <div class="total-label">Total des Livraisons</div>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Grille de Statistiques -->
+    <div class="stats-grid" *ngIf="!isLoading">
+      <!-- Carte Livrées -->
+      <div class="stat-card delivered">
+        <div class="stat-value">{{ stats['Livraisons Livrées'] }}</div>
+        <div class="stat-label">Livrées</div>
+        <div class="stat-percentage">
+          {{ getPercentage(stats['Livraisons Livrées']) }}%
+        </div>
+        <div class="progress-container">
+          <div class="progress-bar" [style.width.%]="getPercentage(stats['Livraisons Livrées'])"></div>
+        </div>
+      </div>
+  
+      <!-- Carte En Cours -->
+      <div class="stat-card in-progress">
+        <div class="stat-value">{{ stats['Livraisons En Cours'] }}</div>
+        <div class="stat-label">En Cours</div>
+        <i class="status-icon">🔄</i>
+      </div>
+  
+      <!-- Carte En Attente -->
+      <div class="stat-card pending">
+        <div class="stat-value">{{ stats['Livraisons En Attente'] }}</div>
+        <div class="stat-label">En Attente</div>
+        <i class="status-icon">⏳</i>
+      </div>
+  
+      <!-- Carte Retardées -->
+      <div class="stat-card delayed">
+        <div class="stat-value">{{ stats['Livraisons Retardé'] }}</div>
+        <div class="stat-label">Retardées</div>
+        <i class="status-icon">⚠️</i>
+      </div>
+  
+      <!-- Carte Annulées -->
+      <div class="stat-card canceled">
+        <div class="stat-value">{{ stats['Livraisons Annulées'] }}</div>
+        <div class="stat-label">Annulées</div>
+        <i class="status-icon">❌</i>
+      </div>
+    </div>
+  
+    <!-- Spinner de chargement -->
+    <div *ngIf="isLoading" class="loading-container">
+      <div class="custom-spinner"></div>
+      <p>Chargement des statistiques...</p>
+    </div>
+  </div>

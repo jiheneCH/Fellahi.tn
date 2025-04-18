@@ -1,0 +1,11 @@
+#barcode {
+    margin: 20px 0;
+  }
+
+@media print {
+    .print-button {
+      display: none;
+    }
+  }
+  
+  
