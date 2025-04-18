@@ -110,6 +110,7 @@ import { CheckoutComponent } from './FrontOffice/checkout/checkout.component';
 import { PaymentComponent } from './FrontOffice/payment/payment.component';
 import { DetailsComponent } from './components/details/details.component';
 import { OnlineComponent } from './FrontOffice/online/online.component';
+import { CommandeClientComponent } from './FrontOffice/commande-client/commande-client.component';
 
 
 
@@ -185,7 +186,8 @@ import { OnlineComponent } from './FrontOffice/online/online.component';
         CheckoutComponent,
         PaymentComponent,
         DetailsComponent,
-        OnlineComponent
+        OnlineComponent,
+        CommandeClientComponent
         
 
     ],

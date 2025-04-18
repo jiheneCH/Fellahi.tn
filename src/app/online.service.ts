@@ -18,6 +18,7 @@ export class OnlineService {
 
   // Valider la commande après le paiement
   validerCommandeOnline(commandeId: number): Observable<any> {
-    return this.http.put<any>(`${this.apiUrl}/valider-online/${commandeId}`, {});
+    
+    return this.http.put<any>(`http://localhost:8080/panier/commande/valider-online/${commandeId}`, {});
   }
 }

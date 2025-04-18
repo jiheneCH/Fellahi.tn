@@ -54,6 +54,7 @@ import { ShopComponent } from './FrontOffice/shop/shop.component';
 import { CheckoutComponent } from './FrontOffice/checkout/checkout.component';
 import { DetailsComponent } from './components/details/details.component';
 import { OnlineComponent } from './FrontOffice/online/online.component';
+import { CommandeClientComponent } from './FrontOffice/commande-client/commande-client.component';
 
 export const routes: Routes = [
     {
@@ -88,6 +89,9 @@ export const routes: Routes = [
                     component: CheckoutComponent }, 
                     { path: 'online',
                         component: OnlineComponent }, 
+
+                        { path: 'orders',
+                            component: CommandeClientComponent }, 
            
          
         ]

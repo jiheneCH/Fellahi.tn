@@ -1,0 +1,230 @@
+/* Main Container */
+.orders-container {
+  font-family: 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.orders-header {
+  margin-bottom: 2rem;
+}
+
+.orders-header h2 {
+  color: #2d3748;
+  font-size: 1.8rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0;
+}
+
+.orders-header i {
+  color: #4f46e5;
+}
+
+/* Cards Grid */
+.cards-wrapper {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+}
+
+/* Order Card */
+.order-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 1px solid #edf2f7;
+}
+
+.order-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+}
+
+/* Card Header */
+.order-header {
+  background: #f8fafc;
+  padding: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.order-icon {
+  width: 40px;
+  height: 40px;
+  background: #4f46e5;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+.order-header h4 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #1e293b;
+}
+
+/* Card Body */
+.order-body {
+  padding: 1.5rem;
+}
+
+.order-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.order-row.total {
+  margin-top: 1rem;
+}
+
+.label {
+  color: #64748b;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.value {
+  color: #334155;
+  font-weight: 500;
+}
+
+.link {
+  color: #4f46e5;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.link:hover {
+  color: #4338ca;
+  text-decoration: underline;
+}
+
+.amount {
+  color: #1e40af;
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+/* Divider */
+.divider {
+  height: 1px;
+  background: #e2e8f0;
+  margin: 1rem 0;
+}
+
+/* Status Badges */
+.status {
+  padding: 0.35rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.status-icon {
+  font-size: 0.9rem;
+}
+
+.processing {
+  background: #fffbeb;
+  color: #d97706;
+}
+
+.confirmed {
+  background: #ecfdf5;
+  color: #059669;
+}
+
+.cancelled {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+.pending {
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+/* Points Earned */
+.points-earned {
+  background: #f5f3ff;
+  padding: 0.8rem;
+  border-radius: 8px;
+  margin: 1.25rem 0;
+  color: #5b21b6;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.points-earned i {
+  color: #8b5cf6;
+}
+
+/* Reload Button */
+.reload-btn {
+  width: 100%;
+  padding: 0.75rem;
+  background: #f1f5f9;
+  border: none;
+  border-radius: 8px;
+  color: #334155;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.reload-btn:hover {
+  background: #e2e8f0;
+}
+
+.reload-btn i {
+  transition: transform 0.5s ease;
+}
+
+.reload-btn:hover i {
+  transform: rotate(360deg);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .orders-container {
+    padding: 1.5rem;
+  }
+  
+  .cards-wrapper {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .order-body {
+    padding: 1.25rem;
+  }
+  
+  .order-row {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  
+  .label, .value {
+    font-size: 0.85rem;
+  }
+}

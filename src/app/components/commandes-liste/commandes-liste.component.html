@@ -1,45 +1,104 @@
-<div class="orders-container">
-  <div class="orders-header">
-    <h2><i class="fas fa-clipboard-list me-2"></i>Orders List</h2>
-    <div class="search-container">
-      <div class="search-box">
-        <i class="fas fa-search search-icon"></i>
-        <input id="search" [(ngModel)]="searchQuery" (ngModelChange)="filterCommandes()" 
-               class="search-input" placeholder="Search by customer, date or reference..." />
+<!-- HTML (template seulement) -->
+<div class="order-management-container">
+  <!-- Filtres améliorés -->
+  <div class="filter-section">
+    <div class="filter-grid">
+      <div class="filter-group">
+        <i class="filter-icon fas fa-user"></i>
+        <input 
+          type="text"
+          class="filter-input"
+          placeholder="Search by customer name"
+          [(ngModel)]="searchCustomer"
+          (ngModelChange)="filterCommandes()" />
+      </div>
+
+      <div class="filter-group">
+        <i class="filter-icon far fa-calendar-alt"></i>
+        <input
+          type="date"
+          class="filter-input"
+          placeholder="Filter by date"
+          [(ngModel)]="searchDate"
+          (ngModelChange)="filterCommandes()" />
+      </div>
+
+      <div class="filter-group">
+        <i class="filter-icon fas fa-tag"></i>
+        <input
+          type="text"
+          class="filter-input"
+          placeholder="Order reference"
+          [(ngModel)]="searchReference"
+          (ngModelChange)="filterCommandes()" />
+      </div>
+
+      <div class="filter-group">
+        <i class="filter-icon fas fa-filter"></i>
+        <select
+          class="filter-select"
+          [(ngModel)]="searchStatus"
+          (change)="filterCommandes()">
+          <option value="">All statuses</option>
+          <option *ngFor="let status of ['Processing', 'Pending', 'Confirmed', 'Cancelled']" [value]="status">
+            {{ status }}
+          </option>
+        </select>
       </div>
     </div>
   </div>
 
+  <!-- Tableau des commandes avec référence -->
   <div class="table-container">
-    <table class="orders-table">
+    <table class="order-table">
       <thead>
         <tr>
-          <th>Reference</th>
-          <th>Date</th>
-          <th>Customer</th>
-          <th>Phone</th>
-          <th>Address</th>
-          <th>Total</th>
-          <th>Points</th>
-          <th>Actions</th>
+          <th (click)="sortBy('referenceCommande')" class="sortable-header">Order Reference</th>
+          <th (click)="sortBy('user.username')" class="sortable-header">Customer</th>
+          <th (click)="sortBy('dateCommande')" class="sortable-header">Date</th>
+          <th (click)="sortBy('prixTotalCommande')" class="sortable-header">Total</th>
+          <th (click)="sortBy('statusCommande')" class="sortable-header">Status</th>
+          <th (click)="sortBy('modeDePaiement')" class="sortable-header">Payment</th>
+          <th class="actions-header">Actions</th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let commande of filteredCommandes">
-          <td>{{ commande.referenceCommande || 'N/A' }}</td>
-          <td>{{ commande.dateCommande | date:'mediumDate' }}</td>
-          <td>{{ commande.client.name }}</td>
-          <td>{{ commande.client.phone }}</td>
-          <td>{{ commande.client.address }}</td>
-          <td>{{ commande.prixTotalCommande | currency:'TND':'symbol':'1.2-2' }}</td>
-          <td>{{ commande.pointfidelityTotalCommande }}</td>
+        <tr *ngFor="let commande of paginatedCommandes">
+          <td>{{ commande.referenceCommande }}</td> <!-- Affichage de la référence de la commande -->
+          <td class="customer-cell">{{ commande.user.username }}</td>
+          <td>{{ commande.dateCommande | date: 'mediumDate' }}</td>
+          <td class="price-cell">{{ commande.prixTotalCommande | currency:'TND' }}</td>
           <td>
-            <a [routerLink]="['/commande-details', commande.idCommande]" class="btn-details">
-              View Details
-            </a>
+            <span class="status-badge" [class]="'status-' + commande.statusCommande.toLowerCase()">
+              {{ commande.statusCommande }}
+            </span>
+          </td>
+          <td>
+            <span class="payment-badge">{{ commande.payment }}</span>
+          </td>
+          <td class="actions-cell">
+            <ng-container *ngIf="commande.statusCommande === 'Pending'; else viewOnly">
+              <button class="action-btn validate-btn" (click)="validerCommande(commande.idCommande)">Validate</button>
+              <button class="action-btn cancel-btn" (click)="annulerCommande(commande.idCommande)">Cancel</button>
+              <button class="action-btn details-btn" (click)="viewDetails(commande.idCommande)">Details</button>
+            </ng-container>
+            <ng-template #viewOnly>
+              <button class="action-btn details-btn" (click)="viewDetails(commande.idCommande)">Details</button>
+            </ng-template>
           </td>
         </tr>
       </tbody>
     </table>
+  </div>
+
+  <!-- Pagination -->
+  <div class="pagination-container">
+    <button class="pagination-btn" (click)="changePage(-1)" [disabled]="currentPage === 1">
+      Previous
+    </button>
+    <span class="page-indicator">Page {{ currentPage }} of {{ totalPages }}</span>
+    <button class="pagination-btn" (click)="changePage(1)" [disabled]="currentPage === totalPages">
+      Next
+    </button>
   </div>
 </div>

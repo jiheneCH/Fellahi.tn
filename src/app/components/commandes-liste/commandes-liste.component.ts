@@ -1,38 +1,49 @@
-import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Router } from '@angular/router';
 import { CommandesService } from 'src/app/commandes.service';
+
+export enum StatusPayment {
+  PENDING = 'PENDING',
+  ONSITE = 'ONSITE',
+  ONLINE = 'ONLINE'
+}
+
+export enum StatusCommande {
+  Processing = 'Processing',
+  Pending = 'Pending',
+  Confirmed = 'Confirmed',
+  Cancelled = 'Cancelled'
+}
 
 interface Commande {
   idCommande: number;
   prixTotalCommande: number;
   pointfidelityTotalCommande: number;
   referenceCommande: string | null;
-  status: string;
-  dateCommande: string;  // La date est retournée sous forme de chaîne ISO 8601
-  client: {
-    idClient: number;
-    name: string;
+  statusCommande: StatusCommande;
+  payment: StatusPayment;
+  dateCommande: string;
+  user: {
+    id: number;
+    username: string;
     phone: string;
     address: string;
     pointFidelityClient: number;
   };
-  detailsCommande: [
-    {
-      idDetailsCommande: number;
-      quantite: number;
-      prixTotalArticle: number;
-      pointfidelityTotalArticle: number;
-      article: {
-        idArticle: number;
-        nom: string;
-        reference: string;
-        pointsFidelite: number;
-        statusArticle: string;
-        prix: number;
-      };
-    }
-  ];
+  detailsCommande: {
+    idDetailsCommande: number;
+    quantite: number;
+    prixTotalArticle: number;
+    pointfidelityTotalArticle: number;
+    article: {
+      idArticle: number;
+      nom: string;
+      reference: string;
+      pointsFidelite: number;
+      prix: number;
+      statusAgri: string;
+    };
+  }[];
 }
 
 @Component({
@@ -41,25 +52,32 @@ interface Commande {
   styleUrls: ['./commandes-liste.component.css']
 })
 export class CommandesListeComponent implements OnInit {
-  commandes: Commande[] = [];  // Liste complète des commandes
-  filteredCommandes: Commande[] = [];  // Liste filtrée des commandes
-  searchQuery: string = '';  // Valeur de recherche
-  selectedCommande: Commande | null = null;  // Commande sélectionnée pour afficher ses détails
+  commandes: Commande[] = [];
+  filteredCommandes: Commande[] = [];
+  paginatedCommandes: Commande[] = [];
+  searchCustomer: string = '';
+  searchDate: string = '';
+  searchReference: string = '';
+  searchStatus: string = '';
+  selectedCommande: Commande | null = null;
+  currentPage: number = 1;
+  itemsPerPage: number = 10;
+  totalPages: number = 1;
+  sortColumn: string = '';
+  sortAsc: boolean = true;
 
-  private apiUrl = 'http://localhost:8080/panier/commande/retrieveAllCommande';  // URL de l'API
-
-  constructor(private commandesService: CommandesService) {}
+  constructor(private commandesService: CommandesService, private router: Router) {}
 
   ngOnInit(): void {
-    this.loadCommandes();  // Charge les commandes au démarrage
+    this.loadCommandes();
   }
 
   loadCommandes(): void {
     this.commandesService.getCommandes().subscribe(
-      (data) => {
-        // Filtre les commandes pour ne garder que celles avec le statut 'valider'
-        this.commandes = data.filter((commande: Commande) => commande.status === 'valider');
-        this.filteredCommandes = this.commandes;  // Initialement, afficher toutes les commandes validées
+      (data: Commande[]) => {
+        this.commandes = data;
+        this.totalPages = Math.ceil(this.commandes.length / this.itemsPerPage);
+        this.filterCommandes();
       },
       (error) => {
         console.error('Erreur lors du chargement des commandes', error);
@@ -67,36 +85,78 @@ export class CommandesListeComponent implements OnInit {
     );
   }
 
-  // Méthode de filtrage des commandes en fonction de la recherche
   filterCommandes(): void {
-    const query = this.searchQuery.toLowerCase();  // Convertir la recherche en minuscule pour rendre la recherche insensible à la casse
-    this.filteredCommandes = this.commandes.filter(commande =>
-      // Vérifier si la recherche correspond au nom du client, à la date ou à la référence
-      commande.client.name.toLowerCase().includes(query) ||
-      commande.dateCommande.toLowerCase().includes(query) ||
-      (commande.referenceCommande && commande.referenceCommande.toLowerCase().includes(query))
-    );
+    let filtered = this.commandes.filter(commande => {
+      const matchesCustomer = commande.user.username.toLowerCase().includes(this.searchCustomer.toLowerCase());
+      const matchesDate = this.searchDate ? commande.dateCommande.includes(this.searchDate) : true;
+      const matchesReference = commande.referenceCommande?.toLowerCase().includes(this.searchReference.toLowerCase()) || false;
+      const matchesStatus = this.searchStatus ? commande.statusCommande.toLowerCase().includes(this.searchStatus.toLowerCase()) : true;
+
+      return matchesCustomer && matchesDate && matchesReference && matchesStatus;
+    });
+
+    if (this.sortColumn) {
+      filtered.sort((a, b) => {
+        let valA = this.getValueByPath(a, this.sortColumn);
+        let valB = this.getValueByPath(b, this.sortColumn);
+        return this.sortAsc
+          ? (valA > valB ? 1 : -1)
+          : (valA < valB ? 1 : -1);
+      });
+    }
+
+    this.filteredCommandes = filtered;
+    this.updatePagination();
   }
 
-  // Méthode pour afficher ou masquer les détails d'une commande
-  toggleDetails(commande: Commande): void {
-    if (this.selectedCommande === commande) {
-      this.selectedCommande = null;  // Si déjà sélectionnée, on la désélectionne
-    } else {
-      this.selectedCommande = commande;  // Sélectionne la commande et affiche ses détails
-      this.fetchCommandeDetails(commande.idCommande);  // Récupère les détails de la commande
+  updatePagination(): void {
+    this.totalPages = Math.ceil(this.filteredCommandes.length / this.itemsPerPage);
+    const start = (this.currentPage - 1) * this.itemsPerPage;
+    const end = start + this.itemsPerPage;
+    this.paginatedCommandes = this.filteredCommandes.slice(start, end);
+  }
+
+  changePage(direction: number): void {
+    const newPage = this.currentPage + direction;
+    if (newPage >= 1 && newPage <= this.totalPages) {
+      this.currentPage = newPage;
+      this.updatePagination();
     }
   }
 
-  // Méthode pour récupérer les détails d'une commande
-  fetchCommandeDetails(id: number): void {
-    this.commandesService.getCommandeById(id).subscribe(
-      (data) => {
-        this.selectedCommande = data;  // Mettre à jour la commande sélectionnée avec les détails
-      },
-      (error) => {
-        console.error('Erreur lors de la récupération des détails de la commande', error);
-      }
+  sortBy(column: string): void {
+    if (this.sortColumn === column) {
+      this.sortAsc = !this.sortAsc;
+    } else {
+      this.sortColumn = column;
+      this.sortAsc = true;
+    }
+    this.filterCommandes();
+  }
+
+  getValueByPath(obj: any, path: string): any {
+    return path.split('.').reduce((o, key) => o && o[key], obj);
+  }
+
+  validerCommande(idCommande: number): void {
+    this.commandesService.validerCommande(idCommande).subscribe(
+      () => this.loadCommandes(),
+      (error) => console.error('Erreur lors de la validation', error)
     );
+  }
+
+  annulerCommande(idCommande: number): void {
+    this.commandesService.annulerCommande(idCommande).subscribe(
+      () => this.loadCommandes(),
+      (error) => console.error('Erreur lors de l\'annulation', error)
+    );
+  }
+
+  viewDetails(idCommande: number): void {
+    this.router.navigate(['/commande-details', idCommande]);
+  }
+
+  refreshOrders(): void {
+    this.loadCommandes();
   }
 }

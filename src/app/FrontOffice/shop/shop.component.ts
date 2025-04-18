@@ -12,8 +12,8 @@ export class ShopComponent implements OnInit {
   products = [
     {
       id: 1,
-      name: 'Fresh Apple',
-      description: 'Delicious red apples.',
+      name: 'fraise',
+      description: 'Delicious fraises.',
       price: 3.50,
       image: 'src/assets/images/Apple.webp',
       quantity: 1

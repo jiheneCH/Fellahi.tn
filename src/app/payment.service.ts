@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
 })
 export class PaymentService {
 
-  private stripePromise = loadStripe('pk_test_51RDRTFFQnlvscCidLdrzyinp5tiMvFyUsUCFNkTacb586pLnCPucDZzNgViW6hMXjiujXpNw0dM96Ny57x5o5GeS00B4Ag8lSr'); // 👉 Ta clé publique Stripe
+  private stripePromise = loadStripe('pk_test_51REDLGERJZiSpbiZ8baTBXnN24HRhXMMJigC9PtWy4bf87szcLqaIeE5bkgrlcDhIQBqRycWvupxKHm1ROBnl20400Pg4b9jXz'); // 👉 Ta clé publique Stripe
 
   constructor(private http: HttpClient) {}
 
@@ -16,6 +16,7 @@ export class PaymentService {
   createPaymentIntent(amount: number): Observable<any> {
     return this.http.post<any>('http://localhost:8080/panier/commande/create-payment-intent', { amount });
   }
+  
 
   // Récupérer l'instance Stripe
   async getStripe(): Promise<Stripe | null> {

@@ -1,0 +1,67 @@
+<div class="orders-container">
+  <div class="orders-header">
+    <h2><i class="fas fa-box-open"></i> My Orders</h2>
+  </div>
+  
+  <div class="cards-wrapper">
+    <div class="order-card" *ngFor="let commande of commandes">
+      <div class="order-header">
+        <div class="order-icon">
+          <i class="fas fa-shopping-bag"></i>
+        </div>
+        <h4>Order Summary</h4>
+      </div>
+
+      <div class="order-body">
+        <div class="order-row">
+          <span class="label">Reference:</span>
+          <a [routerLink]="['/commande-details', commande.idCommande]" class="value link">
+            {{ commande.referenceCommande || 'N/A' }}
+          </a>
+        </div>
+
+        <div class="order-row">
+          <span class="label">Status:</span>
+          <span class="value status" [ngClass]="{
+            'processing': commande.statusCommande?.toLowerCase() === 'processing',
+            'confirmed': commande.statusCommande?.toLowerCase() === 'confirmed',
+            'cancelled': commande.statusCommande?.toLowerCase() === 'cancelled',
+            'pending': commande.statusCommande?.toLowerCase() === 'pending'
+          }">
+            <i class="status-icon" [ngClass]="{
+              'fa-clock': commande.statusCommande?.toLowerCase() === 'pending',
+              'fa-check-circle': commande.statusCommande?.toLowerCase() === 'confirmed',
+              'fa-times-circle': commande.statusCommande?.toLowerCase() === 'cancelled',
+              'fa-cog': commande.statusCommande?.toLowerCase() === 'processing'
+            }"></i>
+            {{ commande.statusCommande | titlecase }}
+          </span>
+          
+        </div>
+
+        <div class="order-row">
+          <span class="label">Date:</span>
+          <span class="value">{{ commande.dateCommande | date:'mediumDate' }}</span>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="order-row total">
+          <span class="label">Total:</span>
+          <span class="value amount">TND{{ commande.prixTotalCommande | number:'1.2-2' }}</span>
+        </div>
+
+        <div class="points-earned">
+          <i class="fas fa-gem"></i>
+          <span>You'll earn <strong>{{ commande?.pointfidelityTotalCommande || 0 }}</strong> points</span>
+        </div>
+
+        <button *ngIf="commande.status?.toLowerCase() === 'cancelled'" 
+                (click)="changerStatutCommande(commande.idCommande)" 
+                class="reload-btn">
+          <i class="fas fa-redo"></i> Reload Order
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
