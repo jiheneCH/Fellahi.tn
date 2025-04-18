@@ -35,4 +35,8 @@ public List<Livraison> getLivraisonsByTUsername(String username);
 
     public User findTransporteurAvecMoinsDeLivraisons(String delegation);
     public Map<String, Long> calculerStatusParLivreur( long idLivreur);
+    public List<Livraison> findLivraisonsByDeelegation(String delegation);
+    public Map<String, Long> findByStatutEtDelegation(String delegation);
+    public String generateDeliveryReference();
+    public Livraison getByRef(String refLivraison);
 }

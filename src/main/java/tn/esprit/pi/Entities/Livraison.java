@@ -62,8 +62,16 @@ public class Livraison {
 
 
 
-
+private String refLivraison;
     private LocalDate dateLivraison;
+
+    public String getRefLivraison() {
+        return refLivraison;
+    }
+
+    public void setRefLivraison(String refLivraison) {
+        this.refLivraison = refLivraison;
+    }
 
     @Enumerated(EnumType.STRING)
     private StatutLivraison statut;

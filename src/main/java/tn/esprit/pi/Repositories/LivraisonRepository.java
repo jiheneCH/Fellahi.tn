@@ -17,6 +17,7 @@ public interface LivraisonRepository extends JpaRepository<Livraison, Long>{
 
     long countByStatutAndTransporteur_Id(StatutLivraison statut, long id);
 
+    long countByStatutAndClient_Delegation(StatutLivraison statut, String clientDelegation);
     List<Livraison> findByStatut(StatutLivraison statut);
     List<Livraison> findByClient_Delegation(String delegation);
     List<Livraison> findByTransporteur_Id(Long transporteurId);
@@ -28,4 +29,10 @@ public interface LivraisonRepository extends JpaRepository<Livraison, Long>{
     List<Livraison> findByClient_Telephone(String telephone);
 List<Livraison> findByTransporteur_Username(String username);
     List<Livraison> findByClient_Username(String username);
+List<Livraison> findLivraisonByClient_Delegation(String delegation);
+
+    long countByDateLivraison(LocalDate dateLivraison);
+
+    Optional<Livraison> findByRefLivraison(String refLivraison);
+
 }

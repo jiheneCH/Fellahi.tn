@@ -1,6 +1,4 @@
 package tn.esprit.pi.Services;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.http.ResponseEntity;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,8 +10,8 @@ import tn.esprit.pi.Repositories.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -32,6 +30,8 @@ public class LivraisonServiceImpl implements ILivraisonServices {
     @Autowired
     private UserRepository userRepository;
 
+
+
     @Override
     public User findTransporteurAvecMoinsDeLivraisons(String delegation) {
         List<User> users = userRepository.findUserByDelegation(delegation);
@@ -44,6 +44,22 @@ public class LivraisonServiceImpl implements ILivraisonServices {
                 .min(Comparator.comparingInt(User::getNbLivraisons))
                 .orElseThrow(() -> new RuntimeException("Aucun transporteur disponible dans cette délégation"));
     }
+    @Override
+    public String generateDeliveryReference() {
+        String prefix = "LIV-";
+        LocalDate today = LocalDate.now();
+        String datePart = today.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+
+        // Récupère l'heure actuelle en millisecondes pour assurer l'unicité
+        long timestamp = System.currentTimeMillis();
+
+        // On génère un suffixe basé sur le timestamp pour garantir l'unicité
+        String suffix = String.format("%06d", timestamp % 1000000); // Exemple : un numéro basé sur les 6 derniers chiffres du timestamp
+
+        return prefix + datePart + "-" + suffix;
+    }
+
+
 
 
     @Override
@@ -93,6 +109,9 @@ public class LivraisonServiceImpl implements ILivraisonServices {
         livraison.setDateLivraison(dateLivraison);
         livraison.setStatut(StatutLivraison.EN_ATTENTE);
         livraison.setPrixTotal(prixTotalLivraison);
+        String reference = generateDeliveryReference();
+        livraison.setRefLivraison(reference);
+
 
         // 7. Sauvegarder la livraison
         livraisonRepository.save(livraison);
@@ -459,6 +478,43 @@ public List<Livraison> getLivraisonsByCUsername(String username)
 
     return result;
 }
+@Override
+public List<Livraison> findLivraisonsByDeelegation(String delegation)
+{
+    return livraisonRepository.findLivraisonByClient_Delegation(delegation);
+}
+
+@Override
+    public Map<String, Long> findByStatutEtDelegation(String delegation)
+{
+
+    long livraisonsLivrees = livraisonRepository.countByStatutAndClient_Delegation(StatutLivraison.LIVRE, delegation);
+    long livraisonsAnnulees = livraisonRepository.countByStatutAndClient_Delegation(StatutLivraison.ANNULE, delegation);
+    long livraisonsEnAttente = livraisonRepository.countByStatutAndClient_Delegation(StatutLivraison.EN_ATTENTE, delegation);
+    long livraisonsEnCours = livraisonRepository.countByStatutAndClient_Delegation(StatutLivraison.EN_COURS, delegation);
+    long livraisonsRetarde = livraisonRepository.countByStatutAndClient_Delegation(StatutLivraison.RETARDE, delegation);
+
+    // Créer une map de résultats à retourner
+    Map<String, Long> result = new HashMap<>();
+    result.put("Livraisons Livrées", livraisonsLivrees);
+    result.put("Livraisons Annulées", livraisonsAnnulees);
+    result.put("Livraisons En Attente", livraisonsEnAttente);
+    result.put("Livraisons En Cours", livraisonsEnCours);
+    result.put("Livraisons Retardé", livraisonsRetarde);
+    return result;
+}
+
+    @Override
+    public Livraison getByRef(String refLivraison) {
+        Livraison livraison = livraisonRepository.findByRefLivraison(refLivraison)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        if (livraison.getStatut() == StatutLivraison.ARCHIVE) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        }
+
+        return livraison;
+    }
 }
 
 

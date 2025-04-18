@@ -166,6 +166,16 @@ public class LivraisonRestController {
     }
     @GetMapping("/statutTransporteur/{id}")
     public Map<String, Long> calculerStatutTransporteur(@PathVariable("id") Long id) {
-        return livraisonService.calculerStatusParLivreur( id);
+        return livraisonService.calculerStatusParLivreur(id);
     }
+    @GetMapping("/delegation")
+    public Map<String, Long> statutByDelegation(@RequestParam("delegation") String delegation) {
+        return livraisonService.findByStatutEtDelegation(delegation);
+    }
+    @GetMapping("/ref/{ref}")
+    public ResponseEntity<Livraison> getLivraisonByRef(@PathVariable("ref") String refLivraison) {
+        Livraison livraison = livraisonService.getByRef(refLivraison);
+        return ResponseEntity.ok(livraison);
+    }
+
 }
