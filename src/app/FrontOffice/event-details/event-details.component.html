@@ -122,16 +122,36 @@
                 <div class="reservation-body">
                     <p>Interested in this event? Secure your spot now!</p>
                     <div class="price-display">
-                        <span class="price">{{ event.prix }} TND</span>
-                        <span class="per-person">per person</span>
+                        <!-- Badge de statut amélioré -->
+                        <div class="status-badge" [ngClass]="{
+                            'status-available': event.status === 'disponible',
+                            'status-complete': event.status === 'complete'
+                           
+                        }">
+                            <i class="fas" [ngClass]="{
+                                'fa-check-circle': event.status === 'disponible',
+                                'fa-times-circle': event.status === 'complete'
+                                
+                            }"></i>
+                            {{ event.status | uppercase }}
+                        </div>
+                        <div class="price-container">
+                            <span class="price">{{ event.prix }} TND</span>
+                            <span class="per-person">per person</span>
+                        </div>
                     </div>
 
 
 
                      <!-- BOUTON PRINCIPAL -->
-<button *ngIf="!showReservationForm" class="btn btn-primary btn-block reservation-btn" (click)="showReservationForm = true">
-    <i class="fas fa-ticket-alt"></i> Book Now
-</button>
+                     <button 
+                     *ngIf="!showReservationForm" 
+                     class="btn btn-primary btn-block reservation-btn" 
+                     [disabled]="event?.status === 'complete'"
+                     (click)="showReservationForm = true">
+                     <i class="fas fa-ticket-alt"></i> Book Now
+                   </button>
+                   
 
 <!-- FORMULAIRE DE RÉSERVATION -->
 <div *ngIf="showReservationForm" class="mt-3">
@@ -161,4 +181,49 @@
             </div>
         </div>
     </div>
+</div>
+
+<!-- Section Reviews -->
+<div class="section-spacer" style="height: 50px;"></div>
+<div class="container reviews-section">
+  <div class="row">
+    <div class="col-lg-12">
+      <h2 class="section-title mb-4">Customer Reviews 
+        <span class="orange-text">• {{event.title}}</span>
+        <div class="title-divider"></div>
+      </h2>
+
+      <div *ngIf="reviews.length > 0; else noReviews" class="reviews-container">
+        <div *ngFor="let review of reviews" class="review-card">
+          <div class="review-header">
+            <div class="user-avatar">
+              <i class="fas fa-user-circle"></i>
+            </div>
+            <div class="user-info">
+              <h5 class="username">{{ review.user?.username || 'Anonymous' }}</h5>
+              <div class="rating-stars">
+                <span *ngFor="let star of [1,2,3,4,5]" 
+                      [class.filled]="star <= review.rating"
+                      class="star">★</span>
+              </div>
+            </div>
+          </div>
+          <div class="review-body">
+            <p class="review-comment">{{ review.comment || 'No comment provided' }}</p>
+          </div>
+          <div class="review-footer">
+            <span class="review-date">{{ review.createdAt | date:'mediumDate' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <ng-template #noReviews>
+        <div class="no-reviews">
+          <i class="far fa-comment-dots"></i>
+          <h4>No reviews yet</h4>
+          <p>Be the first to share your experience!</p>
+        </div>
+      </ng-template>
+    </div>
+  </div>
 </div>

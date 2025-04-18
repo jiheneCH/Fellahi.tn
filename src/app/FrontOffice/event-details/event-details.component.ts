@@ -4,6 +4,7 @@ import { ActivatedRoute } from '@angular/router';
 import { Event } from 'src/app/Event';
 import { EventsService } from 'src/app/events.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Review } from 'src/app/Review';
 
 @Component({
   selector: 'app-event-details',
@@ -15,6 +16,7 @@ export class EventDetailsComponent implements OnInit {
   userId!: number;
   numberOfPass!: number;
   showReservationForm: boolean = false;
+  reviews: Review[] = [];
 
   constructor(
     private route: ActivatedRoute,
@@ -35,12 +37,27 @@ export class EventDetailsComponent implements OnInit {
         next: (data) => {
           this.event = data;
           console.log('Event loaded:', this.event);
+          this.getReviewsByEvent(this.event.idEvent);
         },
         error: (err) => {
           console.error('Error fetching event:', err);
         }
       });
     }
+  }
+
+
+  getReviewsByEvent(idEvent: number): void {
+    this.http.get<any[]>(`http://localhost:8080/piEvent/review/event/${idEvent}`)
+      .subscribe({
+        next: (data) => {
+          this.reviews = data;
+          console.log('Reviews loaded:', this.reviews);
+        },
+        error: (err) => {
+          console.error('Error loading reviews:', err);
+        }
+      });
   }
 
 
@@ -59,23 +76,17 @@ export class EventDetailsComponent implements OnInit {
       .set('idEvent', idEvent.toString())
       .set('id', this.userId.toString())
       .set('numberOfPass', this.numberOfPass.toString());
-
-    this.http.post('http://localhost:8080/piEvent/reservation/book', null, { params })
+      this.http.post('http://localhost:8080/piEvent/reservation/book', null, { params })
       .subscribe({
         next: (response) => {
-          this.snackBar.open('Reservation successful!', 'Close', {
-            duration: 3000,
-            panelClass: ['snackbar-success']
-          });
+          alert('✅ Reservation successful!');
           window.location.reload();
         },
         error: (err) => {
-          this.snackBar.open('Reservation failed.', 'Close', {
-            duration: 3000,
-            panelClass: ['snackbar-error']
-          });
+          alert('❌ Reservation failed. ' + (err?.error?.message || 'Please try again.'));
         }
       });
+    
   }
   
 

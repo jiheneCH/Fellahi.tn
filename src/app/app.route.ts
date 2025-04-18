@@ -59,6 +59,8 @@ import { ReservationListComponent } from './FrontOffice/reservation-list/reserva
 import { ReviewComponent } from './FrontOffice/review/review.component';
 import { SchedularComponent } from './FrontOffice/schedular/schedular.component';
 import { ReservationClientComponent } from './FrontOffice/reservation-client/reservation-client.component';
+import { CalendarClientComponent } from './FrontOffice/calendar-client/calendar-client.component';
+import { EventViewComponent } from './components/event-view/event-view.component';
 
 export const routes: Routes = [
     {
@@ -110,6 +112,9 @@ export const routes: Routes = [
                                 {
                                     path:'reservationClient/:id',
                                     component:  ReservationClientComponent},
+                                    {
+                                        path:'calendarClient/:id',
+                                        component:  CalendarClientComponent},
     
          
         ]
@@ -200,6 +205,7 @@ export const routes: Routes = [
             { path: 'event-edit/:id', component: EventEditComponent },
             { path: 'bookings', component: BookingsComponent },
             { path: 'waiting-list', component: WaitingListComponent },
+            { path: 'event-view/:id', component: EventViewComponent },
 
 
            

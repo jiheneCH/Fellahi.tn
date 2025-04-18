@@ -5,19 +5,23 @@ import { Reservation } from 'src/app/Reservation';
 
 import { ReservationService } from 'src/app/reservation.service';
 
+
 @Component({
   selector: 'app-reservation-client',
   templateUrl: './reservation-client.component.html',
   styleUrls: ['./reservation-client.component.css']
 })
-export class ReservationClientComponent implements OnInit {
+export class ReservationClientComponent{
 
   bookings: Reservation[] = [];
   searchReference: string = '';
   userId!: number;
  
+
+ 
   constructor(
     private reservationService: ReservationService,
+   
     private route: ActivatedRoute,
 
   ) {}
@@ -26,8 +30,11 @@ export class ReservationClientComponent implements OnInit {
     this.route.params.subscribe(params => {
       this.userId = +params['id']; // Récupère l'id depuis l'URL
       this.fetchReservations(this.userId);
+     
     });
   }
+
+
 
   fetchReservations(userId: number): void {
     this.reservationService.getAllReservationsClient(this.userId).subscribe({

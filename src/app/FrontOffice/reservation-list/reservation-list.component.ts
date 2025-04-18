@@ -60,6 +60,11 @@ export class ReservationListComponent implements OnInit{
   }
 
 
+  logClick() {
+    console.log('clicked');
+  }
+  
+
   onCancelReservation(idReservation: number) {
     const confirmation = window.confirm("Voulez-vous vraiment annuler cette réservation ?");
     if (confirmation) {

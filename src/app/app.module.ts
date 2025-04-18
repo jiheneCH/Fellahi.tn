@@ -3,6 +3,7 @@ import { BrowserModule, Title } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { FullCalendarModule } from '@fullcalendar/angular';
 
 
 import { HttpClientModule, HttpClient } from '@angular/common/http';  
@@ -120,8 +121,10 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 
-import { ScheduleModule, RecurrenceEditorModule , DayService, WeekService, WorkWeekService, MonthService, MonthAgendaService } from '@syncfusion/ej2-angular-schedule';
 import { ReservationClientComponent } from './FrontOffice/reservation-client/reservation-client.component';
+import { CalendarClientComponent } from './FrontOffice/calendar-client/calendar-client.component';
+import { EventViewComponent } from './components/event-view/event-view.component';
+
 
 @NgModule({
     imports: [
@@ -131,17 +134,16 @@ import { ReservationClientComponent } from './FrontOffice/reservation-client/res
         FormsModule,
         NgxPaginationModule,
         ReactiveFormsModule,
-       Ng2SearchPipeModule,
+        Ng2SearchPipeModule,
         FormsModule,
         DataTableModule,
         AngJson2excelBtnModule,
         CommonModule,
         HttpClientModule,
-        ScheduleModule,
-        RecurrenceEditorModule,
-             MatFormFieldModule,
-            MatInputModule,
-            MatSnackBarModule,
+        MatFormFieldModule,
+        MatInputModule,
+        MatSnackBarModule,
+        FullCalendarModule,
          
         
         TranslateModule.forRoot({
@@ -208,6 +210,10 @@ import { ReservationClientComponent } from './FrontOffice/reservation-client/res
         ReviewComponent,
         SchedularComponent,
         ReservationClientComponent,
+        CalendarClientComponent,
+        EventViewComponent,
+    
+       
         
         
 
@@ -228,11 +234,7 @@ import { ReservationClientComponent } from './FrontOffice/reservation-client/res
             },
         },
 
-        DayService,
-        WeekService,
-        WorkWeekService,
-        MonthService,
-        MonthAgendaService
+       
     ],
     bootstrap: [AppComponent],
 })

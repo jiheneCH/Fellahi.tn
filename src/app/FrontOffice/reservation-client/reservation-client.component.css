@@ -191,3 +191,42 @@
 .single-logo-item img:hover {
     filter: grayscale(0);
 }
+
+
+/* Style de base inchangé */
+.cancel-btn {
+    /* Vos styles existants */
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 12px;
+    border: 1px solid #ef4444; /* rouge */
+    color: #ef4444;
+    background-color: white;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+/* Style lorsque désactivé */
+.cancel-btn.archived-btn {
+    border-color: #9ca3af; /* gris */
+    color: #9ca3af;
+    background-color: #f3f4f6; /* fond gris clair */
+    cursor: not-allowed;
+}
+
+/* Style hover uniquement si non archivé */
+.cancel-btn:not(.archived-btn):hover {
+    background-color: #fee2e2; /* rouge très clair */
+}
+
+.btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    background-color: #f8f9fa;
+}
+
+.btn-outline-danger:disabled {
+    border-color: #dee2e6;
+    color: #6c757d;
+}

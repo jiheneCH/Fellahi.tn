@@ -64,3 +64,165 @@
     color: #F28123;
     margin-right: 5px;
 }
+
+/* Styles généraux du badge */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Icônes dans les badges */
+.status-badge i {
+    margin-right: 5px;
+    font-size: 0.9rem;
+}
+
+/* Statut "Available" */
+.status-available {
+    background-color: #e6f7ee;
+    color: #10b759;
+    border: 1px solid #10b759;
+}
+
+/* Statut "Complete" */
+.status-complete {
+    background-color: #fff0f0;
+    color: #ff4d4f;
+    border: 1px solid #ff4d4f;
+}
+
+/* Statut "Cancelled" */
+.status-cancelled {
+    background-color: #fff7e6;
+    color: #fa8c16;
+    border: 1px solid #fa8c16;
+}
+
+/* Animation au survol */
+.status-badge:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+/* Reviews Section Styling */
+.reviews-section {
+    padding: 40px 0;
+  }
+  
+  .section-title {
+    font-weight: 700;
+    position: relative;
+    color: #2c3e50;
+  }
+  
+  .section-title .orange-text {
+    color: #f39c12;
+    font-weight: 600;
+  }
+  
+  .title-divider {
+    height: 3px;
+    width: 80px;
+    background: linear-gradient(to right, #f39c12, #e74c3c);
+    margin-top: 10px;
+  }
+  
+  .reviews-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 25px;
+    margin-top: 30px;
+  }
+  
+  .review-card {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    padding: 25px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-left: 4px solid #f39c12;
+  }
+  
+  .review-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  }
+  
+  .review-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+  }
+  
+  .user-avatar {
+    margin-right: 15px;
+  }
+  
+  .user-avatar i {
+    font-size: 2.5rem;
+    color: #7f8c8d;
+  }
+  
+  .user-info {
+    flex: 1;
+  }
+  
+  .username {
+    font-weight: 600;
+    margin-bottom: 5px;
+    color: #2c3e50;
+  }
+  
+  .rating-stars {
+    color: #bdc3c7;
+    font-size: 1.1rem;
+  }
+  
+  .rating-stars .filled {
+    color: #f39c12;
+  }
+  
+  .review-body {
+    margin-bottom: 15px;
+  }
+  
+  .review-comment {
+    color: #34495e;
+    line-height: 1.6;
+    font-style: italic;
+  }
+  
+  .review-footer {
+    font-size: 0.85rem;
+    color: #95a5a6;
+  }
+  
+  .no-reviews {
+    text-align: center;
+    padding: 40px 20px;
+    background: #f8f9fa;
+    border-radius: 10px;
+  }
+  
+  .no-reviews i {
+    font-size: 3rem;
+    color: #bdc3c7;
+    margin-bottom: 15px;
+  }
+  
+  .no-reviews h4 {
+    color: #7f8c8d;
+    margin-bottom: 10px;
+  }
+  
+  .no-reviews p {
+    color: #95a5a6;
+  }

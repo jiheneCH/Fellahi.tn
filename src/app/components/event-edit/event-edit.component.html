@@ -92,12 +92,16 @@
         </div>
       </div>
   
-      <!-- Champ Status -->
-      <div class="form-group">
-        <label for="status">Status</label>
-        <input id="status" type="text" class="form-control" formControlName="status" />
-        <div *ngIf="eventForm.get('status')?.touched && eventForm.get('status')?.invalid" class="text-danger">
-          <div *ngIf="eventForm.get('status')?.errors?.['required']">Status is required</div>
+      <div class="form-group floating">
+        <label for="status" class="form-label">Status</label>
+        <select class="form-control" id="status" formControlName="status">
+          <option value="">-- Select --</option>
+          <option value="complete">Complete</option>
+          <option value="disponible">Available</option>
+          <option value="archive">Archive</option>
+        </select>
+        <div class="alert alert-danger" *ngIf="eventForm.get('status')?.touched && eventForm.get('status')?.errors">
+          <p *ngIf="eventForm.get('status')?.getError('required')">Status is required</p>
         </div>
       </div>
   

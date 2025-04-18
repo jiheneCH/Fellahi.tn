@@ -31,7 +31,7 @@
         <th scope="col">Event title</th>
    
         
-        <th scope="col">Action</th>
+       
       </tr>
     </thead>
     <tbody> 
@@ -44,38 +44,7 @@
         <td>{{ waiting.user?.username }}</td>
         <td>{{ waiting.event?.title}}</td>
         
-                
-       
-        
-        <td>
-          <div class="flex space-x-2">
-            <!-- Bouton Modifier -->
-            <!-- <button class="btn btn-outline-primary p-2 rounded-md hover:bg-blue-50 transition-colors"
-            [routerLink]="['/admin/event-edit', event.idEvent]"
-            title="Modifier l'événement">
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
-        <path d="M12.146 0.854a2 2 0 0 1 2.828 2.828L5.707 11.293a1 1 0 0 1-.38.213l-4 1a1 1 0 0 1-1.21-1.21l1-4a1 1 0 0 1 .213-.38L10.707 2.022a2 2 0 0 1 2.828-.168z"/>
-      </svg>
-    </button>
-     -->
-            
-            <!-- Bouton Archiver, conditionnellement désactivé si déjà archivé -->
-            <!-- <button class="btn btn-outline-danger p-2 rounded-md hover:bg-red-50 transition-colors"
-          [disabled]="event.status === 'archive'"
-          (click)="archiverEvent(event.idEvent)"
-          title="Archiver l'événement">
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-archive" viewBox="0 0 16 16">
-      <path d="M4 2a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1H4zm0 1h8v9H4V3zm1 4h6v1H5V7z"/>
-    </svg>
-  </button> -->
-  
-            
-            <!-- Bouton Archiver désactivé si l'événement est déjà archivé -->
-            <!-- <button *ngIf="event.status === 'archive'" class="btn btn-secondary btn-sm" disabled title="Événement déjà archivé">
-              <i class="fas fa-lock"></i>
-            </button> -->
-          </div>
-        </td>
+
       </tr>
     </tbody>
   </table>

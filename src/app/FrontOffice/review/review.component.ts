@@ -65,7 +65,7 @@ export class ReviewComponent implements OnInit {
     this.reviewService.addReview(payload).subscribe({
       next: () => {
         alert('Merci pour votre avis !');
-        this.router.navigate(['/reservationClient/:id']);
+         window.location.reload();
       },
       error: (err: any) => {
         console.error('Erreur lors de l’ajout du review :', err);

@@ -1,0 +1,7 @@
+.view-btn {
+    color: #2196f3;
+  }
+  
+  .view-btn:hover {
+    background-color: rgba(33, 150, 243, 0.1);
+  }
