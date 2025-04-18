@@ -15,8 +15,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
+
 @Service
 public class ReservationServicesImpl implements IReservationServices {
+
+    @Autowired
+    private IWaintinglistServices iwaitinglistServices;
 
     @Autowired
     private ReservationRepository reservationRepository;
@@ -24,8 +29,12 @@ public class ReservationServicesImpl implements IReservationServices {
     @Autowired
     private EventRepository eventRepository;
 
+  //  @Autowired
+   // private ClientRepository clientRepository;
+
     @Autowired
-    private ClientRepository clientRepository;
+     private UserRepository userRepository;
+
 
     @Autowired
     private IEventServices eventServices;
@@ -41,21 +50,59 @@ public class ReservationServicesImpl implements IReservationServices {
 
 
 
-    @Override
-    public Reservation createReservation(long idEvent, long idClient, int numberOfPass) {
-        Optional<Event> eventOptional = eventRepository.findById(idEvent);
-        Optional<Client> clientOptional = clientRepository.findById(idClient);
 
-        if (eventOptional.isPresent() && clientOptional.isPresent()) {
+
+
+
+    //@Override
+   // public List<Reservation> retrieveAllReservation() {
+      //  return reservationRepository.findAll();
+    //}
+
+
+    @Override
+    public List<Reservation> retrieveAllReservation() {
+        return reservationRepository.findAllWithClientAndEvent();
+    }
+
+    //@Override
+   // public List<Reservation> getReservationsByClientId(Long userId) {
+      //  return reservationRepository.findReservationsByUser_Id(userId);
+   // }
+
+    @Override
+    public List<Reservation> getReservationsByClientUserId(Long userId) {
+        return reservationRepository.findReservationsByClientUserId(userId);
+    }
+
+
+
+
+
+
+    @Override
+    public List<Reservation> searchReservationByReference(String reference) {
+        System.out.println("Searching in database for reference: " + reference);
+        // Assurez-vous que votre méthode de recherche fonctionne correctement
+        return reservationRepository.findByReferenceContainingIgnoreCase(reference);
+    }
+
+    @Override
+    public Reservation createReservation(long idEvent, long id, int numberOfPass) {
+        Optional<Event> eventOptional = eventRepository.findById(idEvent);
+        Optional<User> userOptional = userRepository.findById(id);
+
+        if (eventOptional.isPresent() && userOptional.isPresent()) {
             Event event = eventOptional.get();
-            Client client = clientOptional.get();
+            User user = userOptional.get();
 
             if (event.getNombrePlaces() >= numberOfPass) {
                 long remainingPlaces = event.getNombrePlaces() - numberOfPass;
 
                 if (remainingPlaces == 0) {
                     try {
-                        eventServices.archiverEvent(event.getIdEvent());
+                        event.setStatus(Status.complete);
+
                     } catch (Exception e) {
                         throw new RuntimeException("Erreur lors de l'archivage de l'événement : " + e.getMessage());
                     }
@@ -66,7 +113,7 @@ public class ReservationServicesImpl implements IReservationServices {
                 eventRepository.flush();
 
                 BigDecimal prixUnitaire = event.getPrix();
-                BigDecimal reduction = BigDecimal.valueOf(client.getReduction());
+                BigDecimal reduction = BigDecimal.valueOf(user.getReduction());
                 BigDecimal multiplicateur = BigDecimal.ONE.subtract(reduction);
                 BigDecimal prixTotal = prixUnitaire
                         .multiply(BigDecimal.valueOf(numberOfPass))
@@ -74,7 +121,7 @@ public class ReservationServicesImpl implements IReservationServices {
 
                 Reservation reservation = new Reservation();
                 reservation.setEvent(event);
-                reservation.setClient(client);
+                reservation.setUser(user);
                 reservation.setNumberOfPass(numberOfPass);
                 reservation.setPrixTotal(prixTotal);
                 reservation.setReference(UUID.randomUUID().toString());
@@ -86,16 +133,16 @@ public class ReservationServicesImpl implements IReservationServices {
                 //notificationRepository.save(notifReservation);
                // messagingTemplate.convertAndSend("/topic/reservation", notifReservation);
 
-                int totalReservations = reservationRepository.countByClient_IdClient(client.getIdClient());
+                int totalReservations = reservationRepository.countByUser_Id(user.getId());
 
-                if (client.getReduction() > 0.0) {
+                if (user.getReduction() > 0.0) {
                     // Réduction utilisée : remise à zéro
-                    client.setReduction(0.0);
-                    client.setBadge("STANDARD");
-                } else if (totalReservations >= 5 && !"VIP".equalsIgnoreCase(client.getBadge())) {
+                    user.setReduction(0.0);
+                    user.setBadge("STANDARD");
+                } else if (totalReservations >= 5 && !"VIP".equalsIgnoreCase(user.getBadge())) {
                     //  Le client devient VIP
-                    client.setReduction(0.10);
-                    client.setBadge("VIP");
+                    user.setReduction(0.10);
+                    user.setBadge("VIP");
 
                    // String vipMessage = " Félicitations " + client.getNomClient() + ", vous êtes maintenant un client VIP avec 10% de réduction !";
                     //Notification vipNotification = new Notification(vipMessage, client);
@@ -103,16 +150,20 @@ public class ReservationServicesImpl implements IReservationServices {
                     //messagingTemplate.convertAndSend("/topic/reservations", vipNotification);
                 }
 
-                clientRepository.save(client);
+                userRepository.save(user);
+                userRepository.flush();
                 return reservation;
 
             } else {
                 // Liste d'attente
                 WaitingListEntry entry = new WaitingListEntry();
-                entry.setClient(client);
+                entry.setUser(user);
                 entry.setEvent(event);
                 entry.setRequestedPasses(numberOfPass);
                 entry.setRequestTime(LocalDateTime.now());
+
+                String reference = iwaitinglistServices.generateReference(entry);
+                entry.setReference(reference);
 
                 WaitingListEntry savedEntry = waitingListEntryRepository.save(entry);
                 waitingListEntryRepository.flush();
@@ -142,7 +193,8 @@ public class ReservationServicesImpl implements IReservationServices {
 
         // Restaurer les places
         event.setNombrePlaces(event.getNombrePlaces() + placesToRestore); // Incrémenter les places
-        event.setArchived(false); // Si l'événement était archivé
+        event.setArchived(false);// Si l'événement était archivé
+        event.setStatus(Status.disponible);
         eventRepository.save(event);  // Sauvegarder l'événement après modification
 
         // Gérer la liste d’attente
@@ -163,7 +215,7 @@ public class ReservationServicesImpl implements IReservationServices {
             if (event.getNombrePlaces() >= requestedPass) {
                 // Créer la réservation automatiquement
                 Reservation reservation = new Reservation();
-                reservation.setClient(entry.getClient());
+                reservation.setUser(entry.getUser());
                 reservation.setEvent(event);
                 reservation.setNumberOfPass(requestedPass);
                 reservationRepository.save(reservation);

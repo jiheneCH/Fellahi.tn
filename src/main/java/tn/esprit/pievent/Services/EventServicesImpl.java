@@ -1,5 +1,10 @@
 package tn.esprit.pievent.Services;
 
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.EncodeHintType;
+import com.google.zxing.client.j2se.MatrixToImageWriter;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.QRCodeWriter;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.element.Paragraph;
@@ -19,24 +24,26 @@ import tn.esprit.pievent.Entities.Event;
 
 
 import tn.esprit.pievent.Entities.Status;
-import tn.esprit.pievent.Entities.TypeEvent;
 import tn.esprit.pievent.Repositories.EventRepository;
 
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.math.BigDecimal;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
+import java.time.LocalTime;
+import java.util.*;
 
 @Service
 public class EventServicesImpl implements IEventServices{
+
     @Autowired
      EventRepository eventRepository;
+
+
 
 
     public EventServicesImpl() {
@@ -45,23 +52,53 @@ public class EventServicesImpl implements IEventServices{
             directory.mkdirs(); // Crée le dossier s'il n'existe pas
         }
     }
+    //@Override
+    //public List<Event> retrieveAllEvent() {
+       // return  eventRepository.findByArchivedFalse();
+   // }
+
+   // @Override
+   // public List<Event> retrieveAllEvent() {
+      //  return eventRepository.findAll();
+   // }
+
+
     @Override
     public List<Event> retrieveAllEvent() {
-        return  eventRepository.findByArchivedFalse();
+        List<Event> events = eventRepository.findAll();
+
+        LocalDate currentDate = LocalDate.now();
+        LocalTime currentTime = LocalTime.now();
+
+        for (Event event : events) {
+            // Vérifie si l'événement est dans le passé (date < aujourd'hui ou même date + heure passée)
+            boolean isPastEvent = event.getDateEvent().isBefore(currentDate) ||
+                    (event.getDateEvent().isEqual(currentDate) && event.getHeureEvent().isBefore(currentTime));
+
+            if (!event.isArchived() && isPastEvent) {
+                archiverEvent(event.getIdEvent()); // Appel à ta méthode d'archivage
+            }
+        }
+
+        return eventRepository.findAll();
     }
+
+
+
 
     @Override
     public Event retrieveEvent(long idEvent) {
          Event event = eventRepository.findById(idEvent)
-                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Article not found"));
-         if (event.getStatus() == Status.archive) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Acces to this event is forbidden");
-         }
+                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Event not found"));
+        // if (event.getStatus() == Status.archive) {
+           // throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Acces to this event is forbidden");
+        // }
          return event;
     }
     //@Override
    // public Event addEvent(Event event) {
        // return eventRepository.save(event);
+
     //}
 
     @Override
@@ -71,13 +108,35 @@ public class EventServicesImpl implements IEventServices{
         }
         return eventRepository.save(event);
     }
-
-
-
-    @Override
-    public Event updateEvent(Event event) {
-        return eventRepository.save(event);
+@Override
+    public  String generateReference(Event event) {
+        // Générer un UUID aléatoire et formater sous forme de chaîne
+        UUID uuid = UUID.randomUUID();
+        String reference = "E-" + uuid.toString().substring(0, 8) + "-" +
+                uuid.toString().substring(9, 13) + "-" +
+                uuid.toString().substring(14, 18) + "-" +
+                uuid.toString().substring(19, 23); // Format désiré
+        return reference;
     }
+@Override
+public byte[] generateQrCode(String text, int width, int height) throws Exception {
+    QRCodeWriter qrCodeWriter = new QRCodeWriter();
+    HashMap<EncodeHintType, Object> hints = new HashMap<>();
+    hints.put(EncodeHintType.MARGIN, 1);
+
+    BitMatrix bitMatrix = qrCodeWriter.encode(text, BarcodeFormat.QR_CODE, width, height, hints);
+    ByteArrayOutputStream pngOutputStream = new ByteArrayOutputStream();
+    MatrixToImageWriter.writeToStream(bitMatrix, "PNG", pngOutputStream);
+    return pngOutputStream.toByteArray();
+}
+
+
+
+
+    // @Override
+   // public Event updateEvent(Event event) {
+     //   return eventRepository.save(event);
+   // }
 
     //@Override
     //public void archiverEvent(Long idEvent) {
@@ -194,22 +253,30 @@ private static final String PDF_DIRECTORY = "C:/events_pdfs/"; // Dossier où st
         return "Fichier uploadé avec succès : " + newFileName;
     }
 
-//recherche avancée
 
-    public List<Event> advancedSearch(String title, String location, String startDateStr) {
-        // Conversion de la date si elle est fournie
-        LocalDate dateEvent = null;
-        if (startDateStr != null && !startDateStr.trim().isEmpty()) {
-            dateEvent = LocalDate.parse(startDateStr);
+
+    @Override
+    public List<Event> searchEventByReference(String reference) {
+       System.out.println("Searching in database for reference: " + reference);
+        // Assurez-vous que votre méthode de recherche fonctionne correctement
+       return eventRepository.findByReferenceContainingIgnoreCase(reference);
+    }
+
+
+
+
+
+    @Override
+    public Event updateEvent(Event event) {
+        if (event.getImage() == null || event.getImage().isEmpty()) {
+            throw new IllegalArgumentException("L'image est obligatoire !");
         }
 
-        // Nettoyage des paramètres : si vides, on passe null pour ignorer le filtre
-        title = (title != null && !title.trim().isEmpty()) ? title.trim() : null;
-        location = (location != null && !location.trim().isEmpty()) ? location.trim() : null;
-
-        // Appel de la méthode du repository
-        return eventRepository.advancedSearch(title, location, dateEvent);
+        // Sauvegarder l'événement après l'avoir mis à jour (si nécessaire)
+        return eventRepository.save(event);
     }
+
+
 
 
 

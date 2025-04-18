@@ -1,6 +1,7 @@
 package tn.esprit.pievent.Entities;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
@@ -53,11 +54,11 @@ public class Event {
     @Pattern(regexp = "^[a-zA-Z0-9,\\s]+$", message = "L'emplacement doit être alphanumérique")
     @NotBlank(message = "L'emplacement est obligatoire")
     @Size(min = 3, max = 255, message = "L'emplacement doit contenir entre 3 et 255 caractères")
-    String location;
+    private String location;
 
     @NotBlank(message = "La description est obligatoire")
     @Size(min = 3, max = 100, message = "La description doit contenir entre 3 et 100 caractères")
-    String description;
+   private  String description;
 
     @NotNull(message = "Le nombre de places est obligatoire")
     @Min(value = 0)
@@ -87,12 +88,51 @@ public class Event {
     @Enumerated(EnumType.STRING)
     Status status;
 
+
+
+    @Column(name = "reference_e")
+    String reference;
+
+    @Lob
+    private byte[] qrCodeImage;
+
+    public byte[] getQrCodeImage() {
+        return qrCodeImage;
+    }
+
+    public void setQrCodeImage(byte[] qrCodeImage) {
+        this.qrCodeImage = qrCodeImage;
+    }
+
+    public String getReference() {
+        return reference;
+    }
+
+    public void setReference(String reference) {
+        this.reference = reference;
+    }
+
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Reservation> reservations = new ArrayList<>();
 
 
     @OneToMany(mappedBy = "event")
+    @JsonIgnore
     private List<WaitingListEntry> waitingListEntries;
+
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<Review> reviews = new ArrayList<>();
+
+
+    public List<Review> getReviews() {
+        return reviews;
+    }
+
+    public void setReviews(List<Review> reviews) {
+        this.reviews = reviews;
+    }
 
     public List<WaitingListEntry> getWaitingListEntries() {
         return waitingListEntries;
@@ -214,6 +254,8 @@ public class Event {
     public void setReservations(List<Reservation> reservations) {
         this.reservations = reservations;
     }
+
+
 }
 
 

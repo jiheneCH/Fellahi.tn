@@ -12,12 +12,14 @@ import tn.esprit.pievent.Entities.WaitingListEntry;
 import tn.esprit.pievent.Repositories.EventRepository;
 import tn.esprit.pievent.Repositories.WaitingListEntryRepository;
 import tn.esprit.pievent.Services.IReservationServices;
+import tn.esprit.pievent.Services.IWaintinglistServices;
 
 import java.util.List;
 import java.util.Optional;
 
 @RestController
 @AllArgsConstructor
+@CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping("/reservation")
 public class ReservationRestController {
 
@@ -31,9 +33,45 @@ public class ReservationRestController {
     @Autowired
     private EventRepository eventRepository;
 
+    @Autowired
+    private IWaintinglistServices iwaitinglistServices;
+
+
+
+    @GetMapping("/retrieveAllReservation")
+    public List<Reservation> afficherReservation() {
+        return iReservationServices.retrieveAllReservation();}
+
+
+
+
+    @GetMapping("/client/{userId}")
+    public List<Reservation> getReservationsByClient(@PathVariable Long userId) {
+        return iReservationServices.getReservationsByClientUserId(userId);
+    }
+
+
+
+
+    @GetMapping("/retrieveAllWaitinglist")
+    public List<WaitingListEntry> afficherWaitinglist() {
+        return iwaitinglistServices.retrieveAllWaitinglist();}
+
+    @GetMapping("/search-reference")
+    public List<Reservation> searchReservationByReference(@RequestParam("reference") String reference) {
+        return iReservationServices.searchReservationByReference(reference);
+    }
+
+
+    @GetMapping("/search-waitinglist")
+    public List<WaitingListEntry> searchWaitingByReference(@RequestParam("reference") String reference) {
+        return iwaitinglistServices.searchWaitinglistByReference(reference);
+    }
+
+
     @PostMapping("/book")
-    public Reservation bookEvent(@RequestParam long idEvent, @RequestParam long idClient, @RequestParam int numberOfPass) {
-        return iReservationServices.createReservation(idEvent, idClient, numberOfPass);
+    public Reservation bookEvent(@RequestParam long idEvent, @RequestParam long id, @RequestParam int numberOfPass) {
+        return iReservationServices.createReservation(idEvent, id, numberOfPass);
     }
 
     @GetMapping("/waiting-list/{idEvent}")

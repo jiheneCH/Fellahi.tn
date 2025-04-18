@@ -8,4 +8,6 @@ public interface IReviewServices {
     Review addReview(Review review);
 
      List<Review> getReviewsByEvent(Long idEvent);
+
+
 }

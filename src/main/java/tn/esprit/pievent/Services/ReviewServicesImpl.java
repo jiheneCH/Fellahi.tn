@@ -1,17 +1,13 @@
 package tn.esprit.pievent.Services;
 
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tn.esprit.pievent.Entities.Event;
-import tn.esprit.pievent.Entities.Client;
 import tn.esprit.pievent.Entities.Review;
-import tn.esprit.pievent.Repositories.ClientRepository;
 import tn.esprit.pievent.Repositories.EventRepository;
 import tn.esprit.pievent.Repositories.ReviewRepository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ReviewServicesImpl implements IReviewServices {
@@ -30,6 +26,7 @@ public class ReviewServicesImpl implements IReviewServices {
         return reviewRepository.save(review);
     }
 
+    @Override
     public List<Review> getReviewsByEvent(Long idEvent) {
         Event event = eventRepository.findById(idEvent)
                 .orElseThrow(() -> new RuntimeException("Événement non trouvé"));

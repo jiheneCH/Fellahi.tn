@@ -1,5 +1,7 @@
 package tn.esprit.pievent.Entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Digits;
 import lombok.*;
@@ -25,8 +27,8 @@ public class Reservation {
     private Event event;
 
     @ManyToOne
-    @JoinColumn(name = "client_id", nullable = false)
-    private Client client;
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     private LocalDateTime reservationDate = LocalDateTime.now();
 
@@ -37,6 +39,7 @@ public class Reservation {
 
    
     private String reference;
+
 
 
     public String getReference() {
@@ -71,12 +74,12 @@ public class Reservation {
         this.event = event;
     }
 
-    public Client getClient() {
-        return client;
+    public User getUser() {
+        return user;
     }
 
-    public void setClient(Client client) {
-        this.client = client;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public LocalDateTime getReservationDate() {

@@ -1,6 +1,8 @@
 package tn.esprit.pievent.Entities;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -24,7 +26,7 @@ public class WaitingListEntry {
     @NotNull
     @JoinColumn(name = "client_id", nullable = false)
     @ManyToOne
-    private Client client;
+    private User user;
 
     @NotNull
     @JoinColumn(name = "event_id", nullable = false)
@@ -36,7 +38,15 @@ public class WaitingListEntry {
 
     private LocalDateTime requestTime= LocalDateTime.now();
 
+    private String reference;
 
+    public String getReference() {
+        return reference;
+    }
+
+    public void setReference(String reference) {
+        this.reference = reference;
+    }
 
     public Long getId() {
         return id;
@@ -46,12 +56,12 @@ public class WaitingListEntry {
         this.id = id;
     }
 
-    public Client getClient() {
-        return client;
+    public User getUser() {
+        return user;
     }
 
-    public void setClient(Client client) {
-        this.client = client;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public Event getEvent() {

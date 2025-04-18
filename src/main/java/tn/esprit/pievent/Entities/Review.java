@@ -27,8 +27,8 @@ public class Review {
     private Event event;
 
     @ManyToOne
-    @JoinColumn(name = "client_id", nullable = false)
-    private Client client;
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     @Min(1)  // Note minimale
     @Max(5)  // Note maximale
@@ -56,12 +56,12 @@ public class Review {
         this.event = event;
     }
 
-    public Client getClient() {
-        return client;
+    public User getUser() {
+        return user;
     }
 
-    public void setClient(Client client) {
-        this.client = client;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public Integer getRating() {
