@@ -1,6 +1,6 @@
 package tn.esprit.pi_article.Entities;
 
-public enum Status {
+public enum StatusAgri {
     InStock ,
     OutOfStock,
     LowStock,

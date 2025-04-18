@@ -1,4 +1,6 @@
 package tn.esprit.pi_article.Controller;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 
 
 import com.google.zxing.BarcodeFormat;
@@ -8,17 +10,16 @@ import com.google.zxing.qrcode.QRCodeWriter;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springdoc.core.converters.models.Sort;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-import tn.esprit.pi_article.Entities.Article;
-import tn.esprit.pi_article.Entities.Status;
-import tn.esprit.pi_article.Entities.TypeProduit;
-import tn.esprit.pi_article.Entities.utilisateur;
+import tn.esprit.pi_article.Entities.*;
 import tn.esprit.pi_article.Services.ArticleServicelmpl;
 import tn.esprit.pi_article.Services.IArticleServices;
 
@@ -38,20 +39,29 @@ import java.util.Optional;
 public class ArticleRestController {
     @Autowired
     IArticleServices iArticleServices;
-/*
-    @GetMapping("/retriveAllArticle")
+
+
+
+
+
+
+    /*@GetMapping("/retriveAllArticle")
     public List<Article> afficherAllArticle(){
         return iArticleServices.retriveAllArticle();
     }
+    */
+/*
     @GetMapping("/retrieveArticle/{idA}")
     public Article afficherArticle(@PathVariable("idA") long idArticle){
         return iArticleServices.retriveArticle(idArticle);
     }
 
+    /*
     @PostMapping("/addArtice")
     public Article ajouterArticle (@RequestBody Article article){
         return iArticleServices.addArticle(article);
     }
+
 
     @PutMapping("/archiverArticle/{id}")
     public ResponseEntity<String> archiverArticle(@PathVariable("id") Long id) {
@@ -59,15 +69,22 @@ public class ArticleRestController {
         return ResponseEntity.ok("Stock " + id + " archivée avec succès.");
     }
 
-
+/*
 
 @PostMapping("/addArtice")
 public ResponseEntity<?> ajouterArticle(@Valid @RequestBody Article article) {
     Article newArticle = iArticleServices.addArticle(article);
     return ResponseEntity.ok(newArticle);
 }
+*/
 
- */
+
+
+
+
+
+    ///////////////
+
     @GetMapping("/retriveAllArticle")
     public List<Article> afficherAllArticle(){
         return iArticleServices.retriveAllArticle();
@@ -84,6 +101,18 @@ public ResponseEntity<?> ajouterArticle(@Valid @RequestBody Article article) {
     }
 
 
+
+
+
+
+
+
+
+
+
+
+    ////////////////////////////////////
+
  /*   @PostMapping("/addArticle")
     public ResponseEntity<?> ajouterArticle(@Valid @RequestBody Article article) {
         try {
@@ -93,6 +122,14 @@ public ResponseEntity<?> ajouterArticle(@Valid @RequestBody Article article) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }*/
+
+
+
+
+
+
+    ////////////////////////////
+    /*
  @PostMapping("/addArticle")
  public ResponseEntity<?> ajouterArticle (@Valid @RequestBody Article article) {
      try {
@@ -110,7 +147,7 @@ public ResponseEntity<?> ajouterArticle(@Valid @RequestBody Article article) {
 
 
 
-
+*/
 
 @PutMapping("/archiverArticle/{id}")
 public ResponseEntity<?> archiverArticle(@PathVariable("id") Long id) {
@@ -160,10 +197,10 @@ public ResponseEntity<?> archiverArticle(@PathVariable("id") Long id) {
     @GetMapping("/search")
     public ResponseEntity<List<Article>> searchArticles(
             @RequestParam(required = false) String nom,
-            @RequestParam(required = false) Status status,
+            @RequestParam(required = false) StatusAgri statusAgri,
             @RequestParam(required = false) TypeProduit typeProduit
     ) {
-        List<Article> articles = iArticleServices.rechercherArticles(nom, status, typeProduit);
+        List<Article> articles = iArticleServices.rechercherArticles(nom, statusAgri, typeProduit);
         return ResponseEntity.ok(articles);
     }
 
@@ -215,6 +252,7 @@ public ResponseEntity<?> archiverArticle(@PathVariable("id") Long id) {
     public List<Map<String, Object>> getAjoutsParMois() {
         return iArticleServices.getAjoutsParMois();
     }
+    /*
     @GetMapping("/mes-articles/{id}")
     public ResponseEntity<List<Article>> getMesArticles(@PathVariable Long id) {
         return ResponseEntity.ok(iArticleServices.getArticlesByUtilisateurId(id));
@@ -230,6 +268,57 @@ public ResponseEntity<?> archiverArticle(@PathVariable("id") Long id) {
     public Article ajouterArticle(@PathVariable Long id, @RequestBody Article article) {
         return iArticleServices.ajouterArticleparuser(id, article);
     }
+*/
 
 
+    @GetMapping("/afficherproduitagriculteur/{id}")
+    public ResponseEntity<List<Article>> getArticlesParUtilisateur(@PathVariable Long id) {
+        try {
+            // Appel du service pour obtenir les articles de l'utilisateur
+            List<Article> articles = iArticleServices.getArticlesParUtilisateur(id);
+            return ResponseEntity.ok(articles);  // Retourne une réponse 200 avec la liste des articles
+        } catch (RuntimeException e) {
+            // Si un utilisateur n'est pas trouvé ou si son rôle n'est pas FARMER
+            return ResponseEntity.status(404).body(null);  // Retourne une réponse 404 si l'utilisateur est introuvable
+        }
+    }
+    @PostMapping("/ajouterproduitagriculteur/{idUtilisateur}")
+    public ResponseEntity<Article> ajouterArticlePourUtilisateur(
+            @PathVariable Long idUtilisateur,
+            @RequestBody Article article) {
+
+        try {
+            // Appel du service pour ajouter l'article
+            Article articleAjoute = iArticleServices.ajouterArticlePourUtilisateur(idUtilisateur, article);
+
+            // Retourner l'article ajouté avec un code HTTP 201 (création réussie)
+            return new ResponseEntity<>(articleAjoute, HttpStatus.CREATED);
+        } catch (RuntimeException e) {
+            // Si l'utilisateur n'est pas un agriculteur ou s'il y a une erreur
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // 400 - Mauvaise demande
+        }
+    }
+    @PostMapping("/generer-pack/{idUtilisateur}")
+    public ResponseEntity<Article> genererPack(@PathVariable Long idUtilisateur) {
+        try {
+            // Appeler la méthode service pour générer un pack
+            Article pack = iArticleServices.genererPackSiNecessaireeee(idUtilisateur);
+
+            // Retourner une réponse avec le pack généré
+            return ResponseEntity.status(HttpStatus.CREATED).body(pack);
+        } catch (RuntimeException e) {
+            // Si une erreur se produit, retourner une réponse avec un message d'erreur
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+    }
+    @GetMapping("/articles/low-stock-out-of-stock")
+    public List<Article> getLowStockAndOutOfStockArticles() {
+        return iArticleServices.getArticlesLowStockAndOutOfStock();
+    }
+    @GetMapping("/articles")
+    public Page<Article> getArticles(@RequestParam(defaultValue = "1") int page,
+                                     @RequestParam(defaultValue = "10") int size) {
+        // Appelle le service pour obtenir les articles paginés
+        return iArticleServices.getArticles(page, size);
+    }
 }

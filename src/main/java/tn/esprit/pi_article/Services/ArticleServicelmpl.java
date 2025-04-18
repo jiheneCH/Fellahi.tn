@@ -1,23 +1,21 @@
 package tn.esprit.pi_article.Services;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 
-import jakarta.persistence.EntityNotFoundException;
+
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.server.ResponseStatusException;
-import tn.esprit.pi_article.Entities.Article;
-import tn.esprit.pi_article.Entities.Status;
-import tn.esprit.pi_article.Entities.TypeProduit;
-import tn.esprit.pi_article.Entities.utilisateur;
+import tn.esprit.pi_article.Entities.*;
 import tn.esprit.pi_article.Repositories.ArticleRepository;
-import tn.esprit.pi_article.Repositories.UtilisateurRepository;
+import tn.esprit.pi_article.Repositories.UserRepository;
 
-import java.lang.module.ResolutionException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.*;
@@ -27,23 +25,23 @@ import java.util.*;
 @AllArgsConstructor
 @Service
 public class ArticleServicelmpl implements IArticleServices {
+
     @Autowired
     ArticleRepository articleRepository;
     private final Random random = new Random();
     @Autowired
-    private UtilisateurRepository utilisateurRepository;
+    private UserRepository userRepository;
 
     @Override
     public List<Article> retriveAllArticle() {
-        // Récupérer tous les articles non archivés
-        List<Article> articles = articleRepository.findByArchivedFalse();
-
-        // Appliquer les promotions (Black Friday et fin d'année)
-        for (Article article : articles) {
-            appliquerPromotion(article);
+        try {
+            // Assurez-vous que cette méthode renvoie une liste d'articles correcte
+            return articleRepository.findAll();  // ou toute autre méthode selon votre logique
+        } catch (Exception e) {
+            // Si une exception se produit, la loguer et la re-throw pour la gestion d'erreurs
+            System.err.println("Erreur lors de la récupération des articles : " + e.getMessage());
+            throw new RuntimeException("Erreur lors de la récupération des articles", e);
         }
-
-        return articles;
     }
 
     @Override
@@ -52,7 +50,7 @@ public class ArticleServicelmpl implements IArticleServices {
         Article article = articleRepository.findById(idArticle)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Article not found"));
 
-        if (article.getStatus() == Status.archive) {
+        if (article.getStatusAgri() == StatusAgri.archive.archive) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access to this article is forbidden");
         }
 
@@ -84,7 +82,7 @@ public class ArticleServicelmpl implements IArticleServices {
 
 
         // Mise à jour du statut de l'article en fonction de la quantité disponible et initiale
-        existingArticle.setStatus(getStatusByQuantity(existingArticle.getQuantiteDisponible(), existingArticle.getQuantiteInitiale()));
+        existingArticle.setStatusAgri(getStatusByQuantity(existingArticle.getQuantiteDisponible(), existingArticle.getQuantiteInitiale()));
 
         // Calcul des points de fidélité (si nécessaire)
         existingArticle.calculerPointsFidelite();
@@ -101,7 +99,7 @@ public class ArticleServicelmpl implements IArticleServices {
 
 
 
-
+/*
     @Override
     public void deleteArticle(long idArticle) {
         articleRepository.deleteById(idArticle);
@@ -116,7 +114,12 @@ public class ArticleServicelmpl implements IArticleServices {
         article.setArchived(true);
         article.setStatus(Status.archive);
         articleRepository.save(article);
-    }*/
+    }
+*/
+
+
+
+
 @Override
 @Transactional
 public void archiverArticle(Long id) {
@@ -128,7 +131,7 @@ public void archiverArticle(Long id) {
     }
 
     article.setArchived(true);
-    article.setStatus(Status.archive);
+    article.setStatusAgri(StatusAgri.archive);
 
     try {
         articleRepository.save(article);
@@ -144,13 +147,17 @@ public void archiverArticle(Long id) {
         return articleRepository.existsByNom(nom);
     }
 
- /*   @Override
+    /*
+   @Override
     public Article addArticle(Article article) {
         if (existsByNom(article.getNom())) {
             throw new RuntimeException("Un article avec ce nom existe déjà.");
         }
         return articleRepository.save(article);
-    }*/
+    }
+*/
+
+/*
  @Override
  public Article addArticle(Article article) {
      // Vérification si le nom existe déjà
@@ -170,12 +177,17 @@ public void archiverArticle(Long id) {
 
      article.setReference(genererReferenceArticle(article.getNom()));
      article.calculerPointsFidelite();
-     article.setStatus(getStatusByQuantity(article.getQuantiteDisponible(), article.getQuantiteInitiale()));
+     article.setStatusAgri(getStatusByQuantity(article.getQuantiteDisponible(), article.getQuantiteInitiale()));
      article.setDateAjout(LocalDate.now());
      /*if (article.getUtilisateur().getId() == null) {
          throw new IllegalArgumentException("L'agriculteur doit être spécifié");
      }*/
 
+
+    /////////////////////////////////////
+
+    /*
+////////////////////////////////////
      ajusterPrix(article);
 
 
@@ -186,7 +198,7 @@ public void archiverArticle(Long id) {
  }
 
 
-
+*/
 
 
     public String genererReferenceArticle(String nomArticle) {
@@ -202,17 +214,21 @@ public void archiverArticle(Long id) {
         // Construire la référence unique
         return prefix + "-" + date + "-" + randomNumber;
     }
-    private Status getStatusByQuantity(int quantiteDisponible, int quantiteInitiale) {
+
+
+
+
+    private StatusAgri getStatusByQuantity(int quantiteDisponible, int quantiteInitiale) {
         if (quantiteDisponible == 0) {
-            return Status.OutOfStock;
+            return StatusAgri.OutOfStock;
         }
 
         double ratio = (double) quantiteDisponible / quantiteInitiale;
 
         if (ratio > 0.2) {
-            return Status.InStock;
+            return StatusAgri.InStock;
         } else {
-            return Status.LowStock;
+            return StatusAgri.LowStock;
         }
     }
 
@@ -282,7 +298,7 @@ public void archiverArticle(Long id) {
         System.out.println("📦 Quantité disponible pour le pack: " + quantitePack);
 
         // Déterminer le statut en fonction de la quantité disponible
-        Status statutPack = getStatusByQuantity(quantitePack, quantitePack);
+        StatusAgri statutPack = getStatusByQuantity(quantitePack, quantitePack);
         System.out.println("🏷️ Statut du pack : " + statutPack);
 
         // Création du pack
@@ -291,7 +307,7 @@ public void archiverArticle(Long id) {
         pack.setReference(referencePack);
         pack.setPrix(prixTotal);
         pack.setQuantiteDisponible(quantitePack);
-        pack.setStatus(statutPack);
+        pack.setStatusAgri(statutPack);
         pack.setPack(true);
         pack.setQuantiteVendue(0);
         pack.setArticlesPack(articlesPackIds);
@@ -307,7 +323,7 @@ public void archiverArticle(Long id) {
 
 
     public List<Article> verifierSeuilCritiqueEtEnvoyerAlerte() {
-        List<Article> articlesFaibles = articleRepository.findByStatusAndAlerteEnvoyeeFalse(Status.LowStock);
+        List<Article> articlesFaibles = articleRepository.findByStatusAgriIn(List.of(StatusAgri.LowStock, StatusAgri.OutOfStock));
 
         for (Article article : articlesFaibles) {
             System.out.println("⚠ Alerte : Stock faible pour l'article : " + article.getNom());
@@ -351,19 +367,19 @@ public void archiverArticle(Long id) {
         article.setPrix(nouveauPrix);
     }
 
-    public List<Article> rechercherArticles(String nom, Status status, TypeProduit typeProduit) {
-        if (nom != null && status != null && typeProduit != null) {
-            return articleRepository.findByNomContainingIgnoreCaseAndStatusAndTypeProduit(nom, status, typeProduit);
-        } else if (nom != null && status != null) {
-            return articleRepository.findByNomContainingIgnoreCaseAndStatus(nom, status);
+    public List<Article> rechercherArticles(String nom, StatusAgri statusAgri, TypeProduit typeProduit) {
+        if (nom != null && statusAgri != null && typeProduit != null) {
+            return articleRepository.findByNomContainingIgnoreCaseAndStatusAgriAndTypeProduit(nom, statusAgri, typeProduit);
+        } else if (nom != null && statusAgri != null) {
+            return articleRepository.findByNomContainingIgnoreCaseAndStatusAgri(nom, statusAgri);
         } else if (nom != null && typeProduit != null) {
             return articleRepository.findByNomContainingIgnoreCaseAndTypeProduit(nom, typeProduit);
-        } else if (status != null && typeProduit != null) {
-            return articleRepository.findByStatusAndTypeProduit(status, typeProduit);
+        } else if (statusAgri != null && typeProduit != null) {
+            return articleRepository.findByStatusAgriAndTypeProduit(statusAgri, typeProduit);
         } else if (nom != null) {
             return articleRepository.findByNomContainingIgnoreCase(nom);
-        } else if (status != null) {
-            return articleRepository.findByStatus(status);
+        } else if (statusAgri != null) {
+            return articleRepository.findByStatusAgri(statusAgri);
         } else if (typeProduit != null) {
             return articleRepository.findByTypeProduit(typeProduit);
         }
@@ -549,17 +565,24 @@ public void archiverArticle(Long id) {
         };
         return mois[monthNumber - 1]; // -1 car les tableaux commencent à 0
     }
+    /*
     public List<Article> getArticlesByUtilisateurId(Long id) {
         return articleRepository.findByUtilisateurId(id);
     }
     // Trouver un agriculteur par son nom et obtenir ses articles
 
+    */
+    /*
     public List<Article> getArticlesParUtilisateur(Long id) {
         utilisateur utilisateur = utilisateurRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
 
         return articleRepository.findByUtilisateurIdAndArchivedFalse(utilisateur.getId());
     }
+    */
+
+
+    /*
 
     public Article ajouterArticleparuser(Long id, Article article) {
         utilisateur utilisateur = utilisateurRepository.findById(id)
@@ -579,7 +602,7 @@ public void archiverArticle(Long id) {
 
         article.setReference(genererReferenceArticle(article.getNom()));
         article.calculerPointsFidelite();
-        article.setStatus(getStatusByQuantity(article.getQuantiteDisponible(), article.getQuantiteInitiale()));
+        article.setStatusAgri(getStatusByQuantity(article.getQuantiteDisponible(), article.getQuantiteInitiale()));
         article.setDateAjout(LocalDate.now());
         article.setUtilisateur(utilisateur);
         ajusterPrix(article);
@@ -587,4 +610,178 @@ public void archiverArticle(Long id) {
         return articleRepository.save(article);
     }
 
+*/
+
+
+
+    public List<Article> getArticlesParUtilisateur(Long id) {
+        // Trouver l'utilisateur par son ID
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
+
+        // Vérifier si l'utilisateur est un agriculteur
+        if (user.getRole() == null || user.getRole().getRoleName() != RoleName.FARMER) {
+            throw new RuntimeException("L'utilisateur n'est pas un agriculteur.");
+        }
+
+        // Récupérer uniquement les articles non archivés associés à l'utilisateur
+        return articleRepository.findByUserAndArchivedFalse(user);}
+    public Article ajouterArticlePourUtilisateur(Long idUtilisateur, Article article) {
+        // Vérifier si l'utilisateur existe
+        User user = userRepository.findById(idUtilisateur)
+                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
+
+        // Vérifier si c'est un agriculteur
+        if (user.getRole() == null || user.getRole().getRoleName() != RoleName.FARMER) {
+            throw new RuntimeException("L'utilisateur n'est pas un agriculteur.");
+        }
+
+        // Vérifier si un article avec le même nom existe déjà
+        if (articleRepository.existsByNom(article.getNom())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Un article avec ce nom existe déjà.");
+        }
+
+        // Vérifier que la quantité disponible est correcte
+        if (article.getQuantiteDisponible() == null || article.getQuantiteDisponible() < 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La quantité disponible ne peut pas être négative ou nulle.");
+        }
+
+        // Vérifier que la quantité vendue est correcte
+        if (article.getQuantiteVendue() == null || article.getQuantiteVendue() < 0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La quantité vendue ne peut pas être négative.");
+        }
+
+        // Générer la référence
+        article.setReference(genererReferenceArticle(article.getNom()));
+
+        // Calculer les points de fidélité
+        article.calculerPointsFidelite();
+
+        // Déterminer le statut
+        article.setStatusAgri(getStatusByQuantity(article.getQuantiteDisponible(), article.getQuantiteInitiale()));
+
+        // Définir la date d'ajout
+        article.setDateAjout(LocalDate.now());
+
+        // Associer l'article à l'utilisateur
+        article.setUser(user); // Ou setUtilisateur si tu préfères ce nom
+
+        // Ajuster le prix
+        ajusterPrix(article);
+
+        // Sauvegarder l'article
+        return articleRepository.save(article);
+    }
+
+    @Transactional
+    public Article genererPackSiNecessaireeee(Long idUtilisateur) {
+        System.out.println("🚀 Début de la génération du pack...");
+
+        // Vérifier si l'utilisateur existe
+        User user = userRepository.findById(idUtilisateur)
+                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
+
+        // Vérifier si l'utilisateur est un agriculteur
+        if (user.getRole() == null || user.getRole().getRoleName() != RoleName.FARMER) {
+            throw new RuntimeException("L'utilisateur n'est pas un agriculteur.");
+        }
+
+        // Récupérer les 3 articles les plus vendus
+        List<Article> articlesPlusVendus = articleRepository.findTop3ByOrderByQuantiteVendueDesc();
+
+        // Vérifier qu'il y a au moins 2 articles
+        if (articlesPlusVendus.size() < 2) {
+            System.out.println("⚠ Pas assez d'articles populaires pour générer un pack !");
+            throw new RuntimeException("Pas assez d'articles vendus pour générer un pack.");
+        }
+
+        // Générer un nom unique pour le pack en concaténant les noms des articles
+        StringBuilder nomPackBuilder = new StringBuilder("Pack-");
+        for (int i = 0; i < articlesPlusVendus.size(); i++) {
+            nomPackBuilder.append(articlesPlusVendus.get(i).getNom());
+            if (i < articlesPlusVendus.size() - 1) {
+                nomPackBuilder.append("-");
+            }
+        }
+        String nomPack = nomPackBuilder.toString();
+        System.out.println("🛒 Nom du pack généré: " + nomPack);
+
+        // Vérifier si un pack avec les mêmes articles existe déjà
+        List<Long> articlesPackIds = new ArrayList<>();
+        for (Article article : articlesPlusVendus) {
+            articlesPackIds.add(article.getIdArticle());
+        }
+        Collections.sort(articlesPackIds); // Trier les IDs pour la comparaison
+
+        Optional<Article> packExist = articleRepository.findByArticlesPackIn(articlesPackIds);
+        if (packExist.isPresent()) {
+            System.out.println("⚠ Un pack avec les mêmes articles existe déjà. Aucun pack n'a été créé.");
+            return packExist.get(); // Retourner le pack existant
+        }
+
+        // Générer une référence unique pour le pack
+        String referencePack = genererReferenceArticle(nomPack);
+        System.out.println("🔖 Référence du pack générée: " + referencePack);
+
+        // Calcul du prix total avec réduction de 10%
+        double prixTotal = 0.0;
+        for (Article article : articlesPlusVendus) {
+            prixTotal += article.getPrix();
+        }
+        prixTotal *= 0.9;
+        System.out.println("💰 Prix du pack après réduction: " + prixTotal);
+
+        // Déterminer la quantité du pack (minimum des stocks disponibles)
+        int quantitePack = Integer.MAX_VALUE;
+        for (Article article : articlesPlusVendus) {
+            if (article.getQuantiteDisponible() < quantitePack) {
+                quantitePack = article.getQuantiteDisponible();
+            }
+        }
+
+        // Vérifier si la quantité est 0
+        if (quantitePack == 0) {
+            System.out.println("❌ Aucune quantité disponible pour générer un pack !");
+            throw new RuntimeException("Impossible de créer un pack avec quantité 0.");
+        }
+        System.out.println("📦 Quantité disponible pour le pack: " + quantitePack);
+
+        // Déterminer le statut en fonction de la quantité disponible
+        StatusAgri statutPack = getStatusByQuantity(quantitePack, quantitePack);
+        System.out.println("🏷️ Statut du pack : " + statutPack);
+
+        // Création du pack
+        Article pack = new Article();
+        pack.setNom(nomPack);
+        pack.setReference(referencePack);
+        pack.setPrix(prixTotal);
+        pack.setQuantiteDisponible(quantitePack);
+        pack.setStatusAgri(statutPack);
+        pack.setPack(true);
+        pack.setQuantiteVendue(0);
+        pack.setArticlesPack(articlesPackIds);
+        pack.setDateAjout(LocalDate.now());
+
+        // Calculer les points de fidélité
+        pack.calculerPointsFidelite();
+
+        // Associer le pack à l'utilisateur (agriculteur)
+        pack.setUser(user); // Ou setUtilisateur si tu préfères ce nom
+
+        // Sauvegarder le pack
+        System.out.println("✅ Pack généré avec succès !");
+        return articleRepository.save(pack);
+    }
+
+    // Méthode pour récupérer les articles avec un stock faible ou épuisé
+    public List<Article> getArticlesLowStockAndOutOfStock() {
+        return articleRepository.findByStatusAgriIn(List.of(StatusAgri.LowStock, StatusAgri.OutOfStock));
+    }
+
+    // Cette méthode récupère une page d'articles avec pagination et tri
+    public Page<Article> getArticles(int page, int size) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        return articleRepository.findAll(pageRequest);
+    }
 }
+

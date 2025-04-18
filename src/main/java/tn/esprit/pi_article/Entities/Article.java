@@ -11,9 +11,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Entity
 @Getter
@@ -143,30 +141,34 @@ public class Article {
     Double prix;
 
 
-
-
-
     @Enumerated(EnumType.STRING)
-    Status status;
+StatusAgri statusAgri;
+
+    public StatusAgri getStatusAgri() {
+        return statusAgri;
+    }
+
+    public void setStatusAgri(StatusAgri statusAgri) {
+        this.statusAgri = statusAgri;
+    }
+
+
+
+
 
     TypeProduit typeProduit;
     private boolean archived = false; // Ajout du champ d'archivage
 
     @ManyToOne
-    private utilisateur utilisateur;
+    private User user;
 
-
-
-    public utilisateur getUtilisateur() {
-        return utilisateur;
+    public User getUser() {
+        return user;
     }
 
-    public void setUtilisateur(utilisateur utilisateur) {
-        this.utilisateur = utilisateur;
+    public void setUser(User user) {
+        this.user = user;
     }
-
-
-
 
     public long getIdArticle() {
         return idArticle;
@@ -186,13 +188,7 @@ public class Article {
         this.prix = prix;
     }
 
-    public Status getStatus() {
-        return status;
-    }
 
-    public void setStatus(Status status) {
-        this.status = status;
-    }
 
     public TypeProduit getTypeProduit() {
         return typeProduit;
@@ -262,4 +258,5 @@ public class Article {
     public void setImage(String image) {
         this.image = image;
     }
+
 }
