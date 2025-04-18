@@ -214,8 +214,7 @@ onViewAllAlerts(): void {
   this.router.navigate(['/farmer/articles/alerts']);
 }
 
-
-
-
-
+toggleDarkMode() {
+  document.body.classList.toggle('dark-mode');
+}
 }

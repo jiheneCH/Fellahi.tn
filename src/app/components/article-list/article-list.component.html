@@ -1,249 +1,201 @@
-<div class="article-management-container">
-  <div class="header-section">
-    <div class="header-left">
-      <button class="refresh-button" (click)="refreshArticles()" title="Actualiser les données">
-        <svg class="icon" viewBox="0 0 24 24">
-          <path d="M17.65 6.35A7.95 7.95 0 0012 4a8 8 0 100 16 8 8 0 007.94-7H18a6 6 0 11-6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
-        </svg>
-      </button>
-      <h2 class="page-title">🚜 Dashboard Agricole pour Admin </h2>
-    </div>
-    <div class="header-actions">
-      <!--
-      <button class="add-button" (click)="onAddNew()">
-        <svg class="icon" viewBox="0 0 24 24">
-          <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
-        </svg>
-        Ajouter un produit
-      </button>
-      <button class="generate-button" (click)="genererPack()">
-        <svg class="icon" viewBox="0 0 24 24">
-          <path d="M20 6h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-6 0h-4V4h4v2z"/>
-        </svg>
-        Créer un lot
-      </button> -->
-    </div>
-  </div>
+<div class="dashboard-container">
+  <!-- Background Video -->
+  <video autoplay muted loop class="background-video">
+    <source src="assets/fruitkha-1.0.0/assets/videos/vecteezy_assortment-of-fresh-vegetables-including-tomatoes-peppers_51295631.mp4" type="video/mp4">
+    Your browser does not support HTML5 video playback.
+  </video>
+  
+  <div class="dashboard-content">
+    <!-- Main Content -->
+    <div class="main-content no-left-space">
+      <div class="header-section">
+        <h1>Agricultural Dashboard for Admin</h1>
+        <div class="header-info">
+          <span class="results-count">{{ getFilteredNonPacks().length }} products found | {{ getFilteredPacks().length }} packs found</span>
+          <button class="refresh-btn" (click)="refreshArticles()">
+            <i class="material-icons">refresh</i>
+            Refresh
+          </button>
+        </div>
+      </div>
 
-  <!-- Section de filtres -->
-  <div class="filters-section">
-    <div class="filter-group">
-      <input 
-        type="text" 
-        [(ngModel)]="searchNom" 
-        (input)="onSearchChange()" 
-        placeholder="Rechercher un produit agricole..."
-        class="search-input" />
-    </div>
-    
-    <div class="filter-group">
-      <select 
-        [(ngModel)]="selectedStatus" 
-        (change)="onSearchChange()"
-        class="filter-select">
-        <option value="all">Tous les statuts</option>
-        <option value="InStock">InStock</option>
-        <option value="LowStock">LowStock</option>
-        <option value="OutOfStock">OutOfStock</option>
-      </select>
+      <!-- Filters Section -->
+      <div class="filters-section">
+        <div class="search-group">
+          <div class="input-with-icon">
+            <i class="material-icons">search</i>
+            <input type="text" [(ngModel)]="searchNom" (input)="onSearchChange()" 
+                   placeholder="Search products..." class="search-input">
+          </div>
+        </div>
+        
+        <div class="filter-group">
+          <select [(ngModel)]="selectedStatus" (change)="onSearchChange()" class="filter-select">
+            <option value="all">All Status</option>
+            <option value="InStock">In Stock</option>
+            <option value="LowStock">Low Stock</option>
+            <option value="OutOfStock">Out of Stock</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <select [(ngModel)]="selectedTypeProduit" (change)="onSearchChange()" class="filter-select">
+            <option value="all">All Categories</option>
+            <option value="fruits">Fruits</option>
+            <option value="legume">Vegetables</option>
+            <option value="cereale">Cereals</option>
+            <option value="produitLaitier">Dairy Products</option>
+            <option value="equipements">Equipment</option>
+            <option value="viande">Meat</option>
+            <option value="insec">Insecticides</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Products Table -->
+      <div class="table-section">
+        <h2><i class="material-icons">inventory</i> Agricultural Products</h2>
+        <div class="table-responsive">
+          <table class="agricultural-table">
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>Reference</th>
+                <th>Price (DT)</th>
+                <th>Status</th>
+                <th>Category</th>
+                <th>Date Added</th>
+                <th>Initial Stock</th>
+                <th>Available</th>
+                <th>Sold</th>
+                <th>Points</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let article of getFilteredNonPacks()">
+                <td class="article-name">{{ article.nom }}</td>
+                <td class="article-ref">{{ article.reference }}</td>
+                <td class="article-price">{{ article.prix | number:'1.2-2' }} DT</td>
+                <td>
+                  <span class="status-badge" [ngClass]="'status-' + article.statusAgri">
+                    {{ article.statusAgri === 'InStock' ? 'In Stock' : 
+                       article.statusAgri === 'LowStock' ? 'Low Stock' : 'Out of Stock' }}
+                  </span>
+                </td>
+                <td>
+                  <span class="type-badge" [ngClass]="'type-' + article.typeProduit">
+                    {{ article.typeProduit === 'fruits' ? 'Fruits' :
+                       article.typeProduit === 'legume' ? 'Vegetables' :
+                       article.typeProduit === 'cereale' ? 'Cereals' :
+                       article.typeProduit === 'produitLaitier' ? 'Dairy' :
+                       article.typeProduit === 'equipements' ? 'Equipment' :
+                       article.typeProduit === 'viande' ? 'Meat' : 'Insecticides' }}
+                  </span>
+                </td>
+                <td class="article-date">{{ article.dateAjout | date:'dd/MM/yyyy' }}</td>
+                <td class="article-quantity">{{ article.quantiteInitiale }}</td>
+                <td class="article-quantity">{{ article.quantiteDisponible }}</td>
+                <td class="article-quantity">{{ article.quantiteVendue }}</td>
+                <td class="article-points">{{ article.pointsFidelite }}</td>
+                <td class="article-actions">
+                  <button class="action-btn view-btn" (click)="onViewDetails(article.idArticle)">
+                    <i class="material-icons">visibility</i>
+                  </button>
+                  <button class="action-btn archive-btn" (click)="onArchive(article.idArticle)">
+                    <i class="material-icons">archive</i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Packs Table -->
+      <div class="table-section">
+        <h2><i class="material-icons">inventory_2</i> Agricultural Packs</h2>
+        <div class="table-responsive">
+          <table class="agricultural-table">
+            <thead>
+              <tr>
+                <th>Pack</th>
+                <th>Reference</th>
+                <th>Price (DT)</th>
+                <th>Status</th>
+                <th>Category</th>
+                <th>Date Added</th>
+                <th>Initial Stock</th>
+                <th>Available</th>
+                <th>Sold</th>
+                <th>Points</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let article of getFilteredPacks()">
+                <td class="article-name">{{ article.nom }}</td>
+                <td class="article-ref">{{ article.reference }}</td>
+                <td class="article-price">{{ article.prix | number:'1.2-2' }} DT</td>
+                <td>
+                  <span class="status-badge" [ngClass]="'status-' + article.statusAgri">
+                    {{ article.statusAgri === 'InStock' ? 'In Stock' : 
+                       article.statusAgri === 'LowStock' ? 'Low Stock' : 'Out of Stock' }}
+                  </span>
+                </td>
+                <td>
+                  <span class="type-badge" [ngClass]="'type-' + article.typeProduit">
+                    {{ article.typeProduit === 'fruits' ? 'Fruits' :
+                       article.typeProduit === 'legume' ? 'Vegetables' :
+                       article.typeProduit === 'cereale' ? 'Cereals' :
+                       article.typeProduit === 'produitLaitier' ? 'Dairy' :
+                       article.typeProduit === 'equipements' ? 'Equipment' :
+                       article.typeProduit === 'viande' ? 'Meat' : 'Insecticides' }}
+                  </span>
+                </td>
+                <td class="article-date">{{ article.dateAjout | date:'dd/MM/yyyy' }}</td>
+                <td class="article-quantity">{{ article.quantiteInitiale }}</td>
+                <td class="article-quantity">{{ article.quantiteDisponible }}</td>
+                <td class="article-quantity">{{ article.quantiteVendue }}</td>
+                <td class="article-points">{{ article.pointsFidelite }}</td>
+                <td class="article-actions">
+                  <button class="action-btn view-btn" (click)="onViewDetails(article.idArticle)">
+                    <i class="material-icons">visibility</i>
+                  </button>
+                  <button class="action-btn archive-btn" (click)="onArchive(article.idArticle)">
+                    <i class="material-icons">archive</i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
 
-    
-    <div class="filter-group">
-      <select 
-        [(ngModel)]="selectedTypeProduit" 
-        (change)="onSearchChange()"
-        class="filter-select">
-        <option value="all">Toutes les catégories</option>
-        <option value="legume">legume</option>
-        <option value="fruits">fruits</option>
-        <option value="cereale">cereale</option>
-        <option value="produitLaitier">produitLaitier</option>
-        <option value="viande">viande</option>
-        <option value="equipements">equipements</option>
-        <option value="insec">insec</option>
-
-      </select>
-    </div>
-    
-    
-  </div>
-
-  <!-- Section Packs (Lots) -->
-  <div class="packs-section" *ngIf="packs.length > 0">
-    <h3 class="section-title">Lots agricoles</h3>
-    <div class="table-container">
-      <table class="article-table">
-        <thead>
-          <tr>
-            <th>Nom du produit</th>
-            <th>Référence</th>
-            <th>Prix (DT)</th>
-            <th>Statut</th>
-            <th>Catégorie</th> 
-            <th>Date d'ajout</th>
-            <th>Stock initial</th>
-            <th>Disponible</th>
-            <th>Vendu</th>
-            <th>Points</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let article of getFilteredPacks()">
-            <td class="article-name">{{ article.nom }}</td>
-            <td class="article-ref">{{ article.reference }}</td>
-            <td class="article-price">{{ article.prix | number:'1.2-2' }} DT</td>
-            <td>
-              <span class="status-badge" [ngClass]="getStatusClass(article.statusAgri)">
-                {{ article.statusAgri }}
-              </span>
-            </td>
-            <td>
-              <span class="type-badge" [ngClass]="'type-' + article.typeProduit">
-                {{ (article.typeProduit) }}
-              </span>
-            </td>
-            <td class="article-date">{{ article.dateAjout | date:'dd/MM/yyyy' }}</td>
-            <td class="article-quantity">{{ article.quantiteInitiale }}</td>
-            <td class="article-quantity">{{ article.quantiteDisponible }}</td>
-            <td class="article-quantity">{{ article.quantiteVendue }}</td>
-            <td class="article-points">{{ article.pointsFidelite }}</td>
-            <td class="article-actions">
-              <!--
-              <button class="action-btn edit-btn" (click)="onEdit(article.idArticle)">
-                <svg viewBox="0 0 24 24">
-                  <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
-                </svg>
-                Modifier
-              </button>-->
-              <button class="action-btn archive-btn" (click)="onArchive(article.idArticle)">
-                <svg viewBox="0 0 24 24">
-                  <path d="M20.54 5.23l-1.39-1.68C18.88 3.21 18.47 3 18 3H6c-.47 0-.88.21-1.16.55L3.46 5.23C3.17 5.57 3 6.02 3 6.5V19c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6.5c0-.48-.17-.93-.46-1.27zM12 17.5L6.5 12H10v-2h4v2h3.5L12 17.5zM5.12 5l.81-1h12l.94 1H5.12z"/>
-                </svg>
-                Archiver
-              </button>
-              <button class="action-btn details-btn" (click)="onViewDetails(article.idArticle)">
-                <svg viewBox="0 0 24 24">
-                  <path d="M21 3H3c-1.1 0-1.99.9-1.99 2L1 19c0 1.1.89 2 1.99 2h18c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM19 17H5V7h14v10z"/>
-                </svg>
-                Détails
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    <div *ngIf="getFilteredPacks().length === 0" class="no-results">
-      Aucun lot agricole ne correspond aux critères de recherche
-    </div>
-  </div>
-
-  <!-- Section Articles (Produits individuels) -->
-  <div class="non-packs-section" *ngIf="nonPacks.length > 0">
-    <h3 class="section-title">Produits agricoles</h3>
-    <div class="table-container">
-      <table class="article-table">
-        <thead>
-          <tr>
-            <th>Nom du produit</th>
-            <th>Référence</th>
-            <th>Prix (DT)</th>
-            <th>Statut</th>
-            <th>Catégorie</th> 
-            <th>Date d'ajout</th>
-            <th>Stock initial</th>
-            <th>Disponible</th>
-            <th>Vendu</th>
-            <th>Points</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let article of getFilteredNonPacks()">
-            <td class="article-name">{{ article.nom }}</td>
-            <td class="article-ref">{{ article.reference }}</td>
-            <td class="article-price">{{ article.prix | number:'1.2-2' }} DT</td>
-            <td>
-              <span class="status-badge" [ngClass]="getStatusClass(article.statusAgri)">
-                {{ article.statusAgri }}
-              </span>
-            </td>
-            
-            <td>
-              <span class="type-badge" [ngClass]="'type-' + article.typeProduit">
-                {{ (article.typeProduit) }}
-              </span>
-            </td>
-            <td class="article-date">{{ article.dateAjout | date:'dd/MM/yyyy' }}</td>
-            <td class="article-quantity">{{ article.quantiteInitiale }}</td>
-            <td class="article-quantity">{{ article.quantiteDisponible }}</td>
-            <td class="article-quantity">{{ article.quantiteVendue }}</td>
-            <td class="article-points">{{ article.pointsFidelite }}</td>
-            <td class="article-actions">
-              <!--
-              <button class="action-btn edit-btn" (click)="onEdit(article.idArticle)">
-                <svg viewBox="0 0 24 24">
-                  <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
-                </svg>
-                Modifier
-              </button>  -->
-              <button class="action-btn archive-btn" (click)="onArchive(article.idArticle)">
-                <svg viewBox="0 0 24 24">
-                  <path d="M20.54 5.23l-1.39-1.68C18.88 3.21 18.47 3 18 3H6c-.47 0-.88.21-1.16.55L3.46 5.23C3.17 5.57 3 6.02 3 6.5V19c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6.5c0-.48-.17-.93-.46-1.27zM12 17.5L6.5 12H10v-2h4v2h3.5L12 17.5zM5.12 5l.81-1h12l.94 1H5.12z"/>
-                </svg>
-                Archiver
-              </button>
-            
-              <button class="action-btn details-btn" (click)="onViewDetails(article.idArticle)">
-                <svg viewBox="0 0 24 24">
-                  <path d="M21 3H3c-1.1 0-1.99.9-1.99 2L1 19c0 1.1.89 2 1.99 2h18c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM19 17H5V7h14v10z"/>
-                </svg>
-                Détails
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    <div *ngIf="getFilteredNonPacks().length === 0" class="no-results">
-      Aucun produit ne correspond aux critères de recherche
-    </div>
-  </div>
- <!-- ✅ Sidebar d’alertes sur toute la hauteur -->
-<div class="alert-sidebar-full">
-  <h4>🔔 Alertes Stock Faible</h4>
-
-  <div 
-    class="alert-scroll-container"
-    (mouseenter)="pauseScroll()"
-    (mouseleave)="resumeScroll()"
-  >
-    <div 
-      class="alert-list" 
-      [ngStyle]="{ 'animation-play-state': scrollPaused ? 'paused' : 'running' }"
-    >
-      <div *ngFor="let article of articlesStockFaible" class="alert-item">
-        <strong>{{ article.nom }}</strong><br />
-        Stock : {{ article.quantiteDisponible }}<br />
-        <span 
-          class="status-badge" 
-          [ngClass]="{
-            'low-stock': article.statusAgri === 'LowStock',
-            'out-of-stock': article.statusAgri === 'OutOfStock'
-          }"
-        >
-          {{ article.statusAgri === 'LowStock' ? 'Stock Faible' : 'Rupture de Stock' }}
-        </span>
+    <!-- Alerts Sidebar -->
+    <div class="alerts-sidebar">
+      <div class="alerts-header">
+        <h2><i class="material-icons">notifications</i> Stock Alerts</h2>
+      </div>
+      <div class="alerts-scroll-container"
+           (mouseenter)="pauseScroll()"
+           (mouseleave)="resumeScroll()">
+        <div class="alerts-list" 
+             [ngStyle]="{ 'animation-play-state': scrollPaused ? 'paused' : 'running' }">
+          <div *ngFor="let article of articlesStockFaible" class="alert-item">
+            <div class="alert-content">
+              <h3>{{ article.nom }}</h3>
+              <div class="alert-details">
+                <span class="stock-value">{{ article.quantiteDisponible }} units</span>
+                <span class="status-badge" [ngClass]="'status-' + article.statusAgri">
+                  {{ article.statusAgri === 'LowStock' ? 'LOW STOCK' : 'OUT OF STOCK' }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
-
 </div>
-
-
-
-
-
-</div>
-
