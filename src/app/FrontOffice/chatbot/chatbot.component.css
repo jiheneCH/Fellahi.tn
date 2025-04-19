@@ -1,0 +1,238 @@
+/* Chatbot Container */
+.agri-chatbot-container {
+    max-width: 600px;
+    margin: 2rem auto;
+    background: #f8faf7;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    overflow: hidden;
+    border: 1px solid #e0e8d9;
+    font-family: 'Open Sans', sans-serif;
+  }
+  
+  /* Header */
+  .chatbot-header {
+    background: linear-gradient(135deg, #588157 0%, #3a5a40 100%);
+    color: white;
+    padding: 1.5rem;
+    text-align: center;
+  }
+  
+  .chatbot-icon {
+    position: relative;
+    margin-bottom: 1rem;
+  }
+  
+  .chatbot-icon .fa-robot {
+    font-size: 2.5rem;
+    color: white;
+  }
+  
+  .farm-icon {
+    position: absolute;
+    bottom: -5px;
+    right: calc(50% - 50px);
+    display: flex;
+    gap: 8px;
+  }
+  
+  .farm-icon i {
+    background: white;
+    padding: 5px;
+    border-radius: 50%;
+    color: #588157;
+    font-size: 0.8rem;
+  }
+  
+  .chatbot-header h2 {
+    margin: 0.5rem 0;
+    font-weight: 600;
+  }
+  
+  .subtitle {
+    margin: 0;
+    opacity: 0.9;
+    font-size: 0.9rem;
+  }
+  
+  /* Body */
+  .chatbot-body {
+    padding: 1.5rem;
+  }
+  
+  /* Search Section */
+  .search-section {
+    margin-bottom: 1.5rem;
+  }
+  
+  .input-group {
+    position: relative;
+    margin-bottom: 1rem;
+  }
+  
+  .input-group i {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #a3b18a;
+  }
+  
+  .recipe-input {
+    width: 100%;
+    padding: 12px 15px 12px 45px;
+    border: 1px solid #d4e0cc;
+    border-radius: 8px;
+    font-size: 1rem;
+    background: #f1f7ed;
+    transition: all 0.3s;
+  }
+  
+  .recipe-input:focus {
+    outline: none;
+    border-color: #a3b18a;
+    box-shadow: 0 0 0 3px rgba(163, 177, 138, 0.2);
+  }
+  
+  .suggest-btn {
+    width: 100%;
+    padding: 12px;
+    background-color: #588157;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  
+  .suggest-btn:hover {
+    background-color: #3a5a40;
+  }
+  
+  /* Suggestions Box */
+  .suggestions-box {
+    background: white;
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin-top: 1.5rem;
+    border: 1px solid #e0e8d9;
+  }
+  
+  .suggestion-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 1rem;
+    color: #3a5a40;
+  }
+  
+  .suggestion-header i {
+    font-size: 1.2rem;
+  }
+  
+  .suggestion-header h3 {
+    margin: 0;
+    font-size: 1.2rem;
+  }
+  
+  .ingredients-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 10px;
+    margin: 1rem 0;
+  }
+  
+  .ingredient-card {
+    background: #f1f7ed;
+    padding: 10px 15px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+    color: #3a5a40;
+  }
+  
+  .ingredient-card i {
+    color: #588157;
+  }
+  
+  .farm-tip {
+    background: #e8f5e9;
+    padding: 10px 15px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    color: #2e7d32;
+  }
+  
+  /* No Results */
+  .no-results {
+    text-align: center;
+    padding: 1.5rem;
+  }
+  
+  .error-message {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    color: #d32f2f;
+    margin-bottom: 1rem;
+  }
+  
+  .error-message i {
+    font-size: 1.2rem;
+  }
+  
+  .help-text {
+    color: #6c757d;
+    font-size: 0.9rem;
+    margin: 0;
+  }
+  
+  /* Seasonal Promo */
+  .seasonal-promo {
+    background: #f1f7ed;
+    padding: 1rem 1.5rem;
+    border-top: 1px solid #e0e8d9;
+  }
+  
+  .seasonal-promo h4 {
+    margin: 0 0 0.5rem 0;
+    color: #3a5a40;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.95rem;
+  }
+  
+  .seasonal-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  
+  .seasonal-items span {
+    background: white;
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    border: 1px solid #d4e0cc;
+    color: #3a5a40;
+  }
+  
+  /* Responsive */
+  @media (max-width: 600px) {
+    .ingredients-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }

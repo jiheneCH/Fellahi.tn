@@ -56,6 +56,7 @@ import { DetailsComponent } from './components/details/details.component';
 import { OnlineComponent } from './FrontOffice/online/online.component';
 import { CommandeClientComponent } from './FrontOffice/commande-client/commande-client.component';
 import { CommandeStatistiquesComponent } from './components/commande-statistiques/commande-statistiques.component';
+import { ChatbotComponent } from './FrontOffice/chatbot/chatbot.component';
 
 export const routes: Routes = [
     {
@@ -93,6 +94,8 @@ export const routes: Routes = [
 
                         { path: 'orders',
                             component: CommandeClientComponent }, 
+     { path: 'chatbot',
+             component: ChatbotComponent }, 
            
          
         ]
