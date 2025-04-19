@@ -15,6 +15,16 @@
     <p class="page-subtitle">Des produits frais, de saison, cultivés avec passion par nos agriculteurs locaux</p>
     <div class="deco-leaf">🍃</div>
   </div>
+<!-- Recherche client -->
+<div class="client-search-section reveal">
+  <label for="clientName">Nom du client :</label>
+  <input type="text" id="clientName" [(ngModel)]="clientName" placeholder="Entrez votre nom" class="client-name-input">
+  <button (click)="fetchClientId()" class="fetch-id-btn">Récupérer mon ID</button>
+
+  <p *ngIf="clientId !== null" class="client-id-display">
+    ✅ ID Client : {{ clientId }}
+  </p>
+</div>
 
   <!-- Filtres -->
   <div class="filter-controls reveal">

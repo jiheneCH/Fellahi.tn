@@ -180,4 +180,5 @@ export class ShopComponent implements OnInit {
   toggleFavorite(idArticle: number): void {
     this.favoriteStatus[idArticle] = !this.favoriteStatus[idArticle];
   }
+  
 }

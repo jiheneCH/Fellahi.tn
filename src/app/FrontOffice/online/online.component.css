@@ -1,0 +1,91 @@
+/* General Styles */
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css');
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Playfair+Display:wght@700&display=swap');
+
+.payment-container {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: #f8faf7;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+  border: 1px solid #e0e8d9;
+  font-family: 'Open Sans', sans-serif;
+}
+
+.payment-title {
+  text-align: center;
+  color: #3a5a40;
+  margin-bottom: 1.5rem;
+  font-family: 'Playfair Display', serif;
+}
+
+.payment-title i {
+  margin-right: 12px;
+  color: #588157;
+}
+
+/* Form Styles */
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #3a5a40;
+}
+
+.form-group label i {
+  width: 20px;
+  margin-right: 8px;
+  color: #588157;
+}
+
+.form-control {
+  background-color: #f1f7ed;
+  border: 1px solid #d4e0cc;
+  padding: 0.75rem;
+  border-radius: 8px;
+  width: 100%;
+  font-size: 1rem;
+  transition: all 0.3s;
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: #a3b18a;
+  box-shadow: 0 0 0 3px rgba(163, 177, 138, 0.2);
+}
+
+/* Button Styles */
+.btn-pay {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: #588157;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  margin-top: 0.5rem;
+}
+
+.btn-pay:hover {
+  background-color: #3a5a40;
+}
+
+.btn-pay i {
+  margin-right: 8px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .payment-container {
+    padding: 1.5rem;
+    margin: 1rem;
+  }
+}
