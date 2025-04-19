@@ -11,7 +11,9 @@ import jakarta.validation.constraints.Digits;
 
 
 import java.math.BigDecimal;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 
@@ -21,11 +23,17 @@ import java.util.List;
 @Getter
 @Entity
 
-@NoArgsConstructor
+
 @AllArgsConstructor
 @ToString
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Event {
+
+    public Event() {
+        // Initialisez les valeurs par défaut si nécessaire
+        this.recurrence = Recurrence.NONE;  // Par exemple
+    }
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -95,6 +103,50 @@ public class Event {
 
     @Lob
     private byte[] qrCodeImage;
+
+
+    @Enumerated(EnumType.STRING)
+    private Recurrence recurrence = Recurrence.NONE;
+
+    private LocalDateTime recurrenceEndDate;
+
+
+    @ElementCollection(targetClass = DayOfWeek.class)
+    @Enumerated(EnumType.STRING)
+    @CollectionTable(name = "event_recurrence_days", joinColumns = @JoinColumn(name = "event_id"))
+    @Column(name = "day_of_week")
+    private List<DayOfWeek> recurrenceDaysOfWeek;
+
+    public Recurrence getRecurrence() {
+        return recurrence;
+    }
+
+    public void setRecurrence(Recurrence recurrence) {
+        if (recurrence == Recurrence.NONE) {
+            this.recurrenceEndDate = null;
+            this.recurrenceDaysOfWeek = new ArrayList<>();
+        }
+        this.recurrence = recurrence;
+    }
+
+
+    public LocalDateTime getRecurrenceEndDate() {
+        return recurrenceEndDate;
+    }
+
+    public void setRecurrenceEndDate(LocalDateTime recurrenceEndDate) {
+        this.recurrenceEndDate = recurrenceEndDate;
+    }
+
+    public List<DayOfWeek> getRecurrenceDaysOfWeek() {
+        return recurrenceDaysOfWeek;
+    }
+
+    // Getters and Setters
+    public void setRecurrenceDaysOfWeek(List<DayOfWeek> days) {
+        this.recurrenceDaysOfWeek = days;
+    }
+
 
     public byte[] getQrCodeImage() {
         return qrCodeImage;

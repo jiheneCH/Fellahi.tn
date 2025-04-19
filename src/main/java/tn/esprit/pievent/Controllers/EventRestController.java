@@ -20,6 +20,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import tn.esprit.pievent.Entities.Event;
+import tn.esprit.pievent.Entities.Recurrence;
 import tn.esprit.pievent.Entities.Status;
 import tn.esprit.pievent.Entities.TypeEvent;
 import tn.esprit.pievent.Repositories.EventRepository;
@@ -31,12 +32,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 @RestController
@@ -122,7 +122,15 @@ public class EventRestController {
             @RequestParam("status") String status,
             @RequestParam("nombrePlaces") int nombrePlaces,
             @RequestParam("prix") BigDecimal prix,
-            @RequestParam("image") MultipartFile image) {
+            @RequestParam("image") MultipartFile image,
+            @RequestParam(required = false) Recurrence recurrence,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate recurrenceEndDate,
+            @RequestParam(required = false) String recurrenceDaysOfWeek) {
+
+        if (recurrence == null) {
+            recurrence = Recurrence.NONE;
+        }
+
         try {
             // Vérification de la validité de la date
             if (dateEvent.isBefore(LocalDate.now())) {
@@ -166,7 +174,23 @@ public class EventRestController {
             event.setStatus(Status.valueOf(status));
             event.setNombrePlaces((long) nombrePlaces);
             event.setPrix(prix);
-            event.setImage(originalFilename); // Stocker seulement le nom de l'image
+            event.setImage(originalFilename);
+            event.setRecurrence(recurrence);
+
+            // Gestion récurrence
+            if (recurrence != Recurrence.NONE) {
+                if (recurrenceEndDate != null) {
+                    event.setRecurrenceEndDate(recurrenceEndDate.atStartOfDay());
+                }
+
+                if (recurrence == Recurrence.CUSTOM && recurrenceDaysOfWeek != null) {
+                    List<DayOfWeek> days = Arrays.stream(recurrenceDaysOfWeek.split(","))
+                            .map(DayOfWeek::valueOf)
+                            .collect(Collectors.toList());
+                    event.setRecurrenceDaysOfWeek(days);
+                }
+            }
+// Stocker seulement le nom de l'image
 
             // Créer le PDF avant d'insérer l'événement dans la base de données
             String pdfFileName = iEventServices.createEventWithPdf(event); // Générer le PDF
