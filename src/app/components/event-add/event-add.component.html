@@ -1,155 +1,256 @@
-<div class="form-container">
-  <h2 class="form-title">🎉 Add event</h2>
-
-  <form [formGroup]="eventForm" (ngSubmit)="onSubmit()" class="modern-form">
-    <div *ngIf="message" class="message" [class.error]="isError">
-      {{ message }}
-    </div>
-    
-    <!-- Line 1 - Title and status -->
-    <div class="form-row">
-      <!-- Title -->
-      <div class="form-group floating">
-        <input type="text" formControlName="title" id="title" placeholder=" " class="form-input">
-        <label for="title" class="form-label">Event Title</label>
-        <div class="underline"></div>
-        <div class="alert alert-danger" *ngIf="eventForm.get('title')?.touched && eventForm.get('title')?.errors">
-          <p *ngIf="eventForm.get('title')?.getError('required')">Title is required</p>
-          <p *ngIf="eventForm.get('title')?.getError('minlength')">Minimum 3 characters</p>
-          <p *ngIf="eventForm.get('title')?.getError('maxlength')">Maximum 100 characters</p>
-          <p *ngIf="eventForm.get('title')?.getError('pattern')">Title cannot start or end with spaces</p>
+<div class="max-w-4xl mx-auto p-6">
+  <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-xl overflow-hidden border border-gray-100 dark:border-gray-800">
+    <!-- Form Header -->
+    <div class="bg-gradient-to-r from-purple-600 to-indigo-600 p-6 text-white">
+      <div class="flex items-center space-x-3">
+        <div class="bg-white/20 p-2 rounded-full">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
         </div>
+        <h2 class="text-2xl font-bold">🎉 Add Event</h2>
       </div>
-
-      <!-- Status -->
-      <div class="form-group floating">
-        <label for="status" class="form-label">Status</label>
-        <select class="form-control" id="status" formControlName="status">
-          <option value="">-- Select --</option>
-          <option value="complete">Complete</option>
-          <option value="disponible">Available</option>
-          <option value="archive">Archive</option>
-        </select>
-        <div class="alert alert-danger" *ngIf="eventForm.get('status')?.touched && eventForm.get('status')?.errors">
-          <p *ngIf="eventForm.get('status')?.getError('required')">Status is required</p>
-        </div>
-      </div>
+      <p class="text-purple-100 mt-1">Create your perfect event experience</p>
     </div>
 
-    <!-- Line 2 - Date and Time -->
-    <div class="form-row">
-      <!-- Date -->
-      <div class="form-group floating">
-        <input type="date" formControlName="dateEvent" id="dateEvent" placeholder=" " class="form-input" [min]="minDate">
-        <label for="dateEvent" class="form-label">Event Date</label>
-        <div class="underline"></div>
-        <div class="alert alert-danger" *ngIf="eventForm.get('dateEvent')?.touched && eventForm.get('dateEvent')?.errors">
-          <p *ngIf="eventForm.get('dateEvent')?.getError('required')">Date is required</p>
-          <p *ngIf="eventForm.get('dateEvent')?.getError('pastDate')">Date must be today or in the future</p>
+    <form [formGroup]="eventForm" (ngSubmit)="onSubmit()" class="p-6 space-y-6">
+      <!-- Status Message -->
+      <div *ngIf="message" class="p-4 rounded-lg transition-all duration-300" 
+           [class.bg-green-100]="!isError" 
+           [class.text-green-800]="!isError"
+           [class.bg-red-100]="isError"
+           [class.text-red-800]="isError">
+        {{ message }}
+      </div>
+      
+      <!-- Row 1 - Title and Status -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Title -->
+        <div class="form-group-float">
+          <input type="text" formControlName="title" id="title" placeholder=" " 
+                 class="form-input-float peer"
+                 [class.border-red-500]="eventForm.get('title')?.invalid && eventForm.get('title')?.touched">
+          <label for="title" class="form-label-float">Event Title</label>
+          <div class="h-0.5 bg-gray-200 dark:bg-gray-700 mt-1 peer-focus:bg-gradient-to-r peer-focus:from-purple-500 peer-focus:to-indigo-500 transition-all duration-300"></div>
+          <div class="mt-1 text-xs text-red-600" *ngIf="eventForm.get('title')?.touched && eventForm.get('title')?.invalid">
+            <span *ngIf="eventForm.get('title')?.errors?.['required']">Title is required</span>
+            <span *ngIf="eventForm.get('title')?.errors?.['minlength']">Minimum 3 characters</span>
+            <span *ngIf="eventForm.get('title')?.errors?.['maxlength']">Maximum 100 characters</span>
+            <span *ngIf="eventForm.get('title')?.errors?.['pattern']">Cannot start/end with spaces</span>
+          </div>
+        </div>
+
+        <!-- Status -->
+        <div class="form-group-float">
+          <select formControlName="status" id="status" 
+                  class="form-input-float peer"
+                  [class.border-red-500]="eventForm.get('status')?.invalid && eventForm.get('status')?.touched">
+            <option value="">-- Select Status --</option>
+            <option value="complete">Complete</option>
+            <option value="disponible">Available</option>
+            <option value="archive">Archive</option>
+          </select>
+          <label for="status" class="form-label-float">Status</label>
+          <div class="h-0.5 bg-gray-200 dark:bg-gray-700 mt-1 peer-focus:bg-gradient-to-r peer-focus:from-purple-500 peer-focus:to-indigo-500 transition-all duration-300"></div>
+          <div class="mt-1 text-xs text-red-600" *ngIf="eventForm.get('status')?.touched && eventForm.get('status')?.invalid">
+            <span *ngIf="eventForm.get('status')?.errors?.['required']">Status is required</span>
+          </div>
         </div>
       </div>
 
-      <!-- Time -->
-      <div class="form-group floating">
-        <input type="time" formControlName="heureEvent" id="heureEvent" placeholder=" " class="form-input">
-        <label for="heureEvent" class="form-label">Event Time</label>
-        <div class="underline"></div>
-        <div class="alert alert-danger" *ngIf="eventForm.get('heureEvent')?.touched && eventForm.get('heureEvent')?.errors">
-          <p *ngIf="eventForm.get('heureEvent')?.getError('required')">Time is required</p>
+      <!-- Row 2 - Date and Time -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Date -->
+        <div class="form-group-float">
+          <input type="date" formControlName="dateEvent" id="dateEvent" placeholder=" " 
+                 class="form-input-float peer" [min]="minDate"
+                 [class.border-red-500]="eventForm.get('dateEvent')?.invalid && eventForm.get('dateEvent')?.touched">
+          <label for="dateEvent" class="form-label-float">Event Date</label>
+          <div class="h-0.5 bg-gray-200 dark:bg-gray-700 mt-1 peer-focus:bg-gradient-to-r peer-focus:from-purple-500 peer-focus:to-indigo-500 transition-all duration-300"></div>
+          <div class="mt-1 text-xs text-red-600" *ngIf="eventForm.get('dateEvent')?.touched && eventForm.get('dateEvent')?.invalid">
+            <span *ngIf="eventForm.get('dateEvent')?.errors?.['required']">Date is required</span>
+            <span *ngIf="eventForm.get('dateEvent')?.errors?.['pastDate']">Must be today or future</span>
+          </div>
         </div>
-      </div>
-    </div>
 
-    <!-- Line 3 - Price and Number of seats -->
-    <div class="form-row">
-      <!-- Price -->
-      <div class="form-group floating">
-        <input type="number" formControlName="prix" id="prix" placeholder=" " class="form-input" step="0.01">
-        <label for="prix" class="form-label">Price</label>
-        <div class="underline"></div>
-        <div class="alert alert-danger" *ngIf="eventForm.get('prix')?.touched && eventForm.get('prix')?.errors">
-          <p *ngIf="eventForm.get('prix')?.getError('required')">Price is required</p>
-          <p *ngIf="eventForm.get('prix')?.getError('min')">Price must be greater than 0</p>
-          <p *ngIf="eventForm.get('prix')?.getError('pattern')">Price should have up to 2 decimal places</p>
-        </div>
-      </div>
-
-      <!-- Number of seats -->
-      <div class="form-group floating">
-        <input type="number" formControlName="nombrePlaces" id="nombrePlaces" placeholder=" " class="form-input">
-        <label for="nombrePlaces" class="form-label">Number of Seats</label>
-        <div class="underline"></div>
-        <div class="alert alert-danger" *ngIf="eventForm.get('nombrePlaces')?.touched && eventForm.get('nombrePlaces')?.errors">
-          <p *ngIf="eventForm.get('nombrePlaces')?.getError('required')">Number of seats is required</p>
-          <p *ngIf="eventForm.get('nombrePlaces')?.getError('max')">Cannot exceed 10,000</p>
-          <p *ngIf="eventForm.get('nombrePlaces')?.getError('min')">Must be at least 0</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Line 4 - Location and Event Type -->
-    <div class="form-row">
-      <!-- Location -->
-      <div class="form-group floating">
-        <input type="text" formControlName="location" id="location" placeholder=" " class="form-input">
-        <label for="location" class="form-label">Location</label>
-        <div class="underline"></div>
-        <div class="alert alert-danger" *ngIf="eventForm.get('location')?.touched && eventForm.get('location')?.errors">
-          <p *ngIf="eventForm.get('location')?.getError('required')">Location is required</p>
-          <p *ngIf="eventForm.get('location')?.getError('pattern')">Must be alphanumeric</p>
-          <p *ngIf="eventForm.get('location')?.getError('minlength')">Minimum 3 characters</p>
-          <p *ngIf="eventForm.get('location')?.getError('maxlength')">Maximum 255 characters</p>
+        <!-- Time -->
+        <div class="form-group-float">
+          <input type="time" formControlName="heureEvent" id="heureEvent" placeholder=" " 
+                 class="form-input-float peer"
+                 [class.border-red-500]="eventForm.get('heureEvent')?.invalid && eventForm.get('heureEvent')?.touched">
+          <label for="heureEvent" class="form-label-float">Event Time</label>
+          <div class="h-0.5 bg-gray-200 dark:bg-gray-700 mt-1 peer-focus:bg-gradient-to-r peer-focus:from-purple-500 peer-focus:to-indigo-500 transition-all duration-300"></div>
+          <div class="mt-1 text-xs text-red-600" *ngIf="eventForm.get('heureEvent')?.touched && eventForm.get('heureEvent')?.invalid">
+            <span *ngIf="eventForm.get('heureEvent')?.errors?.['required']">Time is required</span>
+          </div>
         </div>
       </div>
 
-      <!-- Event Type -->
-      <div class="form-group floating">
-        <label for="typeEvent" class="form-label">Event Type</label>
-        <select class="form-control" id="typeEvent" formControlName="typeEvent">
-          <option value="">-- Select --</option>
-          <option value="WORKSHOP">WORKSHOP</option>
-          <option value="SEMINAIRE">SEMINAR</option>
-          <option value="CONFERENCE">CONFERENCE</option>
-        </select>
-        <div class="alert alert-danger" *ngIf="eventForm.get('typeEvent')?.touched && eventForm.get('typeEvent')?.errors">
-          <p *ngIf="eventForm.get('typeEvent')?.getError('required')">Event type is required</p>
+      <!-- Row 3 - Price and Seats -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Price -->
+        <div class="form-group-float">
+          <input type="number" formControlName="prix" id="prix" placeholder=" " step="0.01"
+                 class="form-input-float peer"
+                 [class.border-red-500]="eventForm.get('prix')?.invalid && eventForm.get('prix')?.touched">
+          <label for="prix" class="form-label-float">Price (DT)</label>
+          <div class="h-0.5 bg-gray-200 dark:bg-gray-700 mt-1 peer-focus:bg-gradient-to-r peer-focus:from-purple-500 peer-focus:to-indigo-500 transition-all duration-300"></div>
+          <div class="mt-1 text-xs text-red-600" *ngIf="eventForm.get('prix')?.touched && eventForm.get('prix')?.invalid">
+            <span *ngIf="eventForm.get('prix')?.errors?.['required']">Price is required</span>
+            <span *ngIf="eventForm.get('prix')?.errors?.['min']">Must be > 0</span>
+            <span *ngIf="eventForm.get('prix')?.errors?.['pattern']">Max 2 decimals</span>
+          </div>
+        </div>
+
+        <!-- Number of seats -->
+        <div class="form-group-float">
+          <input type="number" formControlName="nombrePlaces" id="nombrePlaces" placeholder=" "
+                 class="form-input-float peer"
+                 [class.border-red-500]="eventForm.get('nombrePlaces')?.invalid && eventForm.get('nombrePlaces')?.touched">
+          <label for="nombrePlaces" class="form-label-float">Number of Seats</label>
+          <div class="h-0.5 bg-gray-200 dark:bg-gray-700 mt-1 peer-focus:bg-gradient-to-r peer-focus:from-purple-500 peer-focus:to-indigo-500 transition-all duration-300"></div>
+          <div class="mt-1 text-xs text-red-600" *ngIf="eventForm.get('nombrePlaces')?.touched && eventForm.get('nombrePlaces')?.invalid">
+            <span *ngIf="eventForm.get('nombrePlaces')?.errors?.['required']">Seats required</span>
+            <span *ngIf="eventForm.get('nombrePlaces')?.errors?.['max']">Max 10,000</span>
+            <span *ngIf="eventForm.get('nombrePlaces')?.errors?.['min']">Must be ≥ 0</span>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- Line 5 - Description (full width) -->
-    <div class="form-row">
-      <div class="form-group floating description-group">
-        <textarea formControlName="description" id="description" placeholder=" " class="form-input" rows="5"></textarea>
-        <label for="description" class="form-label">Description</label>
-        <div class="underline"></div>
-        <div class="alert alert-danger" *ngIf="eventForm.get('description')?.touched && eventForm.get('description')?.errors">
-          <p *ngIf="eventForm.get('description')?.getError('required')">Description is required</p>
-          <p *ngIf="eventForm.get('description')?.getError('minlength')">Minimum 3 characters</p>
-          <p *ngIf="eventForm.get('description')?.getError('maxlength')">Maximum 100 characters</p>
+      <!-- Row 4 - Location and Type -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Location -->
+        <div class="form-group-float">
+          <input type="text" formControlName="location" id="location" placeholder=" "
+                 class="form-input-float peer"
+                 [class.border-red-500]="eventForm.get('location')?.invalid && eventForm.get('location')?.touched">
+          <label for="location" class="form-label-float">Location</label>
+          <div class="h-0.5 bg-gray-200 dark:bg-gray-700 mt-1 peer-focus:bg-gradient-to-r peer-focus:from-purple-500 peer-focus:to-indigo-500 transition-all duration-300"></div>
+          <div class="mt-1 text-xs text-red-600" *ngIf="eventForm.get('location')?.touched && eventForm.get('location')?.invalid">
+            <span *ngIf="eventForm.get('location')?.errors?.['required']">Location required</span>
+            <span *ngIf="eventForm.get('location')?.errors?.['pattern']">Alphanumeric only</span>
+            <span *ngIf="eventForm.get('location')?.errors?.['minlength']">Min 3 chars</span>
+            <span *ngIf="eventForm.get('location')?.errors?.['maxlength']">Max 255 chars</span>
+          </div>
+        </div>
+
+        <!-- Event Type -->
+        <div class="form-group-float">
+          <select formControlName="typeEvent" id="typeEvent"
+                  class="form-input-float peer"
+                  [class.border-red-500]="eventForm.get('typeEvent')?.invalid && eventForm.get('typeEvent')?.touched">
+            <option value="">-- Select Type --</option>
+            <option value="WORKSHOP">WORKSHOP</option>
+            <option value="SEMINAIRE">SEMINAR</option>
+            <option value="CONFERENCE">CONFERENCE</option>
+          </select>
+          <label for="typeEvent" class="form-label-float">Event Type</label>
+          <div class="h-0.5 bg-gray-200 dark:bg-gray-700 mt-1 peer-focus:bg-gradient-to-r peer-focus:from-purple-500 peer-focus:to-indigo-500 transition-all duration-300"></div>
+          <div class="mt-1 text-xs text-red-600" *ngIf="eventForm.get('typeEvent')?.touched && eventForm.get('typeEvent')?.invalid">
+            <span *ngIf="eventForm.get('typeEvent')?.errors?.['required']">Type required</span>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- Image - centered -->
-    <div class="form-group file-group centered-file-group">
-      <div class="file-upload-wrapper">
-        <label class="form-label">Event Image</label>
-        <div class="file-upload-container">
-          <input type="file" id="image" (change)="onFileSelected($event)" class="form-input-file">
-          <label for="image" class="file-upload-label">
-            <span>Choose a file</span>
-          </label>
-          <span class="file-name" *ngIf="!selectedFile">No file chosen</span>
-          <span class="file-name" *ngIf="selectedFile">{{selectedFile.name}}</span>
+      <!-- Recurrence Section -->
+      <div class="space-y-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Recurrence -->
+          <div class="form-group-float">
+            <select formControlName="recurrence" id="recurrence" (change)="onRecurrenceChange()"
+                    class="form-input-float peer"
+                    [class.border-red-500]="eventForm.get('recurrence')?.invalid && eventForm.get('recurrence')?.touched">
+              <option value="NONE">None</option>
+              <option value="DAILY">Daily</option>
+              <option value="WEEKLY">Weekly</option>
+              <option value="MONTHLY">Monthly</option>
+              <option value="CUSTOM">Custom</option>
+            </select>
+            <label for="recurrence" class="form-label-float">Recurrence</label>
+            <div class="h-0.5 bg-gray-200 dark:bg-gray-700 mt-1 peer-focus:bg-gradient-to-r peer-focus:from-purple-500 peer-focus:to-indigo-500 transition-all duration-300"></div>
+          </div>
+
+          <!-- Recurrence End Date -->
+          <div class="form-group-float" *ngIf="eventForm.get('recurrence')?.value !== 'NONE'">
+            <input type="date" formControlName="recurrenceEndDate" id="recurrenceEndDate" [min]="minDate"
+                   class="form-input-float peer"
+                   [class.border-red-500]="eventForm.get('recurrenceEndDate')?.invalid && eventForm.get('recurrenceEndDate')?.touched"
+                   [required]="eventForm.get('recurrence')?.value !== 'NONE'">
+            <label for="recurrenceEndDate" class="form-label-float">End Date</label>
+            <div class="h-0.5 bg-gray-200 dark:bg-gray-700 mt-1 peer-focus:bg-gradient-to-r peer-focus:from-purple-500 peer-focus:to-indigo-500 transition-all duration-300"></div>
+            <div class="mt-1 text-xs text-red-600" *ngIf="eventForm.get('recurrenceEndDate')?.touched && eventForm.get('recurrenceEndDate')?.invalid">
+              <span *ngIf="eventForm.get('recurrenceEndDate')?.errors?.['required']">End date required</span>
+            </div>
+          </div>
         </div>
-        <div class="alert alert-danger" *ngIf="imageError">Image is required</div>
-      </div>
-    </div>
 
-    <!-- Submit button -->
-    <button type="submit" class="submit-btn">
-      <span>Add Event</span>
-    </button>
-  </form>
+        <!-- Recurrence Days -->
+        <div *ngIf="eventForm.get('recurrence')?.value === 'CUSTOM'" class="space-y-2">
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Recurrence Days</label>
+          <div class="flex flex-wrap gap-3">
+            <div *ngFor="let day of daysOfWeek" class="flex items-center">
+              <input type="checkbox" [value]="day" (change)="onDaySelected($event)" 
+                     id="{{day}}" class="hidden peer">
+              <label for="{{day}}" 
+                     class="px-4 py-2 text-sm rounded-full border border-gray-300 dark:border-gray-600 cursor-pointer peer-checked:bg-purple-100 peer-checked:text-purple-800 peer-checked:border-purple-300 peer-checked:dark:bg-purple-900/50 peer-checked:dark:text-purple-300 peer-checked:dark:border-purple-600 transition-colors">
+                {{ day }}
+              </label>
+            </div>
+          </div>
+          <div class="mt-1 text-xs text-red-600" *ngIf="eventForm.get('recurrenceDaysOfWeek')?.touched && eventForm.get('recurrenceDaysOfWeek')?.invalid">
+            <span *ngIf="eventForm.get('recurrenceDaysOfWeek')?.errors?.['required']">Select at least one day</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Description -->
+      <div class="form-group-float">
+        <textarea formControlName="description" id="description" placeholder=" " rows="4"
+               class="form-input-float peer"
+               [class.border-red-500]="eventForm.get('description')?.invalid && eventForm.get('description')?.touched"></textarea>
+        <label for="description" class="form-label-float">Description</label>
+        <div class="h-0.5 bg-gray-200 dark:bg-gray-700 mt-1 peer-focus:bg-gradient-to-r peer-focus:from-purple-500 peer-focus:to-indigo-500 transition-all duration-300"></div>
+        <div class="mt-1 text-xs text-red-600" *ngIf="eventForm.get('description')?.touched && eventForm.get('description')?.invalid">
+          <span *ngIf="eventForm.get('description')?.errors?.['required']">Description required</span>
+          <span *ngIf="eventForm.get('description')?.errors?.['minlength']">Min 3 chars</span>
+          <span *ngIf="eventForm.get('description')?.errors?.['maxlength']">Max 100 chars</span>
+        </div>
+      </div>
+
+      <!-- File Upload -->
+      <div class="space-y-2">
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Event Image</label>
+        <div class="relative group">
+          <div class="flex items-center justify-center w-full">
+            <label for="image" class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 dark:border-gray-600 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors group-hover:border-purple-500">
+              <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                <svg class="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
+                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
+                </svg>
+                <p class="mb-2 text-sm text-gray-500 dark:text-gray-400"><span class="font-semibold">Click to upload</span> or drag and drop</p>
+                <p class="text-xs text-gray-500 dark:text-gray-400" *ngIf="!selectedFile">PNG, JPG (MAX. 5MB)</p>
+                <p class="text-sm text-purple-600 dark:text-purple-400 font-medium" *ngIf="selectedFile">{{selectedFile.name}}</p>
+              </div>
+              <input id="image" type="file" class="hidden" (change)="onFileSelected($event)">
+            </label>
+          </div>
+        </div>
+        <div class="mt-1 text-xs text-red-600" *ngIf="imageError">Image is required</div>
+      </div>
+
+      <!-- Submit Button -->
+      <div class="pt-4">
+        <button type="submit" 
+                class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-medium py-3 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                [disabled]="eventForm.invalid">
+          <span class="flex items-center justify-center space-x-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13a1 1 0 102 0V9.414l1.293 1.293a1 1 0 001.414-1.414z" clip-rule="evenodd" />
+            </svg>
+            <span>Add Event</span>
+          </span>
+        </button>
+      </div>
+    </form>
+  </div>
 </div>

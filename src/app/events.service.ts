@@ -38,6 +38,8 @@ export class EventsService {
     return this.http.get<Event[]>(`${this.baseUrl}/search`, { params });
   }
 
+  
+
 
   
   

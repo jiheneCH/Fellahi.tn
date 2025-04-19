@@ -40,5 +40,9 @@ export class EventFrontComponent implements OnInit {
     return this.events.filter(e => e.status === 'disponible' || e.status === 'complete');
   }
   
+  getQrCodeUrl(reference: string): string {
+    return `http://localhost:8080/piEvent/event/qr/${reference}`;
+  }
+  
 
 }

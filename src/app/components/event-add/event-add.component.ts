@@ -17,6 +17,12 @@ export class EventAddComponent  {
   message: string = '';
   isError: boolean = false;
   minDate: string;
+  recurrenceOptions: string[] = ['NONE', 'DAILY', 'WEEKLY', 'MONTHLY', 'CUSTOM'];
+  daysOfWeek: string[] = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'];
+  showRecurrenceEndDate: boolean = false;
+  showRecurrenceDays: boolean = false;
+
+
   
 
   constructor(
@@ -66,7 +72,10 @@ export class EventAddComponent  {
         Validators.pattern(/^[a-zA-Z0-9,\s]+$/)
       ]],
       typeEvent: ['', Validators.required],
-      status: ['', Validators.required]
+      status: ['', Validators.required],
+      recurrence: ['NONE'],
+      recurrenceEndDate: [''],
+      recurrenceDaysOfWeek: [[]],
     });
   }
 
@@ -116,6 +125,15 @@ futureOrPresentDateValidator(control: AbstractControl): { [key: string]: boolean
       formData.append('dateEvent', this.eventForm.get('dateEvent')?.value);
       formData.append('heureEvent', this.eventForm.get('heureEvent')?.value);
       formData.append('image', this.selectedFile); 
+      formData.append('recurrence', this.eventForm.value.recurrence);
+
+      if (this.eventForm.value.recurrence !== 'NONE') {
+        formData.append('recurrenceEndDate', this.eventForm.value.recurrenceEndDate);
+        
+        if (this.eventForm.value.recurrence === 'CUSTOM') {
+          formData.append('recurrenceDaysOfWeek', this.eventForm.value.recurrenceDaysOfWeek.join(','));
+        }
+      }
   
       this.http.post<any>('http://localhost:8080/piEvent/event/addEvent', formData, {
         headers: new HttpHeaders().set('Accept', 'application/json')
@@ -134,6 +152,42 @@ futureOrPresentDateValidator(control: AbstractControl): { [key: string]: boolean
         );
       
       
+  }
+}
+
+
+onDaySelected(event: any): void {
+  const selectedDays = this.eventForm.get('recurrenceDaysOfWeek')?.value || [];
+  const day = event.target.value;
+
+  if (event.target.checked) {
+    // Ajouter le jour à la liste si la case est cochée
+    selectedDays.push(day);
+  } else {
+    // Retirer le jour de la liste si la case est décochée
+    const index = selectedDays.indexOf(day);
+    if (index !== -1) {
+      selectedDays.splice(index, 1);
+    }
+  }
+
+  // Mettre à jour la valeur du formulaire
+  this.eventForm.get('recurrenceDaysOfWeek')?.setValue(selectedDays);
+}
+
+onRecurrenceChange(): void {
+  const recurrence = this.eventForm.get('recurrence')?.value;
+
+  // Logique pour afficher ou masquer les champs en fonction de la récurrence
+  if (recurrence === 'NONE') {
+    this.showRecurrenceEndDate = false;
+    this.showRecurrenceDays = false;
+  } else if (recurrence === 'DAILY' || recurrence === 'WEEKLY' || recurrence === 'MONTHLY') {
+    this.showRecurrenceEndDate = true;
+    this.showRecurrenceDays = true; // Optionnel, si vous voulez afficher les jours
+  } else if (recurrence === 'CUSTOM') {
+    this.showRecurrenceEndDate = true;
+    this.showRecurrenceDays = true; // Optionnel pour des jours personnalisés
   }
 }
 

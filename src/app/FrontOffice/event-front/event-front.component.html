@@ -62,6 +62,14 @@
                     <span class="author"><i class="fas fa-user"></i> Admin</span>
                     <span class="date"><i class="fas fa-calendar"></i> {{ event.dateEvent }}</span>
                   </p>
+
+                  <img
+                  *ngIf="event.reference"
+                  [src]="getQrCodeUrl(event.reference)"
+                  alt="QR Code"
+                  width="150"
+                  height="150"
+                />
                   <p class="excerpt">
                     {{ event.description}}
                   </p>
