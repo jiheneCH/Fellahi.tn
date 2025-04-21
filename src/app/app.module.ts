@@ -124,6 +124,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { ReservationClientComponent } from './FrontOffice/reservation-client/reservation-client.component';
 import { CalendarClientComponent } from './FrontOffice/calendar-client/calendar-client.component';
 import { EventViewComponent } from './components/event-view/event-view.component';
+import { DashboardComponent } from './components/dashboard/dashboard.component';
 
 
 @NgModule({
@@ -212,6 +213,7 @@ import { EventViewComponent } from './components/event-view/event-view.component
         ReservationClientComponent,
         CalendarClientComponent,
         EventViewComponent,
+        DashboardComponent,
     
        
         

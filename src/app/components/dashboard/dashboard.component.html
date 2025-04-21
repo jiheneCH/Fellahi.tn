@@ -1,0 +1,153 @@
+<div class="premium-dashboard">
+    <!-- Premium Header Section -->
+    <div class="premium-header">
+        <div class="header-content">
+            <div class="header-text">
+                <h2 class="gradient-title">Booking Analytics Dashboard</h2>
+                <p class="header-subtitle">Monthly Performance Metrics</p>
+            </div>
+            <div class="header-ornament">
+                <div class="crystal-dot"></div>
+                <div class="light-line"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Grid - Premium Cards -->
+    <div *ngIf="!isLoading && analytics" class="premium-grid">
+        <!-- Card: Current Month Bookings -->
+        <div class="premium-card gray-theme">
+            <div class="card-reflect"></div>
+            <div class="card-header">
+                <div class="card-icon-container">
+                    <i class="card-icon fas fa-calendar-star"></i>
+                </div>
+                <div class="card-trend up">
+                    <span class="trend-value">+5.2%</span>
+                    <i class="fas fa-arrow-up"></i>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="stat-value">{{ analytics.currentMonthReservations }}</div>
+                <div class="stat-label">Current Month Bookings</div>
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 75%"></div>
+                        <div class="progress-sparkle"></div>
+                    </div>
+                    <div class="progress-percent">75%</div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <span class="premium-badge">
+                    <i class="fas fa-circle"></i> Current Period
+                </span>
+            </div>
+            <div class="card-shine"></div>
+        </div>
+
+        <!-- Card: Previous Month Bookings -->
+        <div class="premium-card gray-theme">
+            <div class="card-reflect"></div>
+            <div class="card-header">
+                <div class="card-icon-container">
+                    <i class="card-icon fas fa-calendar-clock"></i>
+                </div>
+                <div class="card-trend down">
+                    <span class="trend-value">-3.8%</span>
+                    <i class="fas fa-arrow-down"></i>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="stat-value">{{ analytics.previousMonthReservations }}</div>
+                <div class="stat-label">Previous Month Bookings</div>
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 60%"></div>
+                        <div class="progress-sparkle"></div>
+                    </div>
+                    <div class="progress-percent">60%</div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <span class="premium-badge">
+                    <i class="fas fa-circle"></i> Comparison
+                </span>
+            </div>
+            <div class="card-shine"></div>
+        </div>
+
+        <!-- Card: Current Month Revenue -->
+        <div class="premium-card gray-theme">
+            <div class="card-reflect"></div>
+            <div class="card-header">
+                <div class="card-icon-container">
+                    <i class="card-icon fas fa-gem"></i>
+                </div>
+                <div class="card-trend up">
+                    <span class="trend-value">+12.5%</span>
+                    <i class="fas fa-arrow-up"></i>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="stat-value">{{ analytics.currentMonthEarnings | currency:'TND':'symbol' }}</div>
+                <div class="stat-label">Current Month Revenue</div>
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 85%"></div>
+                        <div class="progress-sparkle"></div>
+                    </div>
+                    <div class="progress-percent">85%</div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <span class="premium-badge">
+                    <i class="fas fa-circle"></i> Performance
+                </span>
+            </div>
+            <div class="card-shine"></div>
+        </div>
+
+        <!-- Card: Previous Month Revenue -->
+        <div class="premium-card gray-theme">
+            <div class="card-reflect"></div>
+            <div class="card-header">
+                <div class="card-icon-container">
+                    <i class="card-icon fas fa-coins"></i>
+                </div>
+                <div class="card-trend neutral">
+                    <span class="trend-value">0%</span>
+                    <i class="fas fa-equals"></i>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="stat-value">{{ analytics.previousMonthEarnings | currency:'TND':'symbol' }}</div>
+                <div class="stat-label">Previous Month Revenue</div>
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 65%"></div>
+                        <div class="progress-sparkle"></div>
+                    </div>
+                    <div class="progress-percent">65%</div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <span class="premium-badge">
+                    <i class="fas fa-circle"></i> History
+                </span>
+            </div>
+            <div class="card-shine"></div>
+        </div>
+    </div>
+
+    <!-- Premium Loading Animation -->
+    <div *ngIf="isLoading" class="premium-loading">
+        <div class="crystal-spinner">
+            <div class="crystal"></div>
+            <div class="crystal"></div>
+            <div class="crystal"></div>
+        </div>
+        <p class="loading-text">Loading Analytics Data...</p>
+        <p class="loading-subtext">Please wait while we process your metrics</p>
+    </div>
+</div>

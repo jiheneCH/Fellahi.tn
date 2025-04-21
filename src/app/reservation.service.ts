@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Reservation } from './Reservation';
 import { Observable } from 'rxjs';
+import { ReservationAnalyticsResponse } from './ReservationAnalyticsResponse';
 
 @Injectable({
   providedIn: 'root'
@@ -31,6 +32,12 @@ export class ReservationService {
   cancelReservation(idReservation: number): Observable<any> {
     return this.http.delete(`${this.baseUrl}/cancel/${idReservation}`, { responseType: 'text' });
   }
+
+  // reservation.service.ts
+getReservationAnalytics(): Observable<ReservationAnalyticsResponse> {
+  return this.http.get<ReservationAnalyticsResponse>(`${this.baseUrl}/analytics`);
+}
+
 
   
   

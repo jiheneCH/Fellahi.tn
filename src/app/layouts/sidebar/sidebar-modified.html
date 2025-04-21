@@ -143,6 +143,10 @@
                                 <li>
                                     <a routerLink="/admin/waiting-list" routerLinkActive="active" (click)="toggleMobileMenu()"> {{ 'waiting list' | translate }}</a>
                                 </li>
+
+                                <li>
+                                    <a routerLink="/admin/ReservationAnalytics" routerLinkActive="active" (click)="toggleMobileMenu()"> {{ 'dashboard' | translate }}</a>
+                                </li>
                             </ul>
                         </div>
 
@@ -154,16 +158,7 @@
 
 
                       
-                    <li class="menu nav-item">
-                        <button type="button" class="nav-link group w-full">
-                            <div class="flex items-center">
-                                <icon-menu-dashboard class="shrink-0 group-hover:!text-primary" />
-                                <span class="text-black ltr:pl-3 rtl:pr-3 dark:text-[#506690] dark:group-hover:text-white-dark">
-                                    {{ 'Analyse' | translate }}
-                                </span>
-                            </div>
-                        </button>
-                    </li>
+                   
 
                     <h2
                         class="-mx-4 mb-1 flex items-center bg-white-light/30 px-7 py-3 font-extrabold uppercase dark:bg-dark dark:bg-opacity-[0.08]">
