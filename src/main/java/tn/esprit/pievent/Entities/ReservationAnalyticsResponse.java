@@ -1,13 +1,19 @@
 package tn.esprit.pievent.Entities;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+
 import java.math.BigDecimal;
 
+@Entity
 public class ReservationAnalyticsResponse {
-
+    @Id
+    private Long id;
     private Long currentMonthReservations;
     private Long previousMonthReservations;
     private BigDecimal currentMonthEarnings;
     private BigDecimal previousMonthEarnings;
+
 
     // Constructeur par défaut
     public ReservationAnalyticsResponse() {
@@ -53,6 +59,14 @@ public class ReservationAnalyticsResponse {
 
     public void setPreviousMonthEarnings(BigDecimal previousMonthEarnings) {
         this.previousMonthEarnings = previousMonthEarnings;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getId() {
+        return id;
     }
 }
 
