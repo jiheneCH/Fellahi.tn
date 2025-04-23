@@ -1,0 +1,29 @@
+package tn.esprit.fallehiuser.model;
+
+public enum ReclamationSubject {
+
+    // Farmer Complaints
+    DELIVERY_DELAY_BY_TRANSPORTER,
+    ORDER_CANCELLATION_BY_CLIENT,
+    INCORRECT_PRICE_OR_QUANTITY,
+    UNAVAILABILITY_OF_GOODS,
+
+    // Transporter Complaints
+    DELIVERY_DELAY_BY_CLIENT,
+    CLIENT_REFUSES_TO_ACCEPT_GOODS,
+    WRONG_PRODUCT_INFORMATION,
+    UNAVAILABILITY_OF_CLIENT,
+
+    // Client Complaints
+    POOR_QUALITY_OF_GOODS,
+    DELAYED_DELIVERY,
+    WRONG_PRODUCT_DELIVERED,
+    GOODS_NOT_AS_DESCRIBED,
+    PRICE_DISCREPANCY;
+
+
+
+
+
+
+}
